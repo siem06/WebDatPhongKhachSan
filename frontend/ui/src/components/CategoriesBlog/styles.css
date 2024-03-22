@@ -1,0 +1,59 @@
+.imgHover:hover {
+  transform: scale(1.23) rotate(10deg);
+}
+.imgHover {
+  transition: 0.3s ease;
+}
+.imgLayout {
+  overflow: hidden;
+}
+.blog:hover .imgHover {
+  transform: scale(1.23) rotate(10deg);
+}
+/* .general {
+  position: "relative";
+  cursor: "pointer";
+} */
+.text.detail {
+  padding-top: 30px;
+}
+h5.text {
+  color: #111;
+}
+p.text {
+  color: #484242;
+  line-height: 20px;
+}
+.styleImg {
+  width: "100%";
+}
+
+.borderline {
+  width: "100%";
+  height: "1px";
+  background: "#fff";
+}
+.tags {
+  padding-top: "20px";
+}
+.positionBlog {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  background: rgba(34, 34, 34, 0.8);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+}
+.positionBlog .tags {
+  display: none;
+}
+.positionBlog h5 {
+  color: #fff;
+}
+.positionBlog p {
+  color: #fff;
+}

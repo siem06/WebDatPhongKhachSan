@@ -1,0 +1,161 @@
+/* profile */
+.profile-container {
+    margin-top: 80px;
+  }
+  .sidebar {
+    background-color: #f8f9fa;
+    /* border-right: 1px solid #dee2e6; */
+  }
+  
+  .sidebar .navbar {
+    flex-direction: column !important;
+  }
+  .sidebar .nav-item {
+    display: block; /* Hiển thị các tùy chọn theo chiều dọc */
+    margin-bottom: 10px;
+  }
+  
+  .sidebar .nav-item .btn {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+  }
+  
+  .sidebar .nav-item .btn.active {
+    background-color: #f3c300;
+    color: #fff;
+    
+  }
+  .naviProfile {
+    flex-direction: column !important;
+    width: 100%;
+  }
+  .lnr-user {
+    color: #000;
+  }
+  .userProfile{
+    font-size: 16px;
+    justify-content: center;
+    padding: 10px;
+  }
+  /* .nabar-right{
+    height: 1000vh;
+  } */
+  /* Prrofile info */
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #161718
+}
+
+.profile-button {
+    /* background: rgb(99, 39, 120); */
+    box-shadow: none;
+    border: none
+}
+
+.profile-button:hover {
+    background: #682773
+}
+
+.profile-button:focus {
+    /* background: #682773; */
+    box-shadow: none
+}
+
+.profile-button:active {
+    /* background: #682773; */
+    box-shadow: none
+}
+
+.back:hover {
+    color: #682773;
+    cursor: pointer
+}
+
+.labels {
+    font-size: 11px
+}
+
+.add-experience:hover {
+    /* background: #BA68C8; */
+    color: #fff;
+    cursor: pointer;
+    /* border: solid 1px #BA68C8 */
+}
+
+/* 
+Booking History
+*/
+
+.tabs {
+  display: flex;
+  position: relative;
+}
+.tabs .line {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 6px;
+  border-radius: 15px;
+  background-color: #f3c300;
+  transition: all 0.2s ease;
+}
+.tab-item {
+  min-width: 80px;
+  padding: 16px 20px 11px 20px;
+  font-size: 16px;
+  text-align: center;
+  color: #000;
+  background-color: #fff;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 5px solid transparent;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+.tab-icon {
+  font-size: 24px;
+  width: 32px;
+  position: relative;
+  top: 2px;
+}
+.tab-item:hover {
+  opacity: 1;
+  background-color: rgba(194, 53, 100, 0.05);
+  border-color: rgba(194, 53, 100, 0.1);
+}
+.tab-item.active {
+  opacity: 1;
+}
+.tab-content {
+  padding: 28px 0;
+}
+.tab-pane {
+  color: #333;
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
+.tab-pane h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.table-scroll {
+  max-height: 500px; /* Thay đổi giá trị này thành số pixel tùy ý */
+  overflow-y: auto; /* Khả năng cuộn dọc khi nội dung vượt quá chiều cao */
+}
+.fixed-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff; /* Thay đổi màu nền theo ý muốn */
+  z-index: 1; /* Đảm bảo tiêu đề hiển thị trên nền của bảng */
+}
+
+
+
+  
+  
