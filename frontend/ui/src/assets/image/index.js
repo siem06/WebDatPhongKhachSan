@@ -43,5 +43,9 @@ instagram6: require("../image/instagram/Image-06.jpg"),
 instagram7: require("../image/instagram/Image-07.jpg"),
 instagram8: require("../image/instagram/Image-08.jpg"),
 
+
+
+
+
 };
 export default imgs;
