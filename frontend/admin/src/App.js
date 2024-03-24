@@ -1,23 +1,23 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { Route, Routes } from "react-router-dom";
 import './App.css';
-
+import Menu from './layout/Menu';
+import Header from './layout/Header';
+import Dashboard from './pages/Dashboard';
+import Footer from './layout/Footer';
+import ManageRoom from './pages/ManageRoom';
+import BookingRoom from './pages/BookingRoom';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+      <Menu />
+      <Routes>
+        <Route path="/" exact element={<Dashboard />} />
+        <Route path="/home" exact element={<Dashboard />} />
+        <Route path="/manageroom" exact element={<ManageRoom />} />
+        <Route path="/booking" exact element={<BookingRoom/>} />
+      </Routes>
+      <Footer />
     </div>
   );
 }
