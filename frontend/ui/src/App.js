@@ -7,7 +7,7 @@ import Profile from "./screens/Profile";
 import Header from "./Layout/Header";
 import About from "./screens/About";
 import Blog from "./screens/Blog";
-// import Footer from './Layout/Footer';
+import Footer from './Layout/Footer';
 import "./App.css";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -25,7 +25,7 @@ function App() {
       <Route path="/blog" element={<Blog />} />
       <Route path="/profile" element={<Profile />} />
     </Routes>
-    {/* <Footer/> */}
+    <Footer/>
   </div>
   );
 }
