@@ -41,7 +41,7 @@ export default function Header({loggedIn}) {
                 </ul>
               </li> 
               <li className={`nav-item ${getActiveClass('/blog')}`}><NavLink className="nav-link" onClick={() => setActive('/blog')} to="/blog">TIN TỨC</NavLink></li>
-              <li className={`nav-item ${getActiveClass('/profile')}`}><NavLink className="nav-link" onClick={() => setActive('/service')} to="/service">DỊCH VỤ</NavLink></li>
+              <li className={`nav-item ${getActiveClass('/service')}`}><NavLink className="nav-link" onClick={() => setActive('/service')} to="/service">DỊCH VỤ</NavLink></li>
               <li className={`nav-item ${getActiveClass('/contact')}`}><NavLink className="nav-link" onClick={() => setActive('/contact')} to="/contact">LIÊN HỆ</NavLink></li>
             </ul>
           </div> 
