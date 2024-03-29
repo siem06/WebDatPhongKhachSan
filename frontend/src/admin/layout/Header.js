@@ -1,4 +1,4 @@
-export default function Header() {
+export default function Header({pageCurrent}) {
     return (
       <>
      <nav className="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
@@ -6,9 +6,9 @@ export default function Header() {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li className="breadcrumb-item text-sm"><a className="opacity-5 text-dark" href="javascript:;">Trang</a></li>
-            <li className="breadcrumb-item text-sm text-dark active" aria-current="page">Trang Chủ</li>
+            <li className="breadcrumb-item text-sm text-dark active" aria-current="page">{pageCurrent}</li>
           </ol>
-          <h6 className="font-weight-bolder mb-0">Trang chủ</h6>
+          <h6 className="font-weight-bolder mb-0">{pageCurrent}</h6>
         </nav>
         <div className="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div className="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -21,7 +21,7 @@ export default function Header() {
             <li className="nav-item d-flex align-items-center">
               <a href="javascript:;" className="nav-link text-body font-weight-bold px-0">
                 <i className="fa fa-user me-sm-1"></i>
-                <span className="d-sm-inline d-none">Đăng  nhập</span>
+                <span className="d-sm-inline d-none">{pageCurrent}</span>
               </a>
             </li>
             <li className="nav-item d-xl-none ps-3 d-flex align-items-center">

@@ -15,23 +15,36 @@ export default function Header({loggedIn}) {
   const getActiveClass = (path) => {
     return active === path ? 'active' : '';
   }
+  const [showMenu, setShowMenu] = useState(false);
 
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  const closeMenuOnMobile = () => {
+    if (window.innerWidth <= 1150) {
+      setShowMenu(false);
+    }
+  };
   return (
     <header className="header_area">
       <div className="container">
         <nav className="navbar navbar-expand-lg navbar-light">
           <NavLink className="navbar-brand logo_h" to="/"><img src={Logo} alt=""/></NavLink>
-          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <button
+            className={`nav__menu navbar-toggler`}
+            type="button"
+            onClick={toggleMenu}
+          >
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
           </button>
-          <div className="collapse navbar-collapse offset justif justify-content-center" id="navbarSupportedContent">
+          <div className={`collapse navbar-collapse offset justif justify-content-center ${showMenu ? "show" : "" }`}id="navbarSupportedContent">
             <ul className="nav navbar-nav menu_nav ml-auto">
-              <li className={`nav-item ${getActiveClass('/')}`}><NavLink className="nav-link" onClick={() => setActive('/')} to="/">TRANG CHỦ</NavLink></li> 
+              <li className={`nav-item ${getActiveClass('/')}`}  onClick={closeMenuOnMobile}><NavLink className="nav-link" onClick={() => setActive('/')} to="/">TRANG CHỦ</NavLink></li> 
               <li className={`nav-item ${getActiveClass('/about')}`}><NavLink className="nav-link" onClick={() => setActive('/about')} to="/about">GIỚI THIỆU</NavLink></li>
               <li className={`nav-item submenu dropdown ${active.includes('/room') ? 'active' : ''}`}>
-                {/* <a href="#in" className="nav-link dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">PHÒNG <span className="lnr lnr-chevron-down"></span></a> */}
                 <NavLink className="nav-link dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" onClick={() => setActive('/room')} to="/room">PHÒNG<span className="lnr lnr-chevron-down"></span></NavLink>
                 <ul className="dropdown-menu">
                   <li className={`nav-item ${getActiveClass('/standard')}`}><NavLink className="nav-link" onClick={() => setActive('/room')} to="/blog">Tiêu chuẩn</NavLink></li>
@@ -43,16 +56,17 @@ export default function Header({loggedIn}) {
               <li className={`nav-item ${getActiveClass('/blog')}`}><NavLink className="nav-link" onClick={() => setActive('/blog')} to="/blog">TIN TỨC</NavLink></li>
               <li className={`nav-item ${getActiveClass('/service')}`}><NavLink className="nav-link" onClick={() => setActive('/service')} to="/service">DỊCH VỤ</NavLink></li>
               <li className={`nav-item ${getActiveClass('/contact')}`}><NavLink className="nav-link" onClick={() => setActive('/contact')} to="/contact">LIÊN HỆ</NavLink></li>
+              {loggedIn ? (
+                <li className={`nav-item `}>
+                  <NavLink className="nav-link font-size-16 customLogin" to="/profile"><span className="lnr lnr-user w-10"></span>TÀI KHOẢN </NavLink>
+                </li>
+              ) : (
+                <li className={`nav-item `}> <NavLink className="nav-link font-size-16 customLogin"onClick={() => setActive("/login")}  to="/login"> ĐĂNG KÝ/ ĐĂNG NHẬP</NavLink>
+                </li>
+              )}
             </ul>
           </div> 
-          <div> 
-          {loggedIn ? (
-              <NavLink className="nav-link font-size-16 customLogin" to="/profile"><span class="lnr lnr-user w-10"></span>TÀI KHOẢN</NavLink>
-            ) : (
-              <NavLink className="nav-link font-size-16 customLogin" onClick={() => setActive('/login')} to="/login">ĐĂNG KÝ/ ĐĂNG NHẬP</NavLink>
-            )}
-          
-          </div>
+        
         </nav>
       </div>
     </header>

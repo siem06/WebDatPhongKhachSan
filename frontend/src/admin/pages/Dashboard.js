@@ -192,7 +192,7 @@ export default function Dashboard() {
   }, []);
   return (
     <>
-      <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+      <main className="main-content position-relative  border-radius-lg ">
 
 
         <Header />
