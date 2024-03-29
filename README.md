@@ -1,10 +1,10 @@
-MÔ TẢ ĐỒ ÁN CHUYÊN ĐỀ WEB
-Thành viên: 	Châu Quế Bình- 20130204
+- MÔ TẢ ĐỒ ÁN CHUYÊN ĐỀ WEB
+- Thành viên: 	Châu Quế Bình- 20130204
 		Phan Thị Hồng Siêm - 20130386
-Tên đề tài: Webiste đặt khách sạn
-Công nghê sử dụng: React, Spring Boot.
-Mô tả đề tài: trang web cung cấp dịch vụ đặt phòng khách sạn trực tuyến, với sự linh hoạt nhanh chóng và tiện lợi. Với một cú nhấp chuột, khách hàng có thể dễ dàng trải nghiệm quy trình đặt phòng đơn giản và an toàn, mà không cần phải tốn thời gian và công sức.
-Chức năng cơ bản website:
+- Tên đề tài: Webiste đặt phòng khách sạn
+- Công nghê sử dụng: React, Node.js.
+- Mô tả đề tài: trang web cung cấp dịch vụ đặt phòng khách sạn trực tuyến, với sự linh hoạt nhanh chóng và tiện lợi. Với một cú nhấp chuột, khách hàng có thể dễ dàng trải nghiệm quy trình đặt phòng đơn giản và an toàn, mà không cần phải tốn thời gian và công sức.
+- Chức năng cơ bản website:
 -	Người dùng: 
   .     Đăng ký/ Đăng nhập.
 -	Xem phòng (bộ lọc), Đặt phòng, Thanh toán (paypal, tiền mặt).
