@@ -19,6 +19,7 @@ import ManageRoom from "./admin/pages/ManageRoom";
 import BookingRoom from "./admin/pages/BookingRoom";
 import ManageAccount from "./admin/pages/ManagerAccount";
 import ManagerGeneral from "./admin/pages/ManagerGeneral";
+import ManageComment from "./admin/pages/ManageComment";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -48,7 +49,7 @@ function App() {
         <Route path="/booking" exact element={<BookingRoom />} />
         <Route path="/manageaccount" exact element={<ManageAccount />} />
         <Route path="/managegeneral" exact element={<ManagerGeneral />} />
-
+        <Route path="/managecomment" exact element={<ManageComment />} />
       </Routes>
       <FooterAdmin />
     </div>

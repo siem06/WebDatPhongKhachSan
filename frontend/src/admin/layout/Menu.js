@@ -68,6 +68,14 @@ export default function Menu() {
                 <span className="nav-link-text ms-1">Hỗ trợ khách hàng</span>
               </NavLink>
             </li>
+            <li className={`nav-item ${active === "/managecomment" ? "active" : ""}`}>
+              <NavLink className="nav-link text-white" onClick={() => handleSetActive("/managecomment")} to="/managecomment">
+                <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <i className="material-icons opacity-10">comment</i>
+                </div>
+                <span className="nav-link-text ms-1">Quản lý đánh giá</span>
+              </NavLink>
+            </li>
             <li className="nav-item mt-3">
               <h6 className="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
             </li>
