@@ -21,7 +21,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { fakeData, usStates } from '../assets/datafake/makeData.ts';
+import { fakeData, usStates } from '../assets/makeDate.ts';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 

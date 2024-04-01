@@ -133,9 +133,9 @@ button:focus {
   flex-direction: row-reverse;
 }
 
-.mb_30 {
+/* .mb_30 {
   margin-bottom: -30px;
-}
+} */
 
 .section_title {
   margin-bottom: 75px;

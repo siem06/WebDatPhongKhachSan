@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div>
-      {/* <Header loggedIn={loggedIn} /> 
+      <Header loggedIn={loggedIn} /> 
     <Routes>
       <Route path="/" exact element={<Home />} />
       <Route path="/home" element={<Home />} />
@@ -37,10 +37,10 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/profile" element={<Profile />} />
     </Routes>
-    <Footer/> */}
+    <Footer/>
 
       {/* Admin */}
-      <Menu />
+      {/* <Menu />
       <Routes>
         <Route path="/" exact element={<Dashboard />} />
         <Route path="/home" exact element={<Dashboard />} />
@@ -50,7 +50,7 @@ function App() {
         <Route path="/managegeneral" exact element={<ManagerGeneral />} />
 
       </Routes>
-      <FooterAdmin />
+      <FooterAdmin /> */}
     </div>
   );
 }
