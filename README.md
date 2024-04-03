@@ -3,6 +3,7 @@
 		Phan Thị Hồng Siêm - 20130386
 - Tên đề tài: Webiste đặt phòng khách sạn
 - Công nghê sử dụng: React, Node.js.
+- CSDL: https://drive.google.com/file/d/1ofSnkqoRFNsjYDG3lmO_4nrduuA6RAtc/view?usp=sharing
 - Mô tả đề tài: trang web cung cấp dịch vụ đặt phòng khách sạn trực tuyến, với sự linh hoạt nhanh chóng và tiện lợi. Với một cú nhấp chuột, khách hàng có thể dễ dàng trải nghiệm quy trình đặt phòng đơn giản và an toàn, mà không cần phải tốn thời gian và công sức.
 - Chức năng cơ bản website:
 -	Người dùng: 
