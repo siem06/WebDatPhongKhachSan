@@ -10,7 +10,6 @@ import "../assets/css/style.css";
 import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
 export default function Contact() {
-
   return (
     <>
       <section className="breadcrumb_area">
@@ -37,7 +36,7 @@ export default function Contact() {
         <div className="container">
           <div id="mapBox" class="mapBox">
             <iframe
-             style={{ width: "100%", height: "500px"}}
+              style={{ width: "100%", height: "500px" }}
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.214525515966!2d106.78918677512955!3d10.871281657436786!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175276398969f7b%3A0x9672b7efd0893fc4!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBOw7RuZyBMw6JtIFRQLiBI4buTIENow60gTWluaA!5e0!3m2!1svi!2s!4v1711970644758!5m2!1svi!2s"
               allowfullscreen=""
               loading="lazy"
@@ -45,7 +44,7 @@ export default function Contact() {
             ></iframe>
           </div>
 
-          <div className="row">
+          <div className="row mt-8">
             <div className="col-md-3">
               <div className="contact_info">
                 <div className="info_item">

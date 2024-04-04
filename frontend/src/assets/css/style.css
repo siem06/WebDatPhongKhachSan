@@ -386,7 +386,7 @@ button:focus {
 @media (min-width: 992px) {
   .navbar .menu_nav .nav-item.submenu ul {
     position: absolute;
-    top: 100%;
+    top: 40%;
     left: 0px;
     min-width: 220px;
     text-align: left;
@@ -3569,7 +3569,7 @@ h6 {
 
 .single-footer-widget .input-group {
   display: flex !important;
-  flex:3;
+  flex: 3;
 }
 
 .single-footer-widget input {
@@ -3659,9 +3659,9 @@ h6 {
 .footer-bottom .footer-social a:hover {
   color: #f3c300;
 }
-.footer_col{
+.footer_col {
   flex: 0 0 auto;
-    width: 52.333333%;
+  width: 52.333333%;
 }
 
 /*---------------------------------------------------- */
@@ -3741,16 +3741,32 @@ button:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.btnRegister {
-  background-color: #007bff;
+.btnRegister,
+.btnLogin,
+.btnForgot,
+.btnSave {
+  background-color: #f8b600;
   border: none;
 }
 
 .btnRegister:hover {
-  background-color: #0056b3;
+  background-color: #f3c300;
+}
+.btnLogin,
+.btnSave:hover {
+  background-color: #f3c300;
 }
 
 .text-center {
   text-align: center;
 }
-
+a:hover {
+  color: #f8b600;
+}
+.btn-primary {
+  box-shadow: none;
+}
+.btn-primary:hover {
+  border-color: #f8b600;
+  box-shadow: none !important;
+}

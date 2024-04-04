@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
-import Header from "../layout/Header";
-import Table from "../components/Table";
+import React, { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Header from "../layout/Header";
+import Table from "../../components/Table";
+import FormInformation from "../../components/Form";
+import * as yup from "yup";
+
 export default function ManagerGeneral() {
   useEffect(() => {
     const tabs = document.querySelectorAll(".tab-item");
@@ -118,12 +121,14 @@ export default function ManagerGeneral() {
     {
       id: 10,
       name: "Mya",
-      category: "hnaiem@your",state: "Ẩn",
+      category: "hnaiem@your",
+      state: "Ẩn",
     },
     {
       id: 11,
       name: "siêm",
-      category: "lymh@your",state: "Ẩn",
+      category: "lymh@your",
+      state: "Ẩn",
     },
     {
       id: 12,
@@ -134,12 +139,14 @@ export default function ManagerGeneral() {
     {
       id: 13,
       name: "Mya",
-      category: "hnaiem@your",state: "Ẩn",
+      category: "hnaiem@your",
+      state: "Ẩn",
     },
     {
       id: 14,
       name: "siêm",
-      category: "lymh@your",state: "Ẩn",
+      category: "lymh@your",
+      state: "Ẩn",
     },
     {
       id: 15,
@@ -150,12 +157,14 @@ export default function ManagerGeneral() {
     {
       id: 16,
       name: "Mya",
-      category: "hnaiem@your",state: "Ẩn",
+      category: "hnaiem@your",
+      state: "Ẩn",
     },
     {
       id: 17,
       name: "siêm",
-      category: "lymh@your",state: "Ẩn",
+      category: "lymh@your",
+      state: "Ẩn",
     },
     {
       id: 18,
@@ -166,12 +175,14 @@ export default function ManagerGeneral() {
     {
       id: 19,
       name: "Mya",
-      category: "hnaiem@your",state: "Ẩn",
+      category: "hnaiem@your",
+      state: "Ẩn",
     },
     {
       id: 20,
       name: "siêm",
-      category: "lymh@your",state: "Ẩn",
+      category: "lymh@your",
+      state: "Ẩn",
     },
     {
       id: 11,
@@ -182,12 +193,14 @@ export default function ManagerGeneral() {
     {
       id: 22,
       name: "Mya",
-      category: "hnaiem@your",state: "Ẩn",
+      category: "hnaiem@your",
+      state: "Ẩn",
     },
     {
       id: 23,
       name: "siêm",
-      category: "lymh@your",state: "Ẩn",
+      category: "lymh@your",
+      state: "Ẩn",
     },
     {
       id: 24,
@@ -198,21 +211,23 @@ export default function ManagerGeneral() {
     {
       id: 25,
       name: "Mya",
-      category: "hnaiem@your",state: "Ẩn",
+      category: "hnaiem@your",
+      state: "Ẩn",
     },
     {
       id: 26,
       name: "aa",
-      category: "lymh@your",state: "Ẩn",
+      category: "lymh@your",
+      state: "Ẩn",
     },
   ];
- const columnService = [
+  const columnService = [
     {
       name: "Dịch vụ",
       selector: (row) => row.name,
       sortable: true,
     },
-  
+
     {
       name: "Trạng thái",
       selector: (row) => row.state,
@@ -258,9 +273,27 @@ export default function ManagerGeneral() {
       name: "Thăm quan",
       state: "Ẩn",
     },
-   
-   
   ];
+  const [userData, setUserData] = useState({
+    id: "1",
+    slogan: "siem",
+    content: "jdhiwj",
+    img: "kk",
+  });
+  const initialValues = {
+    slogan: userData ? userData.slogan : "",
+    content: userData ? userData.content : "",
+    img: userData ? userData.img : "",
+  };
+
+  const schema = yup.object().shape({
+    slogan: yup.string().required(),
+    content: yup.string().required(),
+    img: yup.string().required().oneOf([true], "terms must be accepted"),
+  });
+  const handleSubmit = (values) => {
+    console.log(values); // Do something with form values
+  };
   return (
     <main className="main-content position-relative border-radius-lg ">
       <Header pageCurrent="Quản lý phòng" />
@@ -300,11 +333,19 @@ export default function ManagerGeneral() {
               </div>
             </div>
             <div className="tab-pane">
-              <div className="table-scroll "></div>
+              {/* <div className="table-scroll "> */}
+              <div className="row">
+                <h4 className="bg-secondary p-3">Thông tin Abouts us</h4>
+                {userData && (
+                  <FormInformation
+                    initialValues={initialValues}
+                    validationSchema={schema}
+                    onSubmit={handleSubmit}
+                  />
+                )}
+              </div>
             </div>
-            <div className="tab-pane">
-              <div className="table-scroll "></div>
-            </div>
+            {/* </div> */}
           </div>
         </div>
       </div>

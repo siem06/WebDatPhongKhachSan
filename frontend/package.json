@@ -8,6 +8,7 @@
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@mui/base": "^5.0.0-beta.40",
     "@mui/icons-material": "^5.15.14",
     "@mui/lab": "^5.0.0-alpha.166",
     "@mui/material": "^5.15.14",
@@ -21,6 +22,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.2",
     "eonasdan-bootstrap-datetimepicker": "^4.17.49",
+    "formik": "^2.4.5",
     "jquery": "^3.7.1",
     "linearicons": "^1.0.2",
     "material-react-table": "^2.12.1",
@@ -37,7 +39,8 @@
     "react-router-dom": "^6.22.2",
     "react-scripts": "^5.0.1",
     "styled-components": "^6.1.8",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
