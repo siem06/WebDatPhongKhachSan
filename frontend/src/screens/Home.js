@@ -136,8 +136,8 @@ export default function Home() {
             <div className="hotel_booking_table">
               <div className="col-md-3">
                 <h2>
-                  Book
-                  <br /> Your Room
+                  Tìm
+                  <br /> Phòng
                 </h2>
               </div>
               <div className="col-md-9">
@@ -168,38 +168,30 @@ export default function Home() {
                         <div className="form-group">
                           <InputGroup
                             title="Loại phòng"
-                            label="Người lớn"
+                            label="Tiêu chuẩn"
                             options={[
-                              { value: 1, label: "Người lớn" },
-                              { value: 2, label: "Trẻ em" },
-                              { value: 3, label: "Trẻ sơ sinh" },
+                              { value: 1, label: "Tiêu chuẩn" },
+                              { value: 2, label: "Cao cấp" },
+                              { value: 3, label: "Đặc biêt" },
+                              { value: 4, label: "Tổng thống" },
                             ]}
                           />
                         </div>
                         <div className="form-group form-option">
                           <InputGroup
-                            title="Loại phòng"
-                            label="Trẻ em"
+                            title="Kiểu phòng"
+                            label="Phòng đơn"
                             options={[
-                              { value: 1, label: "Trẻ em" },
-                              { value: 2, label: "Em bé" },
-                              { value: 3, label: "Trẻ sơ sinh" },
+                              { value: 1, label: "Phòng đơn " },
+                              { value: 2, label: "Phòng đôi" },
                             ]}
                           />
                         </div>
                       </div>
                     </div>
                     <div className="col-md-4">
-                      <div className="book_tabel_item">
-                        <InputGroup
-                          label="Số phòng"
-                          options={[
-                            { value: 1, label: "Phòng 01" },
-                            { value: 2, label: "Phòng 02" },
-                            { value: 3, label: "Phòng 03" },
-                          ]}
-                        />
-                        <Button title="Đặt ngay" />
+                      <div className="book_tabel_item mt-7 pt-4">
+                        <Button title="Tìm ngay" />
                       </div>
                     </div>
                   </div>
