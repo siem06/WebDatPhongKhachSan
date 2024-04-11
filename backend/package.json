@@ -1,0 +1,42 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "nodemon --inspect src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PhanThiHongSiem-20130386/WebDatPhongKhachSan.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PhanThiHongSiem-20130386/WebDatPhongKhachSan/issues"
+  },
+  "homepage": "https://github.com/PhanThiHongSiem-20130386/WebDatPhongKhachSan#readme",
+  "dependencies": {
+    "@google-cloud/storage": "^7.9.0",
+    "bcrypt": "^5.1.1",
+    "deep-email-validator": "^0.1.21",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-handlebars": "^7.1.2",
+    "express-session": "^1.18.0",
+    "formidable": "^3.5.1",
+    "fs": "^0.0.1-security",
+    "googleapis": "^134.0.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.9.3",
+    "node-sessionstorage": "^1.0.0",
+    "nodemailer": "^6.9.13",
+    "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
