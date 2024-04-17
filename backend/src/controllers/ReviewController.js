@@ -1,7 +1,7 @@
-const checkoutModel = require("../config/db/models/Checkout");
-class CheckoutController {
+const reviewModel = require("../config/db/models/Review");
+class ReviewController {
   get(req, res) {
-    let result = checkoutModel.get_all();
+    let result = reviewModel.get_all();
     result
       .then(function (value) {
         console.log(value);
@@ -12,7 +12,7 @@ class CheckoutController {
       });
   }
   find(req, res) {
-    let result = checkoutModel.find(req.params.id);
+    let result = reviewModel.find(req.params.id);
     result
       .then(function (value) {
         console.log(value);
@@ -24,13 +24,14 @@ class CheckoutController {
   }
   create(req, res) {
     const data = {
-      idBooking: req.body.idBooking,
-      status: req.body.status,
-      methodPay: req.body.methodPay,
-      totalPay: req.body.totalPay,
-      datePay: req.body.datePay,
+      idAccount: req.body.idAccount,
+      idRoom: req.body.idRoom,
+      rating: req.body.rating,
+      comment: req.body.comment,
+      
+    //   note: req.body.note,
     };
-    let result = checkoutModel.create(data);
+    let result = reviewModel.create(data);
     result
       .then(function (value) {
         console.log(value);
@@ -42,13 +43,13 @@ class CheckoutController {
   }
   update(req, res) {
     const data = {
-      idBooking: req.body.idBooking,
-      status: req.body.status,
-      methodPay: req.body.methodPay,
-      totalPay: req.body.totalPay,
-      datePay: req.body.datePay,
+        idAccount: req.body.idAccount,
+        idRoom: req.body.idRoom,
+        rating: req.body.rating,
+        comment: req.body.comment,
+    //   note: req.body.note,
     };
-    let result = checkoutModel.update(req.params.id, data);
+    let result = reviewModel.update(req.params.id, data);
     result
       .then(function (value) {
         console.log(value);
@@ -59,7 +60,7 @@ class CheckoutController {
       });
   }
   delete(req, res) {
-    let result = checkoutModel.delete(req.params.id);
+    let result = reviewModel.delete(req.params.id);
     result
       .then(function (value) {
         console.log(value);
@@ -71,4 +72,4 @@ class CheckoutController {
   }
 }
 
-module.exports = new CheckoutController();
+module.exports = new ReviewController();
