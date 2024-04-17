@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import ModalDetail from "../Layout/ModalDetail";
+import { login } from "../service/api";
 const Login = ({ setLoggedIn }) => {
   const [modalShow, setModalShow] = React.useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState();
   const navigation = useNavigate();
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -15,11 +17,16 @@ const Login = ({ setLoggedIn }) => {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (email === "hongsiem2002@gmail.com" && password === "123456") {
+    try {
+      const user = await login(email.trim(), password);
+      localStorage.setItem("user", JSON.stringify(user));
       setLoggedIn(true);
-      return navigation("/");
+      navigation("/");
+    } catch (error) {
+      console.log("Error", error.response.data.message);
+      setError(error.response.data.message);
     }
   };
 
@@ -29,7 +36,7 @@ const Login = ({ setLoggedIn }) => {
         <Row className="justify-content-center">
           <Col md={6} className="formLogin">
             <h2 className="text-center mb-4">ĐĂNG NHẬP</h2>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} action="login">
               <Form.Group controlId="formBasicEmail">
                 <Form.Label>Email:</Form.Label>
                 <Form.Control
@@ -52,6 +59,7 @@ const Login = ({ setLoggedIn }) => {
                 />
               </Form.Group>
 
+              {error && <p className="text-danger">{error}</p>}
               <Button
                 variant="primary"
                 type="submit"
@@ -61,9 +69,7 @@ const Login = ({ setLoggedIn }) => {
               </Button>
             </Form>
             <div className="mt-3 text-center">
-              <p className="cursor-pointer" onClick={() => setModalShow(true)}>
-                Quên mật khẩu?
-              </p>
+              <Link to="/forgot"> Quên mật khẩu?</Link>
             </div>
             <ModalDetail
               show={modalShow}

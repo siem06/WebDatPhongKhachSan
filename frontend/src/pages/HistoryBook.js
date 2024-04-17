@@ -97,18 +97,10 @@ export default function HistoryBook() {
     <div>
       {/* <!-- Tab items --> */}
       <div className="tabs">
-        <div className="tab-item active">
-          Tất cả
-        </div>
-        <div className="tab-item">
-          Giao dịch thành công
-        </div>
-        <div className="tab-item">
-          Giao dịch thất bại
-        </div>
-        <div className="tab-item">
-          Giao dịch đã hủy
-        </div>
+        <div className="tab-item active">Tất cả</div>
+        <div className="tab-item">Giao dịch thành công</div>
+        <div className="tab-item">Giao dịch thất bại</div>
+        <div className="tab-item">Giao dịch đã hủy</div>
         <div className="line"></div>
       </div>
 
@@ -121,7 +113,7 @@ export default function HistoryBook() {
               <p> Theo dõi và quản lý quá trình lịch sử đặt phòng của bạn.</p>
             </div>
             <div className="col-md-3">
-              <Button title="Đặt ngay" />
+              <Button title="Đặt ngay" className="text-white" />
             </div>
           </div>
           <div className="table-scroll ">
@@ -146,7 +138,10 @@ export default function HistoryBook() {
                     <td>{room.date}</td>
                     <td>{room.total}</td>
                     <td>{room.status}</td>
-                    <td className=" text-center lnr lnr-select"onClick={() => setModalShow(true)}></td>
+                    <td
+                      className=" text-center lnr lnr-select"
+                      onClick={() => setModalShow(true)}
+                    ></td>
                   </tr>
                 ))}
               </tbody>

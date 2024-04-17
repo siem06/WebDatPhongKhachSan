@@ -176,12 +176,12 @@ button:focus {
   text-transform: uppercase;
   color: #fff;
   font-weight: 600;
-  background: #f3c300;
+  background: #5143d9;
   padding: 5px 30px;
 }
 
 .theme_btn:before {
-  background: #f8b100;
+  background: #4433e4;
 }
 
 .theme_btn:hover {
@@ -222,7 +222,7 @@ button:focus {
   -ms-transform: translateX(-100%);
   transform: translateX(-100%);
   z-index: -1;
-  background: #f8b100;
+  background: #4433e4;
   -webkit-transition: all 0.3s linear;
   -o-transition: all 0.3s linear;
   transition: all 0.3s linear;
@@ -253,7 +253,7 @@ button:focus {
 .book_now_btn {
   width: 100%;
   display: block;
-  background: #f3c300;
+  background: #5143d9;
   color: #222222;
   text-transform: uppercase;
   font-size: 14px;
@@ -286,7 +286,7 @@ button:focus {
 }
 
 .header-top a:hover {
-  color: #f3c300;
+  color: #5143d9;
 }
 
 .header-top ul {
@@ -333,10 +333,10 @@ button:focus {
 }
 
 .header-top .header-top-right .header-social a:hover {
-  color: #f3c300;
+  color: #5143d9;
 }
 .text-yellow {
-  color: yellow;
+  color: #5143d9;
 }
 .navbar {
   padding: 0px;
@@ -873,7 +873,7 @@ button:focus {
 }
 
 .facilities_item .sec_h4 i {
-  color: #f3c300;
+  color: #5143d9;
   font-size: 24px;
   line-height: 38px;
   display: inline-block;
@@ -980,7 +980,7 @@ button:focus {
 }
 
 .testimonial_slider .testimonial_item .star a {
-  color: #f3c300;
+  color: #5143d9;
   font-size: 14px;
 }
 
@@ -1001,7 +1001,7 @@ button:focus {
 }
 
 .testimonial_slider .owl-dots .owl-dot.active {
-  background: #f3c300;
+  background: #5143d9;
 }
 
 /*---------------------------------------------------- */
@@ -1061,7 +1061,7 @@ button:focus {
 }
 
 .tags .tag_btn:before {
-  background: #f3c300;
+  background: #5143d9;
 }
 
 .tags .tag_btn + .tag_btn {
@@ -1222,7 +1222,7 @@ button:focus {
 .blog_right_sidebar .widget_title {
   font-size: 18px;
   line-height: 25px;
-  background: #f3c300;
+  background: #5143d9;
   text-align: center;
   color: #fff;
   padding: 8px 0px;
@@ -1239,7 +1239,7 @@ button:focus {
   padding-left: 20px;
   border-radius: 45px;
   z-index: 0;
-  background: #f3c300;
+  background: #5143d9;
 }
 
 .blog_right_sidebar .search_widget .input-group .form-control.placeholder {
@@ -1472,7 +1472,7 @@ button:focus {
 }
 
 .blog_right_sidebar .tag_cloud_widget ul li a:hover {
-  background: #f3c300;
+  background: #5143d9;
   color: #fff;
 }
 
@@ -1502,7 +1502,7 @@ button:focus {
 }
 
 .blog-pagination .page-item.active .page-link {
-  background-color: #f3c300;
+  background-color: #5143d9;
   border-color: transparent;
   color: #fff;
 }
@@ -1529,7 +1529,7 @@ button:focus {
 .blog-pagination .page-link:hover {
   color: #fff;
   text-decoration: none;
-  background-color: #f3c300;
+  background-color: #5143d9;
   border-color: #eee;
 }
 
@@ -1769,7 +1769,7 @@ button:focus {
 }
 
 .comments-area .btn-reply:hover {
-  background-color: #f3c300;
+  background-color: #5143d9;
   color: #fff;
 }
 
@@ -1871,11 +1871,11 @@ button:focus {
 }
 
 .comment-form .primary-btn:before {
-  background: #f3c300;
+  background: #5143d9;
 }
 
 .comment-form .primary-btn:hover {
-  border-color: #f3c300 !important;
+  border-color: #5143d9 !important;
   color: #fff !important;
 }
 
@@ -1899,7 +1899,7 @@ button:focus {
   top: 0;
   font-size: 20px;
   line-height: 24px;
-  color: #f3c300;
+  color: #5143d9;
   font-weight: 600;
 }
 
@@ -2001,7 +2001,7 @@ button:focus {
 .modal-message .modal-dialog .modal-content .modal-header h2 {
   display: block;
   text-align: center;
-  color: #f3c300;
+  color: #5143d9;
   padding-bottom: 10px;
   font-family: "Poppins", sans-serif;
 }
@@ -2038,30 +2038,30 @@ button:focus {
 
 .sample-text-area p b {
   font-weight: bold;
-  color: #f3c300;
+  color: #5143d9;
 }
 
 .sample-text-area p i {
-  color: #f3c300;
+  color: #5143d9;
   font-style: italic;
 }
 
 .sample-text-area p sup {
-  color: #f3c300;
+  color: #5143d9;
   font-style: italic;
 }
 
 .sample-text-area p sub {
-  color: #f3c300;
+  color: #5143d9;
   font-style: italic;
 }
 
 .sample-text-area p del {
-  color: #f3c300;
+  color: #5143d9;
 }
 
 .sample-text-area p u {
-  color: #f3c300;
+  color: #5143d9;
 }
 
 /*============== End Elements Area css ================*/
@@ -2206,12 +2206,12 @@ button:focus {
 
 .link-border {
   background: transparent;
-  border: 1px solid #f3c300;
-  color: #f3c300;
+  border: 1px solid #5143d9;
+  color: #5143d9;
 }
 
 .link-border:before {
-  background: #f3c300;
+  background: #5143d9;
 }
 
 .radius {
@@ -3551,7 +3551,7 @@ h6 {
 }
 
 .single-footer-widget ul li a:hover {
-  color: #f3c300;
+  color: #5143d9;
 }
 
 .single-footer-widget .instafeed {
@@ -3605,7 +3605,7 @@ h6 {
 }
 
 .single-footer-widget .sub-btn {
-  background: #f3c300;
+  background: #5143d9;
   color: #fff;
   font-weight: 300;
   border-radius: 0;
@@ -3639,7 +3639,7 @@ h6 {
 }
 
 .footer-bottom .footer-text a {
-  color: #f3c300;
+  color: #5143d9;
 }
 
 .footer-bottom .footer-social {
@@ -3657,7 +3657,7 @@ h6 {
 }
 
 .footer-bottom .footer-social a:hover {
-  color: #f3c300;
+  color: #5143d9;
 }
 .footer_col {
   flex: 0 0 auto;
@@ -3750,11 +3750,11 @@ button:hover {
 }
 
 .btnRegister:hover {
-  background-color: #f3c300;
+  background-color: #5143d9;
 }
 .btnLogin,
 .btnSave:hover {
-  background-color: #f3c300;
+  background-color: #5143d9;
 }
 
 .text-center {

@@ -1,9 +1,16 @@
 import React from "react";
 import "./style.css";
-export default function Input({ placeholder, icon, type, title, customStyle }) {
+export default function Input({
+  placeholder,
+  icon,
+  type,
+  title,
+  customStyle,
+  typeLabel,
+}) {
   return (
     <>
-      <label htmlFor="inputField " className="labelText" style={customStyle}>
+      <label htmlFor="inputField " className={typeLabel} style={customStyle}>
         {title}
       </label>
       <div className="input-group date d-flex" id="datetimepicker11">

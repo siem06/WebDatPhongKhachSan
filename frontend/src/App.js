@@ -20,6 +20,7 @@ import BookingRoom from "./admin/pages/BookingRoom";
 import ManageAccount from "./admin/pages/ManagerAccount";
 import ManagerGeneral from "./admin/pages/ManagerGeneral";
 import Support from "./admin/pages/Support";
+import ForgotPassword from "./screens/ForgotPassword";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -37,6 +38,7 @@ function App() {
         <Route path="/service" element={<Service />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/forgot" element={<ForgotPassword />} />
       </Routes>
       <Footer />
 

@@ -191,7 +191,7 @@ export default function Home() {
                     </div>
                     <div className="col-md-4">
                       <div className="book_tabel_item mt-7 pt-4">
-                        <Button title="Tìm ngay" />
+                        <Button title="Tìm ngay" className="button_hover" />
                       </div>
                     </div>
                   </div>
