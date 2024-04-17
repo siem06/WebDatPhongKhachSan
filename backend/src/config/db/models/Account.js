@@ -53,7 +53,7 @@ module.exports = new (class UsersModel extends Model {
     });
   }
   // update status by email
-  updatByEmail(email, data) {
+  updateByEmail(email, data) {
     let cThis = this;
     return new Promise(function (myResolve, myReject) {
       db.query(
@@ -110,7 +110,6 @@ module.exports = new (class UsersModel extends Model {
 
   login(email, password) {
     let cThis = this;
-    console.log("login", email, password);
     return new Promise(function (myResolve, myReject) {
       db.query(
         "SELECT * FROM ?? where email =? and password =?",
@@ -123,5 +122,22 @@ module.exports = new (class UsersModel extends Model {
     });
   }
 
-  // change password
+  saveAvatarToDatabase(userId, webViewLink) {
+    let cThis = this;
+    return new Promise(function (myResolve, myReject) {
+      const query = `UPDATE ?? SET avatar = ? WHERE id = ?`;
+      db.query(
+        query,
+        [cThis.table, webViewLink, userId],
+        function (err, result) {
+          if (err) {
+            console.error("Error saving avatar URL to database:", err);
+            myResolve(result);
+          } else {
+            console.log("Avatar URL saved to database:", webViewLink);
+          }
+        }
+      );
+    });
+  }
 })();
