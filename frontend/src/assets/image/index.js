@@ -18,10 +18,6 @@ const imgs = {
   feature_img: require("../image/blog/feature-img1.jpg"),
   next: require("../image/blog/next.jpg"),
 
-
-
-
-
   testtimonial1: require("../image/testtimonial-1.jpg"),
   testtimonial2: require("../image/testtimonial-2.jpg"),
   room1: require("../image/room1.jpg"),
@@ -30,22 +26,27 @@ const imgs = {
   room4: require("../image/room4.jpg"),
   about_bg: require("../image/about_bg.jpg"),
 
-//   c4: require("../image//c4.jpg"),
-//   c4: require("../image/blog/c4.jpg"),
-//   c4: require("../image/blog/c4.jpg"),
+  //   c4: require("../image//c4.jpg"),
+  //   c4: require("../image/blog/c4.jpg"),
+  //   c4: require("../image/blog/c4.jpg"),
 
-instagram1: require("../image/instagram/Image-01.jpg"),
-instagram2: require("../image/instagram/Image-02.jpg"),
-instagram3: require("../image/instagram/Image-03.jpg"),
-instagram4: require("../image/instagram/Image-04.jpg"),
-instagram5: require("../image/instagram/Image-05.jpg"),
-instagram6: require("../image/instagram/Image-06.jpg"),
-instagram7: require("../image/instagram/Image-07.jpg"),
-instagram8: require("../image/instagram/Image-08.jpg"),
+  instagram1: require("../image/instagram/Image-01.jpg"),
+  instagram2: require("../image/instagram/Image-02.jpg"),
+  instagram3: require("../image/instagram/Image-03.jpg"),
+  instagram4: require("../image/instagram/Image-04.jpg"),
+  instagram5: require("../image/instagram/Image-05.jpg"),
+  instagram6: require("../image/instagram/Image-06.jpg"),
+  instagram7: require("../image/instagram/Image-07.jpg"),
+  instagram8: require("../image/instagram/Image-08.jpg"),
 
-
-
-
-
+  gallery1: require("../image/gallery/01.jpg"),
+  gallery1_1: require("../image/gallery/01-1.jpg"),
+  gallery2: require("../image/gallery/02.jpg"),
+  gallery2_1: require("../image/gallery/02-1.jpg"),
+  gallery3: require("../image/gallery/03.jpg"),
+  gallery3_1: require("../image/gallery/03-1.jpg"),
+  gallery4: require("../image/gallery/04.jpg"),
+  gallery5: require("../image/gallery/05.jpg"),
+  gallery6: require("../image/gallery/06.jpg"),
 };
 export default imgs;

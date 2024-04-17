@@ -19,26 +19,26 @@ import ManageRoom from "./admin/pages/ManageRoom";
 import BookingRoom from "./admin/pages/BookingRoom";
 import ManageAccount from "./admin/pages/ManagerAccount";
 import ManagerGeneral from "./admin/pages/ManagerGeneral";
-import ManageComment from "./admin/pages/ManageComment";
+import Support from "./admin/pages/Support";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   return (
     <div>
-      <Header loggedIn={loggedIn} /> 
-    <Routes>
-      <Route path="/" exact element={<Home />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/room" element={<Room />} />
-      <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/service" element={<Service />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/profile" element={<Profile />} />
-    </Routes>
-    <Footer/>
+      <Header loggedIn={loggedIn} />
+      <Routes>
+        <Route path="/" exact element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/room" element={<Room />} />
+        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/service" element={<Service />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+      <Footer />
 
       {/* Admin */}
       {/* <Menu />
@@ -49,7 +49,7 @@ function App() {
         <Route path="/booking" exact element={<BookingRoom />} />
         <Route path="/manageaccount" exact element={<ManageAccount />} />
         <Route path="/managegeneral" exact element={<ManagerGeneral />} />
-        <Route path="/managecomment" exact element={<ManageComment />} />
+        <Route path="/supportCustomer" exact element={<Support />} />
       </Routes>
       <FooterAdmin /> */}
     </div>
