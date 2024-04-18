@@ -114,6 +114,9 @@ button:focus {
   .container {
     max-width: 1170px;
   }
+  .btn-close {
+    display: none !important;
+  }
 }
 
 .section_gap {
@@ -254,7 +257,7 @@ button:focus {
   width: 100%;
   display: block;
   background: #5143d9;
-  color: #222222;
+  color: #fff;
   text-transform: uppercase;
   font-size: 14px;
   line-height: 30px;
@@ -308,6 +311,9 @@ button:focus {
 @media (max-width: 414px) {
   .header-top ul li {
     margin-right: 0px;
+  }
+  .btn-close {
+    display: block;
   }
 }
 
@@ -399,6 +405,9 @@ button:focus {
     border: none;
     padding: 0px;
     border-radius: 0px;
+  }
+  .btn-close {
+    display: none;
   }
 }
 
@@ -3470,6 +3479,9 @@ h6 {
   .left-align-p p {
     margin-top: 20px;
   }
+  .btn-close {
+    display: block;
+  }
 }
 
 .form-select {
@@ -3721,7 +3733,7 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  /* background-color: #0056b3; */
 }
 
 /* Trong file CSS (ví dụ: RegisterPage.css) */

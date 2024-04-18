@@ -3,7 +3,11 @@ import "../assets/css/profile.css";
 import Table from "react-bootstrap/Table";
 import Button from "../components/Button/Button";
 import ModalDetail from "../Layout/ModalDetail";
+import { Link, useNavigate } from "react-router-dom";
+
 export default function HistoryBook() {
+  const navigation = useNavigate();
+
   useEffect(() => {
     const tabs = document.querySelectorAll(".tab-item");
     const panes = document.querySelectorAll(".tab-pane");
@@ -138,10 +142,11 @@ export default function HistoryBook() {
                     <td>{room.date}</td>
                     <td>{room.total}</td>
                     <td>{room.status}</td>
-                    <td
-                      className=" text-center lnr lnr-select"
-                      onClick={() => setModalShow(true)}
-                    ></td>
+                    <td className=" text-center">
+                      <Link to="/">
+                        <span className=" lnr lnr-select"></span>
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

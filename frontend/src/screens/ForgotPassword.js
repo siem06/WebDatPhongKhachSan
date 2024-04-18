@@ -111,13 +111,13 @@ export default function ForgotPassword() {
                   className="w-100 btnLogin"
                   onClick={handleSubmit}
                 >
-                  Xác nhận
+                  Tiếp theo
                 </Button>
               )}
             </Form>
 
             <div className="mt-3 text-center">
-              Bạn chưa có tài khoản?<Link to="/register">Đăng ký</Link>
+              Tôi muốn <Link to="/login">Đăng nhập?</Link>
             </div>
           </Col>
         </Row>

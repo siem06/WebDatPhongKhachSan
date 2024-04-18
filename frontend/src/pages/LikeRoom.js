@@ -68,12 +68,9 @@ export default function LikeRoom() {
 
                       <ul className="list-inline mb-0">
                         <li className="list-inline-item">
-                          <a
-                            href="f#"
-                            className="btn btn-sm btn-round btn-danger mb-0"
-                          >
+                          <button className="btn btn-sm btn-round btn-danger mb-0">
                             <i className="fa-solid fa-fw fa-heart"></i>
-                          </a>
+                          </button>
                         </li>
                       </ul>
                     </div>
