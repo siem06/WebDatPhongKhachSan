@@ -1,87 +1,86 @@
 /* profile */
 .profile-container {
-    margin-top: 80px;
-  }
-  .sidebar {
-    background-color: #f8f9fa;
-    /* border-right: 1px solid #dee2e6; */
-  }
-  
-  .sidebar .navbar {
-    flex-direction: column !important;
-  }
-  .sidebar .nav-item {
-    display: block; /* Hiển thị các tùy chọn theo chiều dọc */
-    margin-bottom: 10px;
-  }
-  
-  .sidebar .nav-item .btn {
-    width: 100%;
-    text-align: left;
-    padding: 10px;
-  }
-  
-  .sidebar .nav-item .btn.active {
-    background-color: #f3c300;
-    color: #fff;
-    
-  }
-  .naviProfile {
-    flex-direction: column !important;
-    width: 100%;
-  }
-  .lnr-user {
-    color: #000;
-  }
-  .userProfile{
-    font-size: 16px;
-    justify-content: center;
-    padding: 10px;
-  }
-  /* .nabar-right{
+  margin-top: 80px;
+}
+.sidebar {
+  background-color: #f8f9fa;
+  /* border-right: 1px solid #dee2e6; */
+}
+
+.sidebar .navbar {
+  flex-direction: column !important;
+}
+.sidebar .nav-item {
+  display: block; /* Hiển thị các tùy chọn theo chiều dọc */
+  margin-bottom: 10px;
+}
+
+.sidebar .nav-item .btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+}
+
+.sidebar .nav-item .btn.active {
+  background-color: #5143d9;
+  color: #fff;
+}
+.naviProfile {
+  flex-direction: column !important;
+  width: 100%;
+}
+.lnr-user {
+  color: #000;
+}
+.userProfile {
+  font-size: 16px;
+  justify-content: center;
+  padding: 10px;
+}
+/* .nabar-right{
     height: 1000vh;
   } */
-  /* Prrofile info */
+/* Prrofile info */
 
 .form-control:focus {
-    box-shadow: none;
-    border-color: #161718
+  box-shadow: none;
+  border-color: #161718;
 }
 
 .profile-button {
-    /* background: rgb(99, 39, 120); */
-    box-shadow: none;
-    border: none
+  /* background: rgb(99, 39, 120); */
+  box-shadow: none;
+  border: none;
 }
 
 .profile-button:hover {
-    background: #682773
+  background: #682773;
 }
 
 .profile-button:focus {
-    /* background: #682773; */
-    box-shadow: none
+  /* background: #682773; */
+  box-shadow: none;
 }
 
 .profile-button:active {
-    /* background: #682773; */
-    box-shadow: none
+  /* background: #682773; */
+  box-shadow: none;
 }
 
 .back:hover {
-    color: #682773;
-    cursor: pointer
+  color: #682773;
+  cursor: pointer;
 }
 
 .labels {
-    font-size: 11px
+  font-size: 11px;
 }
 
 .add-experience:hover {
-    /* background: #BA68C8; */
-    color: #fff;
-    cursor: pointer;
-    /* border: solid 1px #BA68C8 */
+  /* background: #BA68C8; */
+  color: #fff;
+  cursor: pointer;
+  /* border: solid 1px #BA68C8 */
 }
 
 /* 
@@ -99,7 +98,7 @@ Booking History
   width: 0;
   height: 6px;
   border-radius: 15px;
-  background-color: #f3c300;
+  background-color: #5143d9;
   transition: all 0.2s ease;
 }
 .tab-item {
@@ -154,8 +153,11 @@ Booking History
   background-color: #fff; /* Thay đổi màu nền theo ý muốn */
   z-index: 1; /* Đảm bảo tiêu đề hiển thị trên nền của bảng */
 }
-
-
-
-  
-  
+/* LIKE ROOOM */
+.btn-delete {
+  background-color: rgba(214, 41, 62, 0.1);
+}
+.btn-delete:hover {
+  background-color: #d6293e !important;
+  color: #fff !important;
+}

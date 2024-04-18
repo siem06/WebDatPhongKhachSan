@@ -3,7 +3,16 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Input from "../components/Input/Input";
 export default function ModalDetail(props) {
-  const { header,title,bookDetail, changePass, btnClose, btnSave } = props;
+  const {
+    header,
+    title,
+    bookDetail,
+    changePass,
+    btnClose,
+    btnSave,
+    forgotPass,
+  } = props;
+
   return (
     <Modal
       {...props}
@@ -13,18 +22,17 @@ export default function ModalDetail(props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter text-center text-black">
-         {header}
-          {/* <h2 className="text-center">Đặt phòng thành công</h2>
-        <p>
-          Chúng tôi đã gửi thông tin vé chi tiết về mail bạn. Vui lòng kiểm tra.
-        </p> */}
+          {header}
+          {/* <h2 className="text-center">Đặt phòng thành công</h2> */}
+          <p>
+            Chúng tôi đã gửi thông tin vé chi tiết về mail bạn. Vui lòng kiểm
+            tra.
+          </p>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div>
-          <h5 className="text-center title-header text-black">
-           {title}
-          </h5>
+          <h5 className="text-center title-header text-black">{title}</h5>
           {bookDetail && (
             <div>
               <div className="d-flex w-full flex-col pb-8 ">

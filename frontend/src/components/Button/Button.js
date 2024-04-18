@@ -13,9 +13,7 @@ export default function Button({
   return (
     <button
       //btn_now
-      className={`book_now_btn button_hover ${className} ${
-        send && "classbutton"
-      } `}
+      className={`book_now_btn  ${className} ${send && "classbutton"} `}
       style={style}
       onClick={onClick}
     >
