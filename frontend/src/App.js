@@ -20,7 +20,12 @@ import BookingRoom from "./admin/pages/BookingRoom";
 import ManageAccount from "./admin/pages/ManagerAccount";
 import ManagerGeneral from "./admin/pages/ManagerGeneral";
 import Support from "./admin/pages/Support";
+
 import ForgotPassword from "./screens/ForgotPassword";
+
+import RoomDetail from "./screens/RoomDetail";
+import Payment from "./screens/Payment";
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -32,6 +37,8 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/room" element={<Room />} />
+        <Route path="/room_detail" element={<RoomDetail />} />
+        <Route path="/payment" element={<Payment />} />
         <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/blog" element={<Blog />} />

@@ -6,6 +6,8 @@ const contatcRouter = require("./Contact");
 const hotelRouter = require("./Hotel");
 const roomRouter = require("./Room");
 const serviceRouter = require("./Service");
+const paymentRouter = require("./Payment");
+const reviewRouter = require("./Review");
 
 function route(app) {
   app.use("/accounts", accountRouter);
@@ -17,6 +19,8 @@ function route(app) {
   app.use("/hotel", hotelRouter);
   app.use("/room", roomRouter);
   app.use("/service", serviceRouter);
+  app.use("/payment", paymentRouter);
+  app.use("/review", reviewRouter);
 
   // app.use('blog', )
 }
