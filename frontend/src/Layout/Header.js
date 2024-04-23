@@ -166,7 +166,7 @@ export default function Header({ loggedIn }) {
                     className="nav-link font-size-16 customLogin"
                     to="/profile"
                   >
-                    <span className="lnr lnr-user w-10"></span>TÀI KHOẢN{" "}
+                    <span className="lnr lnr-user w-10"></span>TÀI KHOẢN
                   </NavLink>
                 </li>
               ) : (

@@ -5,21 +5,23 @@ const accountRouter = express.Router();
 const multer = require("multer");
 const upload = multer();
 accountRouter.get("/", authUser(), accountController.findById);
-accountRouter.get("/all", authUser(), accountController.get);
-accountRouter.post("/", accountController.register);
-accountRouter.get("/login", accountController.login);
+accountRouter.get("/all", accountController.get);
+accountRouter.post("/verify", accountController.verifyOTP);
+accountRouter.post("/register", accountController.register);
+accountRouter.post("/login", accountController.login);
 accountRouter.post("/logout", accountController.logout);
-accountRouter.put("/verify", accountController.verifyOTP);
 accountRouter.post("/forgot", accountController.forgotPassword);
-accountRouter.put("/changepassword", accountController.changePassword);
 accountRouter.post(
   "/uploadImage",
   upload.single("avatar"),
   accountController.uploadFile
 );
-accountRouter.post("/verifPassword", accountController.verifPassword);
+accountRouter.post("/verifyPassword", accountController.verifPassword);
+accountRouter.post("/resetPassword", accountController.resetPassword);
+accountRouter.put("/changepassword", accountController.changePassword);
 
 accountRouter.put("/:id/edit", authUser(), accountController.update);
 accountRouter.delete("/:id", authUser(), accountController.delete);
+accountRouter.get("otp");
 
 module.exports = accountRouter;

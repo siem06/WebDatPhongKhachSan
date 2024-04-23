@@ -25,7 +25,7 @@ const Login = ({ setLoggedIn }) => {
       setLoggedIn(true);
       navigation("/");
     } catch (error) {
-      console.log("Error", error.response.data.message);
+      console.log("Error");
       setError(error.response.data.message);
     }
   };
