@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export const instance = axios.create({
-  baseURL: "http://192.168.61.232:3001",
+  baseURL: "http://localhost:3001",
+  withCredentials: true,
 });
 export const login = async (email, password) => {
   try {
@@ -16,7 +17,7 @@ export const login = async (email, password) => {
 };
 export const register = async (email, phone, password, repassword) => {
   try {
-    const response = await instance.post("/accounts", {
+    const response = await instance.post("/accounts/register", {
       email,
       phone,
       password,
@@ -29,7 +30,7 @@ export const register = async (email, phone, password, repassword) => {
 };
 export const verify = async (otp, email) => {
   try {
-    const response = await instance.put("/accounts/verify", {
+    const response = await instance.post("/accounts/verify", {
       otp,
       email,
     });
@@ -48,15 +49,40 @@ export const forgot = async (email) => {
     throw error;
   }
 };
-export const verifPassword = async (email, otp, password, repassword) => {
+export const verifPassword = async (email, otp) => {
   try {
-    const response = await instance.post("/accounts/verifPassword", {
+    const response = await instance.post("/accounts/verifyPassword", {
       email,
       otp,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const resetPassword = async (password, repassword) => {
+  try {
+    const response = await instance.post("/accounts/resetPassword", {
       password,
       repassword,
     });
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getAll = async () => {
+  try {
+    const response = await instance.get("/accounts/all");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getByIdUser = async (id) => {
+  try {
+    const response = await instance.get(`/accounts/${id}`);
+    console.log(response.data);
   } catch (error) {
     throw error;
   }

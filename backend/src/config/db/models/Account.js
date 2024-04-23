@@ -28,7 +28,20 @@ module.exports = new (class UsersModel extends Model {
     let cThis = this;
     return new Promise(function (myResolve, myReject) {
       db.query(
-        "SELECT * FROM ?? WHERE email = ?",
+        "SELECT * FROM ?? WHERE email = ? and status =1",
+        [cThis.table, email],
+        function (error, result) {
+          if (error) throw error;
+          myResolve(result[0]);
+        }
+      );
+    });
+  }
+  findByEmail1(email) {
+    let cThis = this;
+    return new Promise(function (myResolve, myReject) {
+      db.query(
+        "SELECT * FROM ?? WHERE email = ? ",
         [cThis.table, email],
         function (error, result) {
           if (error) throw error;
