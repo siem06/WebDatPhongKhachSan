@@ -26,7 +26,7 @@ export default function Room() {
                     <div className="page-cover text-center">
                         <h2 className="page-cover-tittle">Phòng</h2>
                         <ol className="breadcrumb">
-                            <li><a href="index.html">Trang chủ</a></li>
+                            <li><a href="/home">Trang chủ</a></li>
                             <li className="active">Phòng</li>
                         </ol>
                     </div>
