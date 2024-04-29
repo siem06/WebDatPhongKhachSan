@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { forgot, resetPassword, verifPassword } from "../service/api";
+
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const [step, setStep] = useState(1);
   const [password, setPassword] = useState("");
   const [repassword, setRePassword] = useState("");
@@ -31,11 +32,10 @@ export default function ForgotPassword() {
         setStep(2);
       } else if (step === 2) {
         await verifPassword(email.trim(), otp);
-        console.log("step", step);
         setStep(3);
       } else if (step === 3) {
-        console.log("Calling resetPassword");
         await resetPassword(password, repassword);
+        navigation("/login");
       }
     } catch (error) {
       console.log("Error", error.response.message);
@@ -50,10 +50,7 @@ export default function ForgotPassword() {
           <Col md={6} className="formLogin">
             <h2 className="text-center mb-4">ĐẶT LẠI MẬT KHẨU</h2>
             <Form action="login">
-              <Form.Group
-                controlId="formBasicEmail"
-                style={{ display: step === 2 || step === 3 ? "none" : "block" }}
-              >
+              <Form.Group controlId="formBasicEmail">
                 <Form.Label>Email:</Form.Label>
                 <Form.Control
                   type="email"
@@ -63,33 +60,22 @@ export default function ForgotPassword() {
                   required
                 />
               </Form.Group>
-              {step === 2 && (
-                <>
-                  <Form.Group
-                    controlId="formBasicName"
-                    style={{
-                      display: step === 1 || step === 3 ? "none" : "block",
-                    }}
-                  >
-                    <Form.Label>OTP:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Nhập OTP"
-                      value={otp}
-                      onChange={handleOTP}
-                      required
-                    />
-                  </Form.Group>
-                </>
+              {step === 2 && ( // Display OTP field only in step 2
+                <Form.Group controlId="formBasicOTP">
+                  <Form.Label>OTP:</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Nhập OTP"
+                    value={otp}
+                    onChange={handleOTP}
+                    required
+                  />
+                </Form.Group>
               )}
-              {step === 3 && (
+
+              {step === 3 && ( // Display password fields only in step 3
                 <>
-                  <Form.Group
-                    controlId="formBasicPassword"
-                    style={{
-                      display: step === 1 || step === 2 ? "none" : "block",
-                    }}
-                  >
+                  <Form.Group controlId="formBasicPassword">
                     <Form.Label>Đặt mật khẩu mới:</Form.Label>
                     <Form.Control
                       type="password"

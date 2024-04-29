@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Logo from "../assets/image/Logo.png";
 import { NavLink } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
@@ -161,12 +162,14 @@ export default function Header({ loggedIn }) {
                 </NavLink>
               </li>
               {loggedIn ? (
-                <li className={`nav-item `}>
-                  <NavLink
-                    className="nav-link font-size-16 customLogin"
-                    to="/profile"
-                  >
-                    <span className="lnr lnr-user w-10"></span>TÀI KHOẢN
+                <li
+                  className={`nav-item d-flex justify-content-center align-items-center `}
+                >
+                  <NavLink className="nav-link" to="/profile">
+                    <Avatar
+                      alt="hemy Sharp"
+                      src="/static/images/avatar/1.jpg"
+                    />
                   </NavLink>
                 </li>
               ) : (
