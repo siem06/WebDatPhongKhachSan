@@ -7,6 +7,8 @@ export default function Input({
   title,
   customStyle,
   typeLabel,
+  value,
+  onChange,
 }) {
   return (
     <>
@@ -14,7 +16,13 @@ export default function Input({
         {title}
       </label>
       <div className="input-group date d-flex" id="datetimepicker11">
-        <input type={type} className="form-control" placeholder={placeholder} />
+        <input
+          value={value}
+          onChange={onChange}
+          type={type}
+          className="form-control"
+          placeholder={placeholder}
+        />
         <span className="input-group-addon">
           <i className={icon} aria-hidden="true"></i>
         </span>

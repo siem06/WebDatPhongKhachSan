@@ -30,7 +30,7 @@ export default function Profile() {
     <div className="container profile-container">
       <div className="row">
         <div className="col-md-3 sidebar bg-light">
-          <nav className=" navbar-expand-lg navbar-light nabar-right">
+          <nav className=" navbar-expand-lg navbar-light nabar-right card border p-3">
             <div class="text-center mb-3">
               <div class="avatar avatar-xl mb-2">
                 <img

@@ -135,7 +135,7 @@ module.exports = new (class UsersModel extends Model {
     });
   }
 
-  saveAvatarToDatabase(userId, webViewLink) {
+  async saveAvatarToDatabase(userId, webViewLink) {
     let cThis = this;
     return new Promise(function (myResolve, myReject) {
       const query = `UPDATE ?? SET avatar = ? WHERE id = ?`;
@@ -145,8 +145,8 @@ module.exports = new (class UsersModel extends Model {
         function (err, result) {
           if (err) {
             console.error("Error saving avatar URL to database:", err);
-            myResolve(result);
           } else {
+            myResolve(result);
             console.log("Avatar URL saved to database:", webViewLink);
           }
         }

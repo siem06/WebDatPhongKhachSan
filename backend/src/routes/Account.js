@@ -16,7 +16,7 @@ accountRouter.post(
   upload.single("avatar"),
   accountController.uploadFile
 );
-accountRouter.post("/verifyPassword", accountController.verifPassword);
+accountRouter.post("/verifyPassword", accountController.verifOTPPassword);
 accountRouter.post("/resetPassword", accountController.resetPassword);
 accountRouter.put("/changepassword", accountController.changePassword);
 

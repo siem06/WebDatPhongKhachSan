@@ -60,11 +60,23 @@ export const verifPassword = async (email, otp) => {
     throw error;
   }
 };
-export const resetPassword = async (password, repassword) => {
+export const resetPassword = async (newpass, renewpass) => {
   try {
     const response = await instance.post("/accounts/resetPassword", {
-      password,
-      repassword,
+      newpass,
+      renewpass,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const changePassword = async (oldPass, newPass, reNewPass) => {
+  try {
+    const response = await instance.put("/accounts/changepassword", {
+      oldPass,
+      newPass,
+      reNewPass,
     });
     return response.data;
   } catch (error) {
@@ -85,5 +97,18 @@ export const getByIdUser = async (id) => {
     console.log(response.data);
   } catch (error) {
     throw error;
+  }
+};
+export const uploadAvatar = async (formData) => {
+  try {
+    const response = await instance.post("/accounts/uploadImage", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new Error("Error uploading image: " + error.message);
   }
 };

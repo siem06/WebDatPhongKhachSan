@@ -52,6 +52,7 @@ class AccountController {
 
     try {
       const userConfirm = await accountModel.findByEmail1(email);
+
       let result;
       if (!userConfirm) {
         result = await accountModel.create(data);
@@ -66,6 +67,7 @@ class AccountController {
         otp: otp,
         otpExpiration: Date.now() + 5 * 60 * 1000, // Hết hạn sau 5 phút
       };
+
       console.log("OTP", req.session);
       sendConfirmationEmail(req.body.email, otp);
       res.json(result);
@@ -150,7 +152,7 @@ class AccountController {
 
     try {
       const value = await accountModel.findByEmail(email);
-
+      console.log(value);
       if (!value) {
         return res.status(401).json({ message: "User does not exist" });
       }
@@ -198,7 +200,9 @@ class AccountController {
           sendConfirmationEmail(email, otp);
           return res.json({ message: "Đã gửi thành công" });
         } else {
-          return res.json({ message: "Email này chưa có tài khoản" });
+          return res
+            .status(409)
+            .json({ message: "Email này chưa có tài khoản" });
         }
       })
       .catch(function (error) {
@@ -206,9 +210,7 @@ class AccountController {
         res.status(500).json({ error: error.message });
       });
   }
-  verifPassword(req, res) {
-    console.log("vp", req.session.otpForgot);
-
+  verifOTPPassword(req, res) {
     const { otp, email } = req.body;
     const { otpForgot } = req.session;
     console.log("body", otp, email);
@@ -224,14 +226,17 @@ class AccountController {
     if (Date.now() > otpForgot.otpExpiration) {
       return res.status(400).json({ message: "OTP expired" });
     }
+    return res.json({ message: "OTP correct" });
+  }
+  resetPassword(req, res) {
     const { newpass, renewpass } = req.body;
-    console.log("ccc");
-    if (newpass !== renewpass || newpass.length === 0 || renewpass.length === 0)
+    if (!newpass || !renewpass || newpass !== renewpass) {
       return res.json({ message: "Mật khẩu không khớp" });
+    }
     var salt = bcrypt.genSaltSync(10);
     var pass_encrypt = bcrypt.hashSync(newpass, salt);
     accountModel
-      .updateByEmail(otpForgot.email, { password: pass_encrypt })
+      .updateByEmail(req.session.otpForgot.email, { password: pass_encrypt })
       .then((user) => {
         res.json({ message: "Forgot successfully", user });
         delete req.session.otpPass;
@@ -241,33 +246,28 @@ class AccountController {
         res.status(500).json({ error: "Internal server error" });
       });
   }
-  resetPassword(req, res) {}
   changePassword(req, res) {
-    const { passwordold, passwordnew, rePass } = req.body;
-    console.log(req.body);
-    if (passwordnew !== rePass)
-      return res.status(401).json({ error: "Mật khẩu không khớp" });
+    const { oldPass, newPass, reNewPass } = req.body;
+    if (newPass !== reNewPass)
+      return res.status(401).json({ message: "Mật khẩu không khớp!" });
     const userId = req.session.userId;
 
     accountModel
       .findById(userId)
       .then(async (user) => {
-        console.log("user", user.password);
-        console.log("user", passwordold);
-        const validaPassword = await bcrypt.compare(passwordold, user.password);
-
+        const validaPassword = await bcrypt.compare(oldPass, user.password);
         if (validaPassword) {
           var salt = bcrypt.genSaltSync(10);
-          var pass_encrypt = bcrypt.hashSync(passwordnew, salt);
+          var pass_encrypt = bcrypt.hashSync(newPass, salt);
           accountModel.update(userId, { password: pass_encrypt });
-          return res.json({ message: "Thành công" });
+          return res.json({ message: "Thành công!" });
         } else {
-          return res.status(401).json({ error: "Mật khẩu không đúng" });
+          return res.status(401).json({ message: "Mật khẩu không đúng!" });
         }
       })
       .catch((error) => {
         console.log(error);
-        return res.status(500).json({ error: "Interval error" });
+        return res.status(500).json({ message: "Interval error" });
       });
   }
 
@@ -278,7 +278,7 @@ class AccountController {
 
       const fileMetadata = {
         name: req.file.originalname,
-        parents: ["1gJZOw4i0gb8y26m9cyJwvAIGf2EsXUpy"],
+        parents: ["1IGKvjoQQe-JpiILG4wbjBxfZxhPp3cIC"],
       };
 
       const fileStream = new Readable();
@@ -293,15 +293,15 @@ class AccountController {
       const response = await drive.files.create({
         resource: fileMetadata,
         media: media,
-        fields: "id, webViewLink",
+        fields: "id, webContentLink, thumbnailLink",
       });
-      const userId = req.session.userId;
-      const fileId = response.data.id;
-      const webViewLink = response.data.webViewLink;
-      accountModel.saveAvatarToDatabase(userId, webViewLink);
 
-      console.log("File uploaded successfully. File ID:", response.data.id);
-      res.send("Uploaded file successfully");
+      const userId = req.session.userId;
+      const thumbnailLink = response.data.thumbnailLink;
+      await accountModel.saveAvatarToDatabase(userId, thumbnailLink);
+      const user = await accountModel.find(userId);
+
+      res.send({ message: "Uploaded file successfully", user });
     } catch (err) {
       console.error("Error uploading file:", err);
       res.status(500).send("Error uploading file");
