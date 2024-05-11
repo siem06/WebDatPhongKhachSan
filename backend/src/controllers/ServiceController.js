@@ -11,6 +11,17 @@ class ServiceController {
         console.log(error);
       });
   }
+  getService(req, res) {
+    let result = serviceModel.getByStatus();
+    result
+      .then(function (value) {
+        console.log(value);
+        res.json(value);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
   find(req, res) {
     let result = serviceModel.find(req.params.id);
     result

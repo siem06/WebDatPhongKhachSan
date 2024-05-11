@@ -56,7 +56,7 @@ export default function Support() {
   ];
   return (
     <main className="main-content position-relative border-radius-lg ">
-      <Header pageCurrent="Quản lý phòng" />
+      <Header pageCurrent="Hỗ trợ khách hàng" />
       <div className="container-fluid py-4">
         <div className="row">
           <Table columns={column} data={data} />

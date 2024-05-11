@@ -22,8 +22,13 @@ const Login = ({ setLoggedIn }) => {
     try {
       const user = await login(email.trim(), password);
       localStorage.setItem("user", JSON.stringify(user));
+      console.log("role", user.user.role);
       setLoggedIn(true);
-      navigation("/");
+      if (user.user.role === 1) {
+        navigation("/dashboard");
+      } else {
+        navigation("/");
+      }
     } catch (error) {
       console.log("Error");
       setError(error.response.data.message);

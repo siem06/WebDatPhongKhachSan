@@ -1,7 +1,45 @@
 const blogModel = require("../config/db/models/Blog");
+const keys = require("../key.json");
+const fs = require("fs");
+const { google } = require("googleapis");
+const SCOPE = ["https://www.googleapis.com/auth/drive"];
+const { Readable } = require("stream");
 class BlogController {
-  get(req, res) {
-    let result = blogModel.get_all();
+  getCategory(req, res) {
+    let result = blogModel.get_all_category();
+    result
+      .then(function (value) {
+        console.log(value);
+        res.json(value);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+  getArticle(req, res) {
+    let result = blogModel.get_all_article();
+    result
+      .then(function (value) {
+        console.log(value);
+        res.json(value);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+  getCateByStatus(req, res) {
+    let result = blogModel.get_blogCate_status();
+    result
+      .then(function (value) {
+        console.log(value);
+        res.json(value);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+  getArticleByStatus(req, res) {
+    let result = blogModel.get_blogArticle_status();
     result
       .then(function (value) {
         console.log(value);
@@ -26,8 +64,9 @@ class BlogController {
     const data = {
       topic: req.body.topic,
       content: req.body.content,
-      status: req.body.status,
       img: req.body.img,
+      type: req.body.type,
+      status: 0,
     };
     let result = blogModel.create(data);
     result
@@ -67,6 +106,56 @@ class BlogController {
         console.log(error);
       });
   }
+
+  async uploadImg(req, res) {
+    try {
+      const authClient = await authorized();
+      const drive = google.drive({ version: "v3", auth: authClient });
+
+      const fileMetadata = {
+        name: req.file.originalname,
+        parents: ["1IGKvjoQQe-JpiILG4wbjBxfZxhPp3cIC"],
+      };
+
+      const fileStream = new Readable();
+      fileStream.push(req.file.buffer);
+      fileStream.push(null);
+
+      const media = {
+        mimeType: req.file.mimetype,
+        body: fileStream,
+      };
+
+      const response = await drive.files.create({
+        resource: fileMetadata,
+        media: media,
+        fields: "id, webContentLink, thumbnailLink",
+      });
+
+      const thumbnailLink = response.data.thumbnailLink;
+
+      res.send({ message: "Uploaded file successfully", thumbnailLink });
+    } catch (err) {
+      console.error("Error uploading file:", err);
+      res.status(500).send("Error uploading file");
+    }
+  }
 }
+const authorized = async () => {
+  const jwtClient = new google.auth.JWT(
+    keys.client_email,
+    null,
+    keys.private_key,
+    SCOPE
+  );
+  try {
+    await jwtClient.authorize();
+    console.log("Kết nối Google OAuth2 thành công!");
+    return jwtClient;
+  } catch (error) {
+    console.error("Lỗi kết nối Google OAuth2:", error);
+    throw error;
+  }
+};
 
 module.exports = new BlogController();

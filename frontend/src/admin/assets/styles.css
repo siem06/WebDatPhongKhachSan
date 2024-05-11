@@ -1,0 +1,13 @@
+@media (max-width: 1199px) {
+  .menuAdmin {
+    display: none !important;
+  }
+  .show {
+    display: block !important;
+  }
+}
+@media (max-width: 991px) {
+  .menu-nav {
+    display: block !important;
+  }
+}

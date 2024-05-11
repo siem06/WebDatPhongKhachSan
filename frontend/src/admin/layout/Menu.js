@@ -1,45 +1,59 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-
-export default function Menu() {
+import { logout } from "../../service/api";
+import { useNavigate } from "react-router-dom";
+import "../assets/styles.css";
+export default function Menu({ setLoggedIn, classname }) {
   const [active, setActive] = useState("");
+  const navigation = useNavigate();
 
   const handleSetActive = (path) => {
     setActive(path);
+  };
+  const handleLogout = async () => {
+    try {
+      const response = await logout();
+      localStorage.removeItem("user");
+      setLoggedIn(false);
+      navigation("/login");
+      console.log(response);
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error);
+    }
   };
 
   return (
     <>
       <aside
-        className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-dark"
+        className={`sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-dark menuAdmin ${classname} `}
         id="sidenav-main"
       >
-        <div className="sidenav-header">
-          <i
+        <div className="sidenav-header  d-flex justify-content-center align-items-center">
+          {/* <i
             className="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
             aria-hidden="true"
             id="iconSidenav"
-          ></i>
-          <a className="navbar-brand m-0" href="/">
-            <span
-              className="ms-1 font-weight-bold text-white"
-              style={{ background: "#fff" }}
-            >
-              Admin Luxurious hotel
-            </span>
-          </a>
+          ></i> */}
+          {/* <a className="navbar-brand m-0" href="/"> */}
+          <p
+            className="  d-flex ms-1 font-weight-bold  nav-link-text ms-1 "
+            style={{ color: "#fff" }}
+          >
+            Admin Luxurious hotel
+          </p>
+          {/* </a> */}
         </div>
-        <hr className="horizontal light mt-0 mb-2" />
+        {/* <hr className="horizontal light mt-0 mb-2" /> */}
         <div
-          className="collapse navbar-collapse w-auto max-height-vh-100"
+          className="navbar-collapse w-auto max-height-vh-100 overflow-visible"
           id="sidenav-collapse-main"
         >
           <ul className="navbar-nav">
             <li className={`nav-item ${active === "/" ? "active" : ""}`}>
               <NavLink
                 className="nav-link text-white"
-                onClick={() => handleSetActive("/")}
-                to="/"
+                onClick={() => handleSetActive("/dashboard")}
+                to="/dashboard"
               >
                 <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                   <i className="material-icons opacity-10">dashboard</i>
@@ -123,8 +137,16 @@ export default function Menu() {
                 <span className="nav-link-text ms-1">Hỗ trợ khách hàng</span>
               </NavLink>
             </li>
-            <li className={`nav-item ${active === "/managecomment" ? "active" : ""}`}>
-              <NavLink className="nav-link text-white" onClick={() => handleSetActive("/managecomment")} to="/managecomment">
+            <li
+              className={`nav-item ${
+                active === "/managecomment" ? "active" : ""
+              }`}
+            >
+              <NavLink
+                className="nav-link text-white"
+                onClick={() => handleSetActive("/managecomment")}
+                to="/managecomment"
+              >
                 <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                   <i className="material-icons opacity-10">comment</i>
                 </div>
@@ -145,20 +167,12 @@ export default function Menu() {
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="./pages/sign-in.html">
+              <NavLink className="nav-link text-white" onClick={handleLogout}>
                 <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <i className="material-icons opacity-10">login</i>
+                  <i className="material-icons opacity-10">logout</i>
                 </div>
-                <span className="nav-link-text ms-1">Sign In</span>
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-white" href="./pages/sign-up.html">
-                <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <i className="material-icons opacity-10">assignment</i>
-                </div>
-                <span className="nav-link-text ms-1">Sign Up</span>
-              </a>
+                <span className="nav-link-text ms-1">Đăng xuất</span>
+              </NavLink>
             </li>
           </ul>
         </div>
