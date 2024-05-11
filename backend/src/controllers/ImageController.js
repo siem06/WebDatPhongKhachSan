@@ -1,7 +1,7 @@
 const imageModel = require("../config/db/models/Image");
 class ImageController {
   get(req, res) {
-    let result = imageModel.get_all();
+    let result = imageModel.get_all_with_images(req.params.id);
     result
       .then(function (value) {
         console.log(value);

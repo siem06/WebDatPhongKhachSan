@@ -18,7 +18,7 @@ module.exports = class Model {
     let cThis = this;
     return new Promise(function (myResolve, myReject) {
       db.query(
-        "SELECT * FROM ?? LIMIT 1",
+        "SELECT * FROM ?? LIMIT ? OFFSET ? ",
         [cThis.table],
         function (error, result) {
           if (error) throw error;

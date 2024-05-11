@@ -3776,6 +3776,7 @@ a:hover {
   color: #f8b600;
 }
 .btn-primary {
+  background-color: #5143d9;
   box-shadow: none;
 }
 .btn-primary:hover {

@@ -10,6 +10,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../assets/css/style.css";
 import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
+import { getRoomsByType } from "../service/api";
 
 export default function Header({ loggedIn }) {
   const [active, setActive] = useState("/");
@@ -18,7 +19,15 @@ export default function Header({ loggedIn }) {
   };
   const [showMenu, setShowMenu] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [rooms, setRooms] = useState([]);
+  const handleMouseEnter = () => {
+    setIsDropdownOpen(true);
+  };
 
+  const handleMouseLeave = () => {
+    setIsDropdownOpen(false);
+  };
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
@@ -32,6 +41,18 @@ export default function Header({ loggedIn }) {
       setShowSidebar(false);
     }
   };
+  const handleRoomTypeSelect = async (type) => {
+    console.log("kkkk", type)
+    try {
+        // Gọi API để lấy danh sách phòng theo loại phòng
+        const rooms = await getRoomsByType(type);
+        setRooms(rooms);
+        // Xử lý logic hiển thị danh sách phòng, ví dụ: lưu vào state hoặc hiển thị trực tiếp
+        console.log(rooms);
+    } catch (error) {
+        console.error("Error fetching rooms by type:", error);
+    }
+};
   return (
     <header className="header_area">
       <div className="d">
@@ -52,9 +73,8 @@ export default function Header({ loggedIn }) {
           </div>
 
           <div
-            className={`collapse navbar-collapse offset justif justify-content-center ${
-              showSidebar ? "show" : ""
-            } right-sidebar`}
+            className={`collapse navbar-collapse offset justif justify-content-center ${showSidebar ? "show" : ""
+              } right-sidebar`}
             id="navbarSupportedContent"
           >
             <ul className="nav navbar-nav menu_nav ml-auto ">
@@ -79,28 +99,25 @@ export default function Header({ loggedIn }) {
                   GIỚI THIỆU
                 </NavLink>
               </li>
-              <li
-                className={`nav-item submenu dropdown  ${
-                  active.includes("/room") ? "active" : ""
-                }`}
-              >
+              <li className={`nav-item submenu dropdown ${isDropdownOpen ? "show" : ""}`}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}>
                 <NavLink
                   className="nav-link dropdown-toggle "
                   data-toggle="dropdown"
                   role="button"
                   aria-haspopup="true"
-                  aria-expanded="false"
+                  aria-expanded={isDropdownOpen ? "true" : "false"}
                   onClick={() => setActive("/room")}
                   to="/room"
                 >
                   PHÒNG<span className="lnr lnr-chevron-down"></span>
                 </NavLink>
-                <ul className="dropdown-menu">
+                <ul className={`dropdown-menu ${isDropdownOpen ? "show" : ""}`}>
                   <li className={`nav-item ${getActiveClass("/standard")}`}>
                     <NavLink
                       className="nav-link"
-                      onClick={() => setActive("/room")}
-                      to="/blog"
+                      onClick={() => handleRoomTypeSelect(1)}
                     >
                       Tiêu chuẩn
                     </NavLink>
@@ -108,8 +125,7 @@ export default function Header({ loggedIn }) {
                   <li className={`nav-item ${getActiveClass("/superior")}`}>
                     <NavLink
                       className="nav-link"
-                      onClick={() => setActive("/room")}
-                      to="/blog"
+                      onClick={() => handleRoomTypeSelect(2)}
                     >
                       Cao cấp
                     </NavLink>
@@ -117,8 +133,7 @@ export default function Header({ loggedIn }) {
                   <li className={`nav-item ${getActiveClass("/deluxe")}`}>
                     <NavLink
                       className="nav-link"
-                      onClick={() => setActive("/room")}
-                      to="/blog-"
+                      onClick={() => handleRoomTypeSelect(3)}
                     >
                       Đặc biệt
                     </NavLink>
@@ -126,8 +141,7 @@ export default function Header({ loggedIn }) {
                   <li className={`nav-item ${getActiveClass("/suite")}`}>
                     <NavLink
                       className="nav-link"
-                      onClick={() => setActive("/room")}
-                      to="/blog"
+                      onClick={() => handleRoomTypeSelect(4)}
                     >
                       Tổng thống
                     </NavLink>

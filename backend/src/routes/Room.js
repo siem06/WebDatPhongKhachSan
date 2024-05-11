@@ -7,5 +7,8 @@ roomRouter.get("/:id", roomController.find);
 roomRouter.post("/", roomController.create);
 roomRouter.put("/:id", roomController.update);
 roomRouter.delete("/:id", roomController.delete);
-
+roomRouter.get("/", roomController.pageNumbers);
+roomRouter.get("/sortedByPrice/:order", roomController.getRoomsSortedByPrice);
+roomRouter.get("/type/:type", roomController.getRoomsByType);
+roomRouter.get("/review/:rating", roomController.getReviewByRoomId);
 module.exports = roomRouter;
