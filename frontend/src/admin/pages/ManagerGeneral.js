@@ -4,9 +4,53 @@ import Header from "../layout/Header";
 import Table from "../../components/Table";
 import FormInformation from "../../components/Form";
 import * as yup from "yup";
+import {
+  deleteBlog,
+  getAboutus,
+  getAllService,
+  getBlogAllArticle,
+  getBlogAllCate,
+} from "../../service/api";
+import Edit from "@mui/icons-material/Edit";
+import Model from "../layout/Model";
 
 export default function ManagerGeneral() {
+  const [cateBlog, setCateBlog] = useState(null);
+  const [aricleBlog, setArticleBlog] = useState(null);
+  const [service, setService] = useState(null);
+  const [aboutus, setAboutus] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleEdit = (rowData) => {
+    setIsModalOpen(true);
+    console.log("Data của hàng được chọn:", rowData);
+    // Thực hiện các hành động khác tùy thuộc vào dữ liệu của hàng được chọn
+  };
+  const handleDelete = async (rowData) => {
+    try {
+      await deleteBlog(rowData.id);
+      alert("Đã xóa thành công!");
+    } catch (error) {
+      console.error("Lỗi khi xóa bài đăng:", error);
+    }
+  };
+
   useEffect(() => {
+    async function getAll() {
+      try {
+        const data = await getBlogAllCate();
+        const aricleBlog = await getBlogAllArticle();
+        const serviceData = await getAllService();
+        const aboutusData = await getAboutus();
+        setCateBlog(data);
+        setArticleBlog(aricleBlog);
+        setService(serviceData);
+        setAboutus(aboutusData);
+      } catch (error) {
+        console.error("Error fetching about data:", error);
+      }
+    }
+
+    getAll();
     const tabs = document.querySelectorAll(".tab-item");
     const panes = document.querySelectorAll(".tab-pane");
 
@@ -39,253 +83,88 @@ export default function ManagerGeneral() {
   const columns = [
     {
       name: "Tiêu đề",
-      selector: (row) => row.name,
+      selector: (row) => row.topic,
       sortable: true,
     },
+    // {
+    //   name: "Danh mục",
+    //   selector: (row) => row.topic,
+    //   sortable: true,
+    // },
     {
-      name: "Danh mục",
-      selector: (row) => row.category,
-      sortable: true,
-    },
-    {
+      key: "status",
       name: "Trạng thái",
-      selector: (row) => row.state,
+      cell: (row) => (
+        <span style={{ color: row.status === "1" ? "#2ea817" : "red" }}>
+          {row.status === "1" ? "Đang hiển thị" : "Đang ẩn"}
+        </span>
+      ),
       sortable: true,
     },
     {
       name: "Action",
       cell: (row) => (
-        <button className="btn w-30 text-capitalize d-flex justify-content-center ">
-          <DeleteIcon />
-        </button>
+        <>
+          <button
+            className="btn w-30 text-capitalize d-flex justify-content-center "
+            onClick={() => handleEdit(row)}
+          >
+            <Edit />
+          </button>
+          <button
+            className="btn w-30 text-capitalize d-flex justify-content-center "
+            onClick={() => handleDelete(row)}
+          >
+            <DeleteIcon />
+          </button>
+        </>
       ),
     },
   ];
 
-  const dataBlog = [
-    {
-      id: 1,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 2,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 3,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 4,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 5,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 6,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 7,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-
-    {
-      id: 8,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 9,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 10,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 11,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 12,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 13,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 14,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 15,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 16,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 17,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 18,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 19,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 20,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 11,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 22,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 23,
-      name: "siêm",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-    {
-      id: 24,
-      name: "Yem",
-      category: "hongsiem@your",
-      state: "Hiển thị",
-    },
-    {
-      id: 25,
-      name: "Mya",
-      category: "hnaiem@your",
-      state: "Ẩn",
-    },
-    {
-      id: 26,
-      name: "aa",
-      category: "lymh@your",
-      state: "Ẩn",
-    },
-  ];
   const columnService = [
     {
       name: "Dịch vụ",
-      selector: (row) => row.name,
+      cell: (row) => row.typeService,
       sortable: true,
     },
 
     {
       name: "Trạng thái",
-      selector: (row) => row.state,
+      cell: (row) => (row.status === 1 ? "Hiển thị" : "Ẩn"),
       sortable: true,
     },
     {
       name: "Action",
       cell: (row) => (
-        <button className="btn w-30 text-capitalize d-flex justify-content-center ">
+        <button className="btn w-30 text-capitalize d-flex justify-content-center">
+          <Edit />
+        </button>
+      ),
+    },
+    {
+      name: "Action",
+      cell: (row) => (
+        <button className="btn w-30 text-capitalize d-flex justify-content-center">
           <DeleteIcon />
         </button>
       ),
     },
   ];
-  const dataService = [
-    {
-      id: 1,
-      name: "Dịch vụ",
-      state: "Hiển thị",
-    },
-    {
-      id: 2,
-      name: "Phương tiện di chuyển",
-      state: "Ẩn",
-    },
-    {
-      id: 3,
-      name: "Vệ sinh",
-      state: "Ẩn",
-    },
-    {
-      id: 4,
-      name: "Tập gym",
-      state: "Hiển thị",
-    },
-    {
-      id: 5,
-      name: "Hồ bơi",
-      state: "Ẩn",
-    },
-    {
-      id: 6,
-      name: "Thăm quan",
-      state: "Ẩn",
-    },
-  ];
-  const [userData, setUserData] = useState({
-    id: "1",
-    slogan: "siem",
-    content: "jdhiwj",
-    img: "kk",
-  });
-  const initialValues = {
-    slogan: userData ? userData.slogan : "",
-    content: userData ? userData.content : "",
-    img: userData ? userData.img : "",
-  };
 
+  // const [userData, setUserData] = useState({
+  //   id: "1",
+  //   slogan: "siem",
+  //   content: "jdhiwj",
+  //   img: "kk",
+  // });
+  const initialValues = {
+    slogan1: aboutus ? aboutus.slogan1 : "",
+    slogan2: aboutus ? aboutus.slogan2 : "",
+    content: aboutus ? aboutus.content : "",
+    img: aboutus ? aboutus.img : "",
+  };
+  console.log("s", initialValues);
   const schema = yup.object().shape({
     slogan: yup.string().required(),
     content: yup.string().required(),
@@ -296,7 +175,7 @@ export default function ManagerGeneral() {
   };
   return (
     <main className="main-content position-relative border-radius-lg ">
-      <Header pageCurrent="Quản lý phòng" />
+      <Header pageCurrent="Quản lý chung" />
 
       <div className="container-fluid py-4">
         <div>
@@ -315,20 +194,25 @@ export default function ManagerGeneral() {
                   <h4 className="bg-secondary p-3">
                     Danh sách bài đăng nổi bật
                   </h4>
-                  <Table columns={columns} data={dataBlog} />
+                  {cateBlog && (
+                    <Table columns={columns} data={cateBlog} type="1" />
+                  )}
                 </div>
               </div>
               <div className="table-scroll mt-4">
                 <div className="row">
                   <h4 className="bg-secondary p-3"> Danh sách bài đăng mới</h4>
-                  <Table columns={columns} data={dataBlog} />
+                  {aricleBlog && (
+                    <Table columns={columns} data={aricleBlog} type="2" />
+                  )}
                 </div>
+                {isModalOpen && <Model onClose={() => setIsModalOpen(false)} />}
               </div>
             </div>
             <div className="tab-pane">
               <div className="table-scroll ">
                 <div className="row">
-                  <Table columns={columnService} data={dataService} />
+                  {service && <Table columns={columnService} data={service} />}
                 </div>
               </div>
             </div>
@@ -336,12 +220,14 @@ export default function ManagerGeneral() {
               {/* <div className="table-scroll "> */}
               <div className="row">
                 <h4 className="bg-secondary p-3">Thông tin Abouts us</h4>
-                {userData && (
+                {aboutus !== null ? (
                   <FormInformation
                     initialValues={initialValues}
                     validationSchema={schema}
                     onSubmit={handleSubmit}
                   />
+                ) : (
+                  <p>Loading...</p>
                 )}
               </div>
             </div>

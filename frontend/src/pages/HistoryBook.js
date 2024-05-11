@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function HistoryBook() {
   const navigation = useNavigate();
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const tabs = document.querySelectorAll(".tab-item");

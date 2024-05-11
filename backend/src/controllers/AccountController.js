@@ -20,7 +20,7 @@ class AccountController {
       });
   }
   findById(req, res) {
-    let result = accountModel.find(req.query.id);
+    let result = accountModel.find(req.params.id);
     result
       .then(function (value) {
         console.log(value);
@@ -33,21 +33,23 @@ class AccountController {
 
   async register(req, res) {
     const otp = accountModel.generateOTP();
-    const { password, repassword, email, phone } = req.body;
+    const { password, repassword, email, useName } = req.body;
     const salt = bcrypt.genSaltSync(10);
     const pass_encrypt = bcrypt.hashSync(password, salt);
     const data = {
       password: pass_encrypt,
       email,
-      phone,
+      useName,
+      phone: null,
       status: 0,
       role: 0,
       createDate: new Date(),
+      avatar: null,
       birthday: null,
     };
 
     if (password !== repassword) {
-      return res.status(400).json({ error: "Mật khẩu nhập lại không khớp" });
+      return res.status(400).json({ message: "Mật khẩu nhập lại không khớp" });
     }
 
     try {
@@ -59,7 +61,7 @@ class AccountController {
       } else if (userConfirm.status === 0) {
         result = await accountModel.updateByEmail(email, data);
       } else {
-        return res.status(403).json({ error: "Tài khoảng đã tồn tại" });
+        return res.status(403).json({ message: "Tài khoảng đã tồn tại" });
       }
 
       req.session.otpInfo = {
@@ -73,10 +75,56 @@ class AccountController {
       res.json(result);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Server internal error" });
+      res.status(500).json({ message: "Server internal error" });
     }
   }
+  async adminCreateAccount(req, res) {
+    const otp = accountModel.generateOTP();
+    const { password, repassword, email, useName } = req.body;
+    const salt = bcrypt.genSaltSync(10);
+    const pass_encrypt = bcrypt.hashSync(password, salt);
+    const data = {
+      password: pass_encrypt,
+      email,
+      useName,
+      phone: null,
+      status: 0,
+      role: 0,
+      createDate: new Date(),
+      avatar: null,
+      birthday: null,
+    };
 
+    if (password !== repassword) {
+      return res.status(400).json({ message: "Mật khẩu nhập lại không khớp" });
+    }
+
+    try {
+      const userConfirm = await accountModel.findByEmail1(email);
+
+      let result;
+      if (!userConfirm) {
+        result = await accountModel.create(data);
+      } else if (userConfirm.status === 0) {
+        result = await accountModel.updateByEmail(email, data);
+      } else {
+        return res.status(403).json({ message: "Tài khoảng đã tồn tại" });
+      }
+
+      req.session.otpInfo = {
+        email: req.body.email,
+        otp: otp,
+        otpExpiration: Date.now() + 5 * 60 * 1000, // Hết hạn sau 5 phút
+      };
+
+      console.log("OTP", req.session);
+      sendConfirmationEmail(req.body.email, otp);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Server internal error" });
+    }
+  }
   verifyOTP(req, res) {
     const { otp, email } = req.body;
     const { otpInfo } = req.session;
@@ -85,13 +133,13 @@ class AccountController {
     if (!otp || !otpInfo || !otpInfo.otp || !otpInfo.email) {
       return res
         .status(400)
-        .json({ error: "OTP information is missing or invalid" });
+        .json({ message: "OTP information is missing or invalid" });
     }
     if (otp !== otpInfo.otp || email !== otpInfo.email) {
-      return res.status(400).json({ error: "Invalid OTP or Email" });
+      return res.status(400).json({ message: "Invalid OTP or Email" });
     }
     if (Date.now() > otpInfo.otpExpiration) {
-      return res.status(400).json({ error: "OTP expired" });
+      return res.status(400).json({ message: "OTP expired" });
     }
 
     accountModel
@@ -102,17 +150,16 @@ class AccountController {
       })
       .catch((error) => {
         console.log(error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
       });
   }
 
   update(req, res) {
     const newData = {
       useName: req.body.useName,
-      password: req.body.password,
       email: req.body.email,
       phone: req.body.phone,
-      avat: req.body.avat,
+      birthday: req.body.birthday,
       status: req.body.status,
       role: req.body.role,
     };
@@ -124,6 +171,7 @@ class AccountController {
     });
 
     let result = accountModel.update(req.params.id, newData);
+    console.log(result);
 
     result
       .then(function (value) {
@@ -154,7 +202,7 @@ class AccountController {
       const value = await accountModel.findByEmail(email);
       console.log(value);
       if (!value) {
-        return res.status(401).json({ message: "User does not exist" });
+        return res.status(401).json({ message: "Tài khoản không tồn tại" });
       }
 
       const validaPassword = await bcrypt.compare(password, value.password);
@@ -167,7 +215,7 @@ class AccountController {
         console.log(req.session);
         return res.json({ user: value });
       } else {
-        return res.status(401).json({ message: "Incorrect password" });
+        return res.status(401).json({ message: "Mật khẩu không đúng" });
       }
     } catch (error) {
       console.log(error);
@@ -180,7 +228,7 @@ class AccountController {
       req.session.destroy();
       res.json({ message: "Logout successful" });
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ message: "Internal Server Error" });
     }
   }
   forgotPassword(req, res) {

@@ -42,11 +42,14 @@ p.text {
   left: 20px;
   right: 20px;
   bottom: 20px;
-  background: rgba(34, 34, 34, 0.8);
+  background: rgba(34, 34, 34, 0.6);
   justify-content: center;
   align-items: center;
   text-align: center;
   cursor: pointer;
+}
+.positionBlog:hover {
+  background: rgba(2, 2, 2, 0.8);
 }
 .positionBlog .tags {
   display: none;

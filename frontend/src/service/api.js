@@ -4,6 +4,7 @@ export const instance = axios.create({
   baseURL: "http://localhost:3001",
   withCredentials: true,
 });
+// Begin call api Account
 export const login = async (email, password) => {
   try {
     const response = await instance.post("/accounts/login", {
@@ -15,11 +16,11 @@ export const login = async (email, password) => {
     throw error;
   }
 };
-export const register = async (email, phone, password, repassword) => {
+export const register = async (email, useName, password, repassword) => {
   try {
     const response = await instance.post("/accounts/register", {
       email,
-      phone,
+      useName,
       password,
       repassword,
     });
@@ -91,6 +92,14 @@ export const getAll = async () => {
     throw error;
   }
 };
+export const logout = async () => {
+  try {
+    const response = await instance.post("/accounts/logout");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 export const getByIdUser = async (id) => {
   try {
     const response = await instance.get(`/accounts/${id}`);
@@ -112,6 +121,133 @@ export const uploadAvatar = async (formData) => {
     throw new Error("Error uploading image: " + error.message);
   }
 };
+export const updateProfile = async (id, newData) => {
+  try {
+    const response = await instance.put(`/accounts/${id}/edit`, newData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const deleteUser = async (idUser) => {
+  try {
+    const response = await instance.delete(`/accounts/${idUser}`);
+    console.log(response.data);
+  } catch (error) {
+    throw error;
+  }
+};
+// end call api Account
+// begin call api About-us
+export const getAboutus = async () => {
+  try {
+    const response = await instance.get("/aboutus/getAbout");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const createAboutus = async (slogan1, slogan2, content, img) => {
+  try {
+    const response = await instance.post("/aboutus", {
+      slogan1,
+      slogan2,
+      content,
+      img,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+// end call api About-us
+//begin call api blog
+export const getBlogAllArticle = async () => {
+  try {
+    const response = await instance.get("/blog/allarticle");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getBlogArticle = async () => {
+  try {
+    const response = await instance.get("/blog/getarticle");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getBlogAllCate = async () => {
+  try {
+    const response = await instance.get("/blog/allcategory");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getBlogCategory = async () => {
+  try {
+    const response = await instance.get("/blog/getcategory");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const uploadImg = async (formData) => {
+  try {
+    const response = await instance.post("/blog/uploadImg", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new Error("Error uploading image: " + error.message);
+  }
+};
+export const createBlogCate = async (topic, content, img, type) => {
+  try {
+    const response = await instance.post("/blog", {
+      topic,
+      content,
+      img,
+      type,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const deleteBlog = async (id) => {
+  try {
+    const response = await instance.delete(`/blog/${id}`);
+    console.log(response.data);
+  } catch (error) {
+    throw error;
+  }
+};
+
+//end call api blog
+// begin call api service
+export const getAllService = async () => {
+  try {
+    const response = await instance.get("/service");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getService = async () => {
+  try {
+    const response = await instance.get("/service/getService");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+//end call api service
 // api all room
 export const getAllRooms = async () => {
   try {
@@ -133,7 +269,9 @@ export const getAllImage = async (id) => {
 // api phan trang room
 export const getRoomsPagination = async (pageNumber, limit) => {
   try {
-    const response = await instance.get(`/room?page=${pageNumber}&limit=${limit}`);
+    const response = await instance.get(
+      `/room?page=${pageNumber}&limit=${limit}`
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -157,11 +295,11 @@ export const getRoomsByType = async (type) => {
     throw error;
   }
 };
-// api rating 
+// api rating
 export const getReviewByRoomId = async (rating) => {
   try {
     const response = await instance.get(`/room/review/${rating}`);
-    console.log(response)
+    console.log(response);
     return response.data;
   } catch (error) {
     throw error;

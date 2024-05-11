@@ -52,7 +52,7 @@ module.exports = new (class UsersModel extends Model {
   }
 
   //find password by id
-  findById(id) {
+  getAboutStatus(id) {
     let cThis = this;
     return new Promise(function (myResolve, myReject) {
       db.query(
@@ -89,6 +89,38 @@ module.exports = new (class UsersModel extends Model {
 
   //
   create(data) {
+    let cThis = this;
+
+    return new Promise(function (myResolve, myReject) {
+      cThis
+        .findByEmail(data.email)
+        .then(function (existing) {
+          if (existing) {
+            myReject(new Error("Email already exists"));
+          } else {
+            db.query(
+              "INSERT INTO ?? SET ?",
+              [cThis.table, data],
+              function (error, result) {
+                if (error) throw error;
+                let data = cThis.find(result.insertId);
+                data
+                  .then(function (value) {
+                    myResolve(value);
+                  })
+                  .catch(function (error) {
+                    myReject(error);
+                  });
+              }
+            );
+          }
+        })
+        .catch(function (error) {
+          myReject(error);
+        });
+    });
+  }
+  createByAdmin(data) {
     let cThis = this;
 
     return new Promise(function (myResolve, myReject) {

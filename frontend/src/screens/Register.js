@@ -5,7 +5,7 @@ import { register, verify } from "../service/api";
 
 const Register = () => {
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [useName, setName] = useState("");
   const [password, setPassword] = useState("");
   const [repassword, setRePassword] = useState("");
   const [otp, setOTP] = useState("");
@@ -17,8 +17,8 @@ const Register = () => {
     setEmail(event.target.value);
   };
 
-  const handlePhoneChange = (event) => {
-    setPhone(event.target.value);
+  const handleName = (event) => {
+    setName(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -38,16 +38,24 @@ const Register = () => {
     console.log(step);
     try {
       if (step === 1) {
-        await register(email, phone, password, repassword);
-        console.log(email, phone, password, repassword);
-
-        setStep(2);
+        const response = await register(email, useName, password, repassword);
+        if (response.error) {
+          setError(response.error);
+        } else {
+          setStep(2);
+          setError(null);
+        }
       } else if (step === 2) {
-        await verify(otp, email);
-        navigation("/login");
-        console.log(email, otp);
+        const response = await verify(otp, email);
+        if (response.error) {
+          setError(response.error);
+        } else {
+          navigation("/login");
+          console.log(email, otp);
+        }
       }
     } catch (e) {
+      console.log("lỗi", e);
       setError(e.response?.data?.message);
     }
   };
@@ -59,6 +67,16 @@ const Register = () => {
           <Col md={6} className="registerForm">
             <h2 className="text-center mb-4">ĐĂNG KÝ</h2>
             <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="formBasicName">
+                <Form.Label>Tên tài khoản:</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập tên"
+                  value={useName}
+                  onChange={handleName}
+                  required
+                />
+              </Form.Group>
               <Form.Group controlId="formBasicEmail">
                 <Form.Label>Email:</Form.Label>
                 <Form.Control
@@ -66,16 +84,6 @@ const Register = () => {
                   placeholder="Nhập email"
                   value={email}
                   onChange={handleEmailChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="formBasicPhone">
-                <Form.Label>Điện thoại:</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Nhập số điện thoại"
-                  value={phone}
-                  onChange={handlePhoneChange}
                   required
                 />
               </Form.Group>
@@ -112,7 +120,7 @@ const Register = () => {
                 </Form.Group>
               )}
               <Button
-                variant="primary"
+                // variant="primary"
                 type="submit"
                 className="w-100 btnRegister"
               >

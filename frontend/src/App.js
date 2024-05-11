@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
@@ -28,39 +28,51 @@ import Payment from "./screens/Payment";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  console.log("app", loggedInUser);
   return (
     <div>
-      <Header loggedIn={loggedIn} />
-      <Routes>
-        <Route path="/" exact element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/room" element={<Room />} />
-        <Route path="/room_detail" element={<RoomDetail />} />
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/service" element={<Service />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/forgot" element={<ForgotPassword />} />
-      </Routes>
-      <Footer />
+      {(!loggedInUser || loggedInUser.user.role === 0) && (
+        <>
+          <Header loggedIn={loggedIn} />
+          <Routes>
+            <Route path="/" exact element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/room" element={<Room />} />
+            <Route path="/room_detail" element={<RoomDetail />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route
+              path="/login"
+              element={<Login setLoggedIn={setLoggedIn} />}
+            />
+            <Route path="/register" element={<Register />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/service" element={<Service />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route
+              path="/profile"
+              element={<Profile setLoggedIn={setLoggedIn} />}
+            />
+            <Route path="/forgot" element={<ForgotPassword />} />
+          </Routes>
+          <Footer />
+        </>
+      )}
 
-      {/* Admin */}
-      {/* <Menu />
-      <Routes>
-        <Route path="/" exact element={<Dashboard />} />
-        <Route path="/home" exact element={<Dashboard />} />
-        <Route path="/manageroom" exact element={<ManageRoom />} />
-        <Route path="/booking" exact element={<BookingRoom />} />
-        <Route path="/manageaccount" exact element={<ManageAccount />} />
-        <Route path="/managegeneral" exact element={<ManagerGeneral />} />
-        <Route path="/supportCustomer" exact element={<Support />} />
-      </Routes>
-      <FooterAdmin /> */}
+      {loggedInUser && loggedInUser.user.role === 1 && (
+        <>
+          <Menu setLoggedIn={setLoggedIn} />
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/manageroom" element={<ManageRoom />} />
+            <Route path="/booking" element={<BookingRoom />} />
+            <Route path="/manageaccount" element={<ManageAccount />} />
+            <Route path="/managegeneral" element={<ManagerGeneral />} />
+            <Route path="/supportCustomer" element={<Support />} />
+          </Routes>
+          <FooterAdmin />
+        </>
+      )}
     </div>
   );
 }

@@ -1,62 +1,87 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import CategoriesBlog from "../components/CategoriesBlog";
 import ArticleBlog from "../components/ArticleBlog";
-import imgs from "../assets/image/index.js"
+import imgs from "../assets/image/index.js";
+import { getBlogArticle, getBlogCategory } from "../service/api.js";
 export default function Blog() {
-  const categories_blog = [
-    {
-      topic: "Social Life",
-      description: "Enjoy your social life together",
-      img: imgs.blog1,
-    },
-    {
-      topic: "Social Life",
-      description: "Enjoy your social life together",
-      img: imgs.blog2,
-    },
-    {
-      topic: "Social Life",
-      description: "Enjoy your social life together",
-      img: imgs.blog3,
-    },
-  ];
-  const articles = [
-    {
-      tags: ["Food, ", "Technology, ", "Politics, ", "Lifestyle "],
-      datePosted: "1/1/2020",
-      view: "103",
-      comment: " 06 ",
-      topic: "Astronomy Binoculars A Great Alternative",
-      title:
-        "  MCSE boot camps have its supporters and its detractors. Some people do not understand why you should have to spend money onboot camp when you can get the MCSE study materials yourself at afraction.",
-    },
-    {
-      tags: ["Food, ", "Technology, ", "Politics, ", "Lifestyle "],
-      datePosted: "1/1/2020",
-      view: "103",
-      comment: " 06 ",
-      topic: "Astronomy Binoculars A Great Alternative",
-      title:
-        "  MCSE boot camps have its supporters and its detractors. Some people do not understand why you should have to spend money onboot camp when you can get the MCSE study materials yourself at afraction.",
-    },
-    {
-      tags: ["Food, ", "Technology, ", "Politics, ", "Lifestyle "],
-      datePosted: "1/1/2020",
-      view: "103",
-      comment: " 06 ",
-      topic: "Astronomy Binoculars A Great Alternative",
-      title:
-        "  MCSE boot camps have its supporters and its detractors. Some people do not understand why you should have to spend money onboot camp when you can get the MCSE study materials yourself at afraction.",
-    },
-  ];
+  // const categories_blog = [
+  //   {
+  //     topic: "Social Life",
+  //     description: "Enjoy your social life together",
+  //     img: imgs.blog1,
+  //   },
+  //   {
+  //     topic: "Social Life",
+  //     description: "Enjoy your social life together",
+  //     img: imgs.blog2,
+  //   },
+  //   {
+  //     topic: "Social Life",
+  //     description: "Enjoy your social life together",
+  //     img: imgs.blog3,
+  //   },
+  // ];
+  // const articles = [
+  //   {
+  //     tags: ["Food, ", "Technology, ", "Politics, ", "Lifestyle "],
+  //     datePosted: "1/1/2020",
+  //     view: "103",
+  //     comment: " 06 ",
+  //     topic: "Astronomy Binoculars A Great Alternative",
+  //     title:
+  //       "  MCSE boot camps have its supporters and its detractors. Some people do not understand why you should have to spend money onboot camp when you can get the MCSE study materials yourself at afraction.",
+  //   },
+  //   {
+  //     tags: ["Food, ", "Technology, ", "Politics, ", "Lifestyle "],
+  //     datePosted: "1/1/2020",
+  //     view: "103",
+  //     comment: " 06 ",
+  //     topic: "Astronomy Binoculars A Great Alternative",
+  //     title:
+  //       "  MCSE boot camps have its supporters and its detractors. Some people do not understand why you should have to spend money onboot camp when you can get the MCSE study materials yourself at afraction.",
+  //   },
+  //   {
+  //     tags: ["Food, ", "Technology, ", "Politics, ", "Lifestyle "],
+  //     datePosted: "1/1/2020",
+  //     view: "103",
+  //     comment: " 06 ",
+  //     topic: "Astronomy Binoculars A Great Alternative",
+  //     title:
+  //       "  MCSE boot camps have its supporters and its detractors. Some people do not understand why you should have to spend money onboot camp when you can get the MCSE study materials yourself at afraction.",
+  //   },
+  // ];
+  const [articles, setArticles] = useState(null);
+  const [category, setCategory] = useState(null);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (!articles) {
+          const articleData = await getBlogArticle();
+          console.log("Article Data from API:", articleData);
+          setArticles(articleData);
+        }
+
+        if (!category) {
+          const categoryData = await getBlogCategory();
+          console.log("Category Data from API:", categoryData);
+          setCategory(categoryData);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchData();
+  }, [articles, category]);
+
   return (
     <>
       <Breadcrumb currently="Blog" classNameImg="blog_banner_two" />
       <section className="blog_categorie_area">
         <div className="container">
           <div className="row">
-            <CategoriesBlog  dataCategory={categories_blog} positionBlog tags/>
+            <CategoriesBlog dataCategory={category} positionBlog tags />
           </div>
         </div>
       </section>

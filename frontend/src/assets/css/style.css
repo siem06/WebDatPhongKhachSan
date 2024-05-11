@@ -3481,6 +3481,8 @@ h6 {
   }
   .btn-close {
     display: block;
+    border-radius: 50%;
+    background-color: #007bff;
   }
 }
 

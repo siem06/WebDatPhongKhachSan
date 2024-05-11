@@ -4,8 +4,7 @@ const { authUser } = require("../middleware/auth");
 const accountRouter = express.Router();
 const multer = require("multer");
 const upload = multer();
-accountRouter.get("/", authUser(), accountController.findById);
-accountRouter.get("/all", accountController.get);
+accountRouter.get("/all", authUser(), accountController.get);
 accountRouter.post("/verify", accountController.verifyOTP);
 accountRouter.post("/register", accountController.register);
 accountRouter.post("/login", accountController.login);
@@ -22,6 +21,8 @@ accountRouter.put("/changepassword", accountController.changePassword);
 
 accountRouter.put("/:id/edit", authUser(), accountController.update);
 accountRouter.delete("/:id", authUser(), accountController.delete);
+accountRouter.get("/:id", authUser(), accountController.findById);
+
 accountRouter.get("otp");
 
 module.exports = accountRouter;

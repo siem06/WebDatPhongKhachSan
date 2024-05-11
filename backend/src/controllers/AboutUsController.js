@@ -11,6 +11,17 @@ class AboutUsController {
         console.log(error);
       });
   }
+  getAboutStatus(req, res) {
+    let result = aboutusModel.getAboutStatus();
+    result
+      .then(function (value) {
+        console.log(value);
+        res.json(value);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
   find(req, res) {
     let result = aboutusModel.find(req.params.id);
     result
@@ -24,9 +35,11 @@ class AboutUsController {
   }
   create(req, res) {
     const data = {
-      slogan: req.body.slogan,
+      slogan1: req.body.slogan1,
+      slogan2: req.body.slogan2,
       content: req.body.content,
       img: req.body.img,
+      status: 0,
     };
     let result = aboutusModel.create(data);
     result
@@ -40,9 +53,11 @@ class AboutUsController {
   }
   update(req, res) {
     const data = {
-      slogan: req.body.slogan,
+      slogan1: req.body.slogan1,
+      slogan2: req.body.slogan2,
       content: req.body.content,
       img: req.body.img,
+      status: req.body.status,
     };
     let result = aboutusModel.update(req.params.id, data);
     result
