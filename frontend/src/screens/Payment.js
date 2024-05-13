@@ -1,19 +1,45 @@
-import React from "react";
-import Breadcrumb from "../components/Breadcrumb";
-import Button from "../components/Button/Button";
-import Input from "../components/Input/Input";
-import InputGroup from "../components/InputGroup";
+import React, { useState, useEffect } from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../assets/css/style.css";
+import "../assets/css/room.css";
 import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
 import imgs from "../assets/image";
 import { Link } from "react-router-dom";
 export default function Payment() {
+	const [currentTab, setCurrentTab] = useState(1);
+	const [selectedTab, setSelectedTab] = useState(0);
+
+	const handleTabClick = (index) => {
+		setSelectedTab(index);
+	};
+	// Hàm để xử lý khi người dùng chuyển tab
+	const handleTabChange = (tab) => {
+		setCurrentTab(tab);
+	};
+
+	// Hàm để chuyển tab sang trang trước
+	const goToPreviousTab = () => {
+		if (currentTab > 1) {
+			setCurrentTab(currentTab - 1);
+		}
+	};
+
+	// Hàm để chuyển tab sang trang sau
+	const goToNextTab = () => {
+		if (currentTab < 3) {
+			setCurrentTab(currentTab + 1);
+		}
+	};
+
+	// Hàm để kiểm tra xem tab hiện tại có phải là tab được chọn không
+	const isActiveTab = (tab) => {
+		return tab === currentTab;
+	};
 	return (
 		<>
 			{/* // <!--================Breadcrumb Area =================--> */}
@@ -31,573 +57,416 @@ export default function Payment() {
 				</div>
 			</section>
 			{/* // <!--================Breadcrumb Area =================-->*/}
-			<section className="pt-0 mt-5">
+			<section className="pt-40 layout-pb-md mt-5">
 				<div className="container">
-					<div className="row g-4 g-lg-5">
+					<div className="row x-gap-40 y-gap-30 items-center">
+						<div className="col-auto">
+							<div
+								className={`size-60 rounded-full flex-center cursor-pointer transition ${isActiveTab(1) ? 'bg-blue-1' : 'bg-light-2'
+									}`}
+								onClick={() => handleTabChange(1)}
+							>
+								{isActiveTab(1) && (
+									<i className="fa fa-check-circle text-28 text-white" aria-hidden="true"></i>
+								)}
+								<span className={isActiveTab(1) ? 'text-white' : 'text-blue-1'}>1</span>
+							</div>
+							<div className="text-18 fw-500 ml-10 text-dark">Chi tiết thông tin</div>
+						</div>
 
-						{/* <!-- Left side content START --> */}
-						<div className="col-xl-8">
-							<div className="vstack gap-5">
-								{/* <!-- Hotel information START --> */}
-								<div className="card shadow">
-									{/* <!-- Card header --> */}
-									<div className="card-header p-4 border-bottom">
-										{/* <!-- Title --> */}
-										<h3 className="mb-0"><i className="fa-solid fa-hotel me-2"></i>Hotel Information</h3>
-									</div>
-
-									{/* <!-- Card body START --> */}
-									<div className="card-body p-4">
-										{/* <!-- Card list START --> */}
-										<div className="card mb-4">
-											<div className="row align-items-center">
-												{/* <!-- Image --> */}
-												<div className="col-sm-6 col-md-3">
-													<img src="https://booking.webestica.com/assets/images/category/hotel/4by3/02.jpg" className="card-img" alt="" />
-												</div>
-
-												{/* <!-- Card Body --> */}
-												<div className="col-sm-6 col-md-9">
-													<div className="card-body pt-3 pt-sm-0 p-0">
-														{/* <!-- Title --> */}
-														<h5 className="card-title"><a href="#">Pride moon Village Resort &amp; Spa</a></h5>
-														<p className="small mb-2"><i className="bi bi-geo-alt me-2"></i>5855 W Century Blvd, Los Angeles - 90045</p>
-
-														{/* <!-- Rating star --> */}
-														<ul className="list-inline mb-0">
-															<li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-															<li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-															<li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-															<li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-															<li className="list-inline-item me-0 small"><i className="fa-solid fa-star-half-alt text-warning"></i></li>
-															<li className="list-inline-item ms-2 h6 small fw-bold mb-0">4.5/5.0</li>
-														</ul>
-													</div>
-												</div>
-
-											</div>
-										</div>
-										{/* <!-- Card list END --> */}
-
-										{/* <!-- Information START --> */}
-										<div className="row g-4">
-											{/* <!-- Item --> */}
-											<div className="col-lg-4">
-												<div className="bg-light py-3 px-4 rounded-3">
-													<h6 className="fw-light small mb-1">Check-in</h6>
-													<h5 className="mb-1">4 March 2022</h5>
-													<small><i className="bi bi-alarm me-1"></i>12:30 pm</small>
-												</div>
-											</div>
-
-											{/* <!-- Item --> */}
-											<div className="col-lg-4">
-												<div className="bg-light py-3 px-4 rounded-3">
-													<h6 className="fw-light small mb-1">Check out</h6>
-													<h5 className="mb-1">8 March 2022</h5>
-													<small><i className="bi bi-alarm me-1"></i>4:30 pm</small>
-												</div>
-											</div>
-
-											{/* <!-- Item --> */}
-											<div className="col-lg-4">
-												<div className="bg-light py-3 px-4 rounded-3">
-													<h6 className="fw-light small mb-1">Rooms &amp; Guests</h6>
-													<h5 className="mb-1">2 G - 1 R</h5>
-													<small><i className="bi bi-brightness-high me-1"></i>3 Nights - 4 Days</small>
-												</div>
-											</div>
-										</div>
-										{/* <!-- Information END -->
-
-							<!-- Card START --> */}
-										<div className="card border mt-4">
-											{/* <!-- Card header --> */}
-											<div className="card-header border-bottom d-md-flex justify-content-md-between">
-												<h5 className="card-title mb-0">Deluxe Pool View with Breakfast</h5>
-												<a href="#" className="btn btn-link p-0 mb-0">View Cancellation Policy</a>
-											</div>
-
-											{/* <!-- Card body --> */}
-											<div className="card-body">
-												<h6>Price Included</h6>
-												{/* <!-- List --> */}
-												<ul className="list-group list-group-borderless mb-0">
-													<li className="list-group-item h6 fw-light d-flex mb-0"><i className="bi bi-patch-check-fill text-success me-2"></i>Free Breakfast and Lunch/Dinner.</li>
-													<li className="list-group-item h6 fw-light d-flex mb-0"><i className="bi bi-patch-check-fill text-success me-2"></i>Great Small Breaks.</li>
-													<li className="list-group-item h6 fw-light d-flex mb-0"><i className="bi bi-patch-check-fill text-success me-2"></i>Free Stay for Kids Below the age of 12 years.</li>
-													<li className="list-group-item h6 fw-light d-flex mb-0"><i className="bi bi-patch-check-fill text-success me-2"></i>On Cancellation, You will not get any refund</li>
-												</ul>
-											</div>
-										</div>
-										{/* <!-- Card END --> */}
-									</div>
-									{/* <!-- Card body END --> */}
-								</div>
-								{/* <!-- Hotel information END --> */}
-
-								{/* <!-- Guest detail START --> */}
-								<div className="card shadow">
-									{/* <!-- Card header --> */}
-									<div className="card-header border-bottom p-4">
-										<h4 className="card-title mb-0"><i className="bi bi-people-fill me-2"></i>Guest Details</h4>
-									</div>
-
-									{/* <!-- Card body START --> */}
-									<div className="card-body p-4">
-										{/* <!-- Form START --> */}
-										<form className="row g-4">
-											{/* <!-- Title --> */}
-											<div className="col-12">
-												<div className="bg-light rounded-2 px-4 py-3">
-													<h6 className="mb-0">Main Guest</h6>
-												</div>
-											</div>
-
-											{/* <!-- Select --> */}
-											<div className="col-md-2">
-												<div className="form-size-lg">
-													<label className="form-label">Title</label>
-													<div className="choices" data-type="select-one" tabindex="0" role="listbox" aria-haspopup="true" aria-expanded="false">
-														<div className="choices__inner">
-															<select className="form-select js-choice choices__input" hidden="" tabindex="-1" data-choice="active">
-																<option value="Mr" data-custom-properties="[object Object]">Mr</option>
-																<option value="Mr" data-custom-properties="[object Object]">Mrs</option>
-																<option value="Mr" data-custom-properties="[object Object]">Ms</option>
-															</select>
-															{/* <div className="choices__list choices__list--single">
-																<div className="choices__item choices__item--selectable" data-item="" data-id="1" data-value="Mr" data-custom-properties="[object Object]" aria-selected="true">Mr</div>
-															</div> */}
-														</div>
-														{/* <div className="choices__list choices__list--dropdown" aria-expanded="false">
-															<div className="choices__list" role="listbox">
-																<div id="choices--ubz7-item-choice-1" className="choices__item choices__item--choice is-selected choices__item--selectable is-highlighted" role="option" data-choice="" data-id="1" data-value="Mr" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">Mr</div>
-																<div id="choices--ubz7-item-choice-2" className="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="Mrs" data-select-text="Press to select" data-choice-selectable="">Mrs</div></div>
-														</div> */}
-													</div>
-												</div>
-											</div>
-
-											{/* <!-- Input --> */}
-											<div className="col-md-5">
-												<label className="form-label">First Name</label>
-												<input type="text" className="form-control form-control-lg" placeholder="Enter your name" />
-											</div>
-
-											{/* <!-- Input --> */}
-											<div className="col-md-5">
-												<label className="form-label">Last Name</label>
-												<input type="text" className="form-control form-control-lg" placeholder="Enter your name" />
-											</div>
-
-											{/* <!-- Button --> */}
-											<div className="col-12">
-												<a href="#" className="btn btn-link mb-0 p-0"><i className="fa-solid fa-plus me-2"></i>Add New Guest</a>
-											</div>
-
-											{/* <!-- Input --> */}
-											<div className="col-md-6">
-												<label className="form-label">Email id</label>
-												<input type="email" className="form-control form-control-lg" placeholder="Enter your email" />
-												<div id="emailHelp" className="form-text">(Booking voucher will be sent to this email ID)</div>
-											</div>
-
-											{/* <!-- Input --> */}
-											<div className="col-md-6">
-												<label className="form-label">Mobile number</label>
-												<input type="text" className="form-control form-control-lg" placeholder="Enter your mobile number" />
-											</div>
-										</form>
-										{/* <!-- Form END -->
-
-							<!-- Alert START --> */}
-										<div className="alert alert-info my-4" role="alert">
-											<a href="sign-up.html" className="alert-heading h6">Login</a> to prefill all details and get access to secret deals
-										</div>
-										{/* <!-- Alert END -->
-
-							<!-- Special request START --> */}
-										<div className="card border mt-4">
-											{/* <!-- Card header --> */}
-											<div className="card-header border-bottom">
-												<h5 className="card-title mb-0">Special request</h5>
-											</div>
-
-											{/* <!-- Card body START --> */}
-											<div className="card-body">
-												<form className="hstack flex-wrap gap-3">
-													{/* <!-- Checkbox --> */}
-													<div className="form-check">
-														<input className="form-check-input" type="checkbox" value="" id="hotelType1" />
-														<label className="form-check-label" for="hotelType1">Smoking room</label>
-													</div>
-													{/* <!-- Checkbox --> */}
-													<div className="form-check">
-														<input className="form-check-input" type="checkbox" value="" id="hotelType2" />
-														<label className="form-check-label" for="hotelType2">Late check-in</label>
-													</div>
-													{/* <!-- Checkbox --> */}
-													<div className="form-check">
-														<input className="form-check-input" type="checkbox" value="" id="hotelType3" />
-														<label className="form-check-label" for="hotelType3">Early check-in</label>
-													</div>
-													{/* <!-- Checkbox --> */}
-													<div className="form-check">
-														<input className="form-check-input" type="checkbox" value="" id="hotelType4" />
-														<label className="form-check-label" for="hotelType4">Room on a high floor</label>
-													</div>
-													{/* <!-- Checkbox --> */}
-													<div className="form-check">
-														<input className="form-check-input" type="checkbox" value="" id="hotelType5" />
-														<label className="form-check-label" for="hotelType5">Large bed</label>
-													</div>
-													{/* <!-- Checkbox --> */}
-													<div className="form-check">
-														<input className="form-check-input" type="checkbox" value="" id="hotelType6" />
-														<label className="form-check-label" for="hotelType6">Airport transfer</label>
-													</div>
-													{/* <!-- Checkbox --> */}
-													<div className="form-check">
-														<input className="form-check-input" type="checkbox" value="" id="hotelType8" />
-														<label className="form-check-label" for="hotelType8">Twin beds</label>
-													</div>
-												</form>
-											</div>
-											{/* <!-- Card body END --> */}
-										</div>
-										{/* <!-- Special request END --> */}
-									</div>
-									{/* <!-- Card body END --> */}
-								</div>
-								{/* <!-- Guest detail END --> */}
-
-								{/* <!-- Payment Options START --> */}
-								<div className="card shadow">
-									{/* <!-- Card header --> */}
-									<div className="card-header border-bottom p-4">
-										{/* <!-- Title --> */}
-										<h4 className="card-title mb-0"><i className="bi bi-wallet-fill me-2"></i>Payment Options</h4>
-									</div>
-
-									{/* <!-- Card body START --> */}
-									<div className="card-body p-4 pb-0">
-
-										<div className="bg-primary bg-opacity-10 rounded-3 mb-4 p-3">
-											<div className="d-md-flex justify-content-md-between align-items-center">
-
-												<div className="d-sm-flex align-items-center mb-2 mb-md-0">
-
-													<img src="https://booking.webestica.com/assets/images/element/16.svg" className="h-50px" alt="" />
-
-													<div className="ms-sm-3 mt-2 mt-sm-0">
-														<h5 className="card-title mb-0">Get Additional Discount</h5>
-														<p className="mb-0">Login to access saved payments and discounts!</p>
-													</div>
-												</div>
-
-
-												<a href="sign-in.html" className="btn btn-primary mb-0">Login now</a>
-											</div>
-										</div>
-
-										<div className="accordion accordion-icon accordion-bg-light" id="accordioncircle">
-											{/* <!-- Credit or debit card START --> */}
-											<div className="accordion-item mb-3">
-												<h6 className="accordion-header" id="heading-1">
-													<button className="accordion-button rounded collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
-														<i className="bi bi-credit-card text-primary me-2"></i>	<span className="me-5">Credit or Debit Card</span>
-													</button>
-												</h6>
-												<div id="collapse-1" className="accordion-collapse collapse show" aria-labelledby="heading-1" data-bs-parent="#accordioncircle">
-													{/* <!-- Accordion body --> */}
-													<div className="accordion-body">
-
-														{/* <!-- Card list -->      */}
-														<div className="d-sm-flex justify-content-sm-between my-3">
-															<h6 className="mb-2 mb-sm-0">We Accept:</h6>
-															<ul className="list-inline my-0">
-																{/* <li className="list-inline-item"> <a href="#"><img src="https://booking.webestica.com/assets/images/element/visa.svg" className="h-30px" alt="" /></a></li>
-																<li className="list-inline-item"> <a href="#"><img src="https://booking.webestica.com/assets/images/element/mastercard.svg" className="h-30px" alt="" /></a></li>
-																<li className="list-inline-item"> <a href="#"><img src="https://booking.webestica.com/assets/images/element/expresscard.svg" className="h-30px" alt="" /></a></li> */}
-															</ul>
-														</div>
-
-														{/* <!-- Form START --> */}
-														<form className="row g-3">
-															{/* <!-- Card number --> */}
-															<div className="col-12">
-																<label className="form-label"><span className="h6 fw-normal">Card Number *</span></label>
-																<div className="position-relative">
-																	<input type="text" className="form-control" maxlength="14" placeholder="XXXX XXXX XXXX XXXX" />
-																	<img src="assets/images/element/visa.svg" className="w-30px position-absolute top-50 end-0 translate-middle-y me-2 d-none d-sm-block" alt="" />
-																</div>
-															</div>
-															{/* <!-- Expiration Date --> */}
-															<div className="col-md-6">
-																<label className="form-label"><span className="h6 fw-normal">Expiration date *</span></label>
-																<div className="input-group">
-																	<input type="text" className="form-control" maxlength="2" placeholder="Month" />
-																	<input type="text" className="form-control" maxlength="4" placeholder="Year" />
-																</div>
-															</div>
-															{/* <!--Cvv code  --> */}
-															<div className="col-md-6">
-																<label className="form-label"><span className="h6 fw-normal">CVV / CVC *</span></label>
-																<input type="text" className="form-control" maxlength="3" placeholder="xxx" />
-															</div>
-															{/* <!-- Card name --> */}
-															<div className="col-12">
-																<label className="form-label"><span className="h6 fw-normal">Name on Card *</span></label>
-																<input type="text" className="form-control" aria-label="name of card holder" placeholder="Enter card holder name" />
-															</div>
-
-															{/* <!-- Alert box START --> */}
-															<div className="col-12">
-																<div className="alert alert-success alert-dismissible fade show my-3" role="alert">
-
-																	{/* <!-- Title --> */}
-																	<div className="d-sm-flex align-items-center mb-3">
-																		<img src="https://booking.webestica.com/assets/images/element/12.svg" className="w-40px me-3 mb-2 mb-sm-0" alt="" />
-																		<h5 className="alert-heading mb-0">$50,000 Covid Cover &amp; More</h5>
-																	</div>
-
-																	{/* <!-- Content --> */}
-																	<p className="mb-2">Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
-
-																	{/* <!-- Button and price --> */}
-																	<div className="d-sm-flex align-items-center">
-																		<a href="#" className="btn btn-sm btn-success mb-2 mb-sm-0 me-3"><i className="fa-regular fa-plus me-2"></i>Add</a>
-																		<h6 className="mb-0">$69 per person</h6>
-																	</div>
-
-																	{/* <!-- Close button --> */}
-																	<button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-																</div>
-															</div>
-															{/* <!-- Alert box END --> */}
-
-															{/* <!-- Buttons --> */}
-															<div className="col-12">
-																<div className="d-sm-flex justify-content-sm-between align-items-center">
-																	<h4>$1800 <span className="small fs-6">Due now</span></h4>
-																	<button className="btn btn-primary mb-0">Pay Now</button>
-																</div>
-															</div>
-
-														</form>
-														{/* <!-- Form END --> */}
-													</div>
-												</div>
-											</div>
-											{/* <!-- Credit or debit card END --> */}
-
-											{/* <!-- Net banking START --> */}
-											<div className="accordion-item mb-3">
-												<h6 className="accordion-header" id="heading-2">
-													<button className="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
-														<i className="bi bi-globe2 text-primary me-2"></i> <span className="me-5">Pay with Net Banking</span>
-													</button>
-												</h6>
-												<div id="collapse-2" className="accordion-collapse collapse" aria-labelledby="heading-2" data-bs-parent="#accordioncircle">
-													{/* <!-- Accordion body --> */}
-													<div className="accordion-body">
-
-														{/* <!-- Form START --> */}
-														<form className="row g-3 mt-1">
-
-															{/* <!-- Popular bank --> */}
-															<ul className="list-inline mb-0">
-
-																<li className="list-inline-item"> <h6 className="mb-0">Popular Bank:</h6> </li>
-																{/* <!-- Rent --> */}
-																<li className="list-inline-item">
-																	<input type="radio" className="btn-check" name="options" id="option1" />
-																	<label className="btn btn-light btn-primary-soft-check" for="option1">
-																		<img src="https://booking.webestica.com/assets/images/element/13.svg" className="h-20px me-2" alt="" />Bank of America
-																	</label>
-																</li>
-																{/* <!-- Sale --> */}
-																<li className="list-inline-item">
-																	<input type="radio" className="btn-check" name="options" id="option2" />
-																	<label className="btn btn-light btn-primary-soft-check" for="option2">
-																		<img src="assets/images/element/15.svg" className="h-20px me-2" alt="" />Bank of Japan
-																	</label>
-																</li>
-																{/* <!-- Buy --> */}
-																<li className="list-inline-item">
-																	<input type="radio" className="btn-check" name="options" id="option3" />
-																	<label className="btn btn-light btn-primary-soft-check" for="option3">
-																		<img src="https://booking.webestica.com/assets/images/element/14.svg" className="h-20px me-2" alt="" />VIVIV Bank
-																	</label>
-																</li>
-															</ul>
-
-															<p className="mb-1">In order to complete your transaction, we will transfer you over to Booking secure servers.</p>
-															<p className="my-0">Select your bank from the drop-down list and click proceed to continue with your payment.</p>
-															{/* <!-- Select bank --> */}
-															<div className="col-md-6">
-																<div className="choices" data-type="select-one" tabindex="0" role="listbox" aria-haspopup="true" aria-expanded="false"><div className="choices__inner"><select className="form-select form-select-sm js-choice border-0 choices__input" hidden="" tabindex="-1" data-choice="active"><option value="" data-custom-properties="[object Object]">Please choose one</option></select><div className="choices__list choices__list--single"><div className="choices__item choices__placeholder choices__item--selectable" data-item="" data-id="1" data-value="" data-custom-properties="[object Object]" aria-selected="true">Please choose one</div></div></div><div className="choices__list choices__list--dropdown" aria-expanded="false"><div className="choices__list" role="listbox"><div id="choices--kz8z-item-choice-1" className="choices__item choices__item--choice is-selected choices__placeholder choices__item--selectable is-highlighted" role="option" data-choice="" data-id="1" data-value="" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">Please choose one</div><div id="choices--kz8z-item-choice-2" className="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="Bank of America" data-select-text="Press to select" data-choice-selectable="">Bank of America</div><div id="choices--kz8z-item-choice-3" className="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="3" data-value="Bank of India" data-select-text="Press to select" data-choice-selectable="">Bank of India</div><div id="choices--kz8z-item-choice-4" className="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="4" data-value="Bank of London" data-select-text="Press to select" data-choice-selectable="">Bank of London</div></div></div></div>
-															</div>
-
-															{/* <!-- Button --> */}
-															<div className="d-grid">
-																<button className="btn btn-success mb-0">Pay $1800</button>
-															</div>
-
-														</form>
-														{/* <!-- Form END --> */}
-													</div>
-												</div>
-											</div>
-											{/* <!-- Net banking END -->
-
-								<!-- Paypal START --> */}
-											<div className="accordion-item mb-3">
-												<h6 className="accordion-header" id="heading-3">
-													<button className="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
-														<i className="bi bi-paypal text-primary me-2"></i><span className="me-5">Pay with Paypal</span>
-													</button>
-												</h6>
-												<div id="collapse-3" className="accordion-collapse collapse" aria-labelledby="heading-3" data-bs-parent="#accordioncircle">
-													{/* <!-- Accordion body --> */}
-													<div className="accordion-body">
-														<div className="card card-body border align-items-center text-center mt-4">
-															{/* <!-- Image --> */}
-															<img src="https://booking.webestica.com/assets/images/element/paypal.svg" className="h-70px mb-3" alt="" />
-															<p className="mb-3"><strong>Tips:</strong> Simply click on the payment button below to proceed to the PayPal payment page.</p>
-															<a href="#" className="btn btn-sm btn-outline-primary mb-0">Pay with paypal</a>
-														</div>
-													</div>
-												</div>
-											</div>
-											{/* <!-- Paypal END --> */}
-										</div>
-										{/* <!-- Accordion END --> */}
-									</div>
-									{/* <!-- Card body END --> */}
-
-									<div className="card-footer p-4 pt-0">
-										{/* <!-- Condition link --> */}
-										<p className="mb-0">By processing, You accept Booking <a href="#">Terms of Services</a> and <a href="#">Policy</a></p>
-									</div>
-								</div>
-								{/* <!-- Payment Options END --> */}
+						<div className="col d-none d-sm-block ">
+							<div className="w-full h-1 bg-border bg-opacity-25">
 							</div>
 						</div>
-						{/* <!-- Left side content END -->
+						<div className="col-auto">
+							<div
+								className={`size-60 rounded-full flex-center cursor-pointer transition ${isActiveTab(2) ? 'bg-blue-1' : 'bg-light-2'
+									}`}
+								onClick={() => handleTabChange(2)}
+							>
+								{isActiveTab(2) && (
+									<i className="fa fa-check-circle text-28 text-white" aria-hidden="true"></i>
+								)}
+								<span className={isActiveTab(2) ? 'text-white' : 'text-blue-1'}>2</span>
+							</div>
+							<div className="text-18 fw-500 ml-10 text-dark">Thanh toán</div>
+						</div>
+						<div className="col d-none d-sm-block">
+							<div className="w-full h-1 bg-border">
+							</div></div>
+						<div className="col-auto">
+							<div
+								className={`size-60 rounded-full flex-center cursor-pointer transition ${isActiveTab(3) ? 'bg-blue-1' : 'bg-light-2'
+									}`}
+								onClick={() => handleTabChange(3)}
+							>
+								{isActiveTab(3) && (
+									<i className="fa fa-check-circle text-28 text-white" aria-hidden="true"></i>
+								)}
+								<span className={isActiveTab(3) ? 'text-white' : 'text-blue-1'}>3</span>
+							</div>
+							<div className="text-18 fw-500 ml-10 text-dark">Xác nhận</div>
+						</div>
+					</div>
+					{currentTab === 1 && (
+						<div className="row">
+							<div className="col-xl-7 col-lg-8 mt-30">
+								<div className="py-15 px-20 rounded-4 text-15 text-dark">Đăng nhập để đặt phòng với các chi tiết đã lưu của bạn hoặc <a className="text-blue-1 fw-500" href="/register">đăng ký</a> để quản lý đặt chỗ của bạn khi đang di chuyển!</div>
+								<h2 className="text-22 fw-500 mt-40 md:mt-24 text-dark">Nhập thông tin chi tiết của bạn</h2>
+								<div className="row x-gap-20 y-gap-20 pt-20">
+									<div className="col-12">
+										<div className="form-input ">
+											<input className="lh-1 text-16 text-light-1 text-dark" required="" type="text" placeholder="Họ và tên" />
 
-			<!-- Right side content START --> */}
-						<aside className="col-xl-4">
-							<div className="row g-4">
-
-								{/* <!-- Price summary START --> */}
-								<div className="col-md-6 col-xl-12">
-									<div className="card shadow rounded-2">
-										{/* <!-- card header --> */}
-										<div className="card-header border-bottom">
-											<h5 className="card-title mb-0">Price Summary</h5>
-										</div>
-
-										{/* <!-- Card body --> */}
-										<div className="card-body">
-											<ul className="list-group list-group-borderless">
-												<li className="list-group-item d-flex justify-content-between align-items-center">
-													<span className="h6 fw-light mb-0">Room Charges</span>
-													<span className="fs-5">$28,660</span>
-												</li>
-												<li className="list-group-item d-flex justify-content-between align-items-center">
-													<span className="h6 fw-light mb-0">Total Discount<span className="badge text-bg-danger smaller mb-0 ms-2">10% off</span></span>
-													<span className="fs-5 text-success">-$2,560</span>
-												</li>
-												<li className="list-group-item d-flex justify-content-between align-items-center">
-													<span className="h6 fw-light mb-0">Price after discount</span>
-													<span className="fs-5">$1852</span>
-												</li>
-												<li className="list-group-item d-flex justify-content-between align-items-center">
-													<span className="h6 fw-light mb-0">Taxes % Fees</span>
-													<span className="fs-5">$350</span>
-												</li>
-											</ul>
-										</div>
-
-										{/* <!-- Card footer --> */}
-										<div className="card-footer border-top">
-											<div className="d-flex justify-content-between align-items-center">
-												<span className="h5 mb-0">Payable Now</span>
-												<span className="h5 mb-0">$22,500</span>
-											</div>
 										</div>
 									</div>
-								</div>
-								{/* <!-- Price summary END --> */}
-
-								{/* <!-- Offer and discount START --> */}
-								<div className="col-md-6 col-xl-12">
-									<div className="card shadow">
-										{/* <!-- Card header --> */}
-										<div className="card-header border-bottom">
-											<div className="cardt-title">
-												<h5 className="mb-0">Offer &amp; Discount</h5>
-											</div>
+									<div className="col-md-6">
+										<div className="form-input ">
+											<input className="lh-1 text-16 text-light-1 text-dark" required="" type="text" placeholder="Email" />
 										</div>
-										{/* <!-- Card body --> */}
-										<div className="card-body">
+									</div>
+									<div className="col-md-6">
+										<div className="form-input ">
+											<input className="lh-1 text-16 text-light-1 text-dark" required="" type="text" placeholder="Số điện thoại" />
+										</div>
+									</div>
+									<div className="col-12">
+										<div className="form-input ">
+											<input className="lh-1 text-16 text-light-1 text-dark" required="" type="text" placeholder="Địa chỉ" />
+										</div>
+									</div>
 
-											{/* <!-- Radio --> */}
-											<div className="bg-light rounded-2 p-3">
-												<div className="form-check form-check-inline mb-0">
-													<input className="form-check-input" type="radio" name="discountOptions" id="discount1" value="option1" checked="" />
-													<label className="form-check-label h5 mb-0" for="discount1">GSTBOOK</label>
-													<p className="mb-1 small">Congratulations! You have saved $230 with GSTBOOK.</p>
-													<h6 className="mb-0 text-success">-$230</h6>
+									<div className="col-md-6"><div className="form-input ">
+										<input className="lh-1 text-16 text-light-1 text-dark" required="" type="text" placeholder="Khu vực/ Tỉnh/ Thành phố" />
+									</div>
+									</div>
+									<div className="col-md-6"><div className="form-input ">
+										<input className="lh-1 text-16 text-light-1 text-dark" required="" type="text" placeholder="Mã bưu điện" />
+									</div>
+									</div>
+									<div className="col-12">
+										<div className="form-group">
+											<textarea className="form-control" name="message" id="message" rows="1" placeholder="Yêu cầu đặc biệt" _mstplaceholder="2885870" _msthash="258"></textarea></div>
+									</div>
+									<div className="col-12">
+										<div className="row y-gap-20 items-center justify-between">
+											<div className="col-auto">
+												<div className="text-14 text-light-1 text-dark">Bằng cách tiến hành đặt phòng này, tôi đồng ý với <a className="text-blue-1 fw-500" href="/register">Tôi đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư của Luxurious</a>
 												</div>
 											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div className="col-xl-5 col-lg-4 mt-30">
+								<div className="booking-sidebar">
+									<div className="px-30 py-30 border-light rounded-4">
+										<div className="text-18 fw-500 mb-30 text-dark text-uppercase font-weight-bold">Chi tiết đặt phòng của bạn</div>
+										<div className="row x-gap-15 y-gap-20">
+											<div className="col-auto">
+												<img alt="image" loading="lazy"
 
-											{/* <!-- Input group --> */}
-											<div className="input-group mt-3">
-												<input className="form-control form-control" placeholder="Coupon code" />
-												<button type="button" className="btn btn-primary">Apply</button>
+													decoding="async"
+													data-nimg="1"
+													className="size-140 rounded-4 object-cover"
+													src="img/room-1.jpg" style={{ color: 'transparent', width: '140px', height: '140px' }} />
+											</div>
+											<div className="col">
+												<div className="d-flex x-gap-5 ">
+													<i className="fa fa-star text-warning text-10"></i>
+													<i className="fa fa-star text-warning text-10"></i>
+													<i className="fa fa-star text-warning text-10"></i>
+													<i className="fa fa-star text-warning text-10"></i>
+													<i className="fa fa-star text-warning text-10"></i>
+												</div>
+												<div className="lh-17 fw-500 text-uppercase text-dark">Phòng tổng thống</div>
+												<div className="text-14 lh-15  ">200000000/đêm</div>
+												<div className="row x-gap-10 y-gap-10 items-center">
+													<div className="col-auto"><div className="d-flex items-center">
+														<div className="size-30 flex-center bg-blue-1 rounded-4">
+															<div className="text-12 fw-600 text-dark">4.8</div>
+														</div>
+														<div className="text-14 fw-500 ml-10 text-dark">Exceptional</div>
+													</div>
+													</div>
+													<div className="col-auto">
+														<div className="text-14 text-dark">3,014 reviews</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div className="border-top-light mt-30 mb-20">
+										</div>
+										<div className="row y-gap-20 justify-between">
+											<div className="col-auto">
+												<div className="text-15 text-dark">Nhận phòng</div>
+												<div className="fw-500 font-weight-bold text-dark">Chủ nhật, 26/5/2022</div>
+												{/* <div className="text-15 text-light-1 text-dark">15:00 – 23:00</div> */}
+											</div>
+											<div className="col-auto md:d-none">
+												<div className="h-full w-1 bg-border">
+												</div>
+											</div>
+											<div className="col-auto text-right md:text-left">
+												<div className="text-15 text-dark">Trả phòng</div>
+												<div className="fw-500 font-weight-bold text-dark">Thứ 2, 27/5/2024</div>
+												{/* <div className="text-15 text-light-1 text-dark">01:00 – 11:00</div> */}
+											</div>
+										</div>
+										<div className="border-top-light mt-30 mb-20"></div>
+										<div>
+											<div className="text-15 text-dark">Tổng thời gian lưu trú:</div>
+											<div className="fw-500 font-weight-bold text-dark">1 đêm</div>
+											{/* <a href="/room" className="text-15 text-blue-1 underline ">Bạn đặt phòng khác?</a> */}
+										</div>
+										<div className="border-top-light mt-30 mb-20"></div>
+										<div className="row y-gap-20 justify-between items-center">
+											<div className="col-auto">
+												<div className="text-15 text-dark">Bạn đã chọn:</div>
+												<div className="fw-500 font-weight-bold text-dark">Phòng tổng thống</div>
+												<a href="/room" className="text-15 text-blue-1 underline">Bạn muốn thay đổi lựa chọn</a>
+											</div>
+											<div className="col-auto">
+												<div className="text-15 text-dark">1 phòng</div>
 											</div>
 										</div>
 									</div>
 								</div>
-								{/* <!-- Offer and discount END -->
+							</div>
+						</div>
+					)}
+					{currentTab === 2 && (
+						<div className="row">
+							<div className="col-xl-7 col-lg-8">
 
-					<!-- Information START --> */}
-								<div className="col-md-6 col-xl-12">
-									<div className="card shadow">
-										{/* <!-- Card header --> */}
-										<div className="card-header border-bottom">
-											<h5 className="card-title mb-0">Why Sign up or Log in</h5>
+								<div className="mt-40">
+									<h3 className="text-22 fw-500 mb-20 text-dark">Phương thức thanh toán kỹ thuật số</h3>
+									<div className="react-tabs" data-rttabs="true">
+										
+										<div className="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel:r0:0" aria-labelledby="tab:r0:0">
+											<div className="row x-gap-20 y-gap-20 pt-20"><div className="col-12"><div className="form-input ">
+											<label className="lh-1 text-16 text-light-1">Chọn phương thức thanh toán *</label>
+												<input required="" type="text" />
+											</div>
+											</div>
+												<div className="col-md-6">
+													<div className="form-input ">
+													<label className="lh-1 text-16 text-light-1">Tên chủ thẻ *</label>
+														<input required="" type="text" />
+														
+													</div>
+													<div className="form-input mt-20">
+													<label className="lh-1 text-16 text-light-1">Số thẻ tín dụng/ thẻ ghi nợ *</label>
+														<input required="" type="text" />
+														
+													</div>
+													<div className="row x-gap-20 y-gap-20 pt-20">
+														<div className="col-md-6">
+															<div className="form-input ">
+															<label className="lh-1 text-16 text-light-1">Ngày hết hạn *</label>
+																<input required="" type="text" />
+																
+															</div>
+														</div>
+														<div className="col-md-6"><div className="form-input ">
+														<label className="lh-1 text-16 text-light-1">CVC/CVV *</label>
+															<input required="" type="text" />
+															
+														</div>
+														</div>
+													</div>
+												</div>
+												<div className="col-md-6">
+													<img src="img/image.png" alt="image" style={{ color: 'transparent', width: '320px', height: '210px' }} />
+												</div>
+											</div>
 										</div>
-
-										{/* <!-- Card body --> */}
-										<div className="card-body">
-											{/* <!-- List --> */}
-											<ul className="list-group list-group-borderless">
-												<li className="list-group-item d-flex mb-0"><i className="fa-solid fa-check text-success me-2"></i>
-													<span className="h6 fw-normal">Get Access to Secret Deal</span>
-												</li>
-
-												<li className="list-group-item d-flex mb-0"><i className="fa-solid fa-check text-success me-2"></i>
-													<span className="h6 fw-normal">Book Faster</span>
-												</li>
-
-												<li className="list-group-item d-flex mb-0"><i className="fa-solid fa-check text-success me-2"></i>
-													<span className="h6 fw-normal">Manage Your Booking</span>
-												</li>
-											</ul>
+										<div className="react-tabs__tab-panel" role="tabpanel" id="panel:r0:1" aria-labelledby="tab:r0:1">
 										</div>
 									</div>
 								</div>
-								{/* <!-- Information END --> */}
-
+								<div className="w-full h-1 bg-border mt-40 mb-40">
+								</div>
+								
 							</div>
-						</aside>
-						{/* <!-- Right side content END --> */}
+							<div className="col-xl-5 col-lg-4">
+								<div className="booking-sidebar">
+									<div className="px-30 py-30 border-light rounded-4 mt-30">
+										<div className="text-18 fw-500 mb-20 text-uppercase font-weight-bold text-dark ">Tổng thanh toán</div>
+										<div className="row y-gap-5 justify-between">
+											<div className="col-auto">
+												<div className="text-15 font-weight-bold text-dark">Số lượng phòng</div>
+											</div>
+											<div className="col-auto">
+												<div className="text-15">1</div>
+											</div>
+										</div>
+										<div className="row y-gap-5 justify-between pt-5">
+											<div className="col-auto">
+												<div className="text-15 font-weight-bold text-dark">Phòng tổng thống</div>
+											</div>
+											<div className="col-auto">
+												<div className="text-15">20000000</div>
+											</div>
+										</div>
+										<div className="row y-gap-5 justify-between pt-5">
+											<div className="col-auto">
+												<div className="text-15 font-weight-bold text-dark">Thuế và phí</div>
+											</div>
+											<div className="col-auto">
+												<div className="text-15">1000000</div>
+											</div>
+										</div>
+										<div className="row y-gap-5 justify-between pt-5">
+											<div className="col-auto">
+												<div className="text-15 font-weight-bold text-dark">Phí giữ phòng</div>
+											</div>
+											<div className="col-auto">
+												<div className="text-15">Miễn phí</div>
+											</div>
+										</div>
+										<div className="px-20 py-20 bg-blue-2 rounded-4 pt-5 mt-20">
+											<div className="row y-gap-5 justify-between">
+												<div className="col-auto">
+													<div className="text-18 lh-13 fw-500 text-uppercase font-weight-bold text-dark">Giá</div>
+												</div>
+												<div className="col-auto">
+													<div className="text-18 lh-13 fw-500">21000000</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="px-30 py-30 border-light rounded-4 mt-30">
+										<div className="text-20 fw-500 mb-20 text-dark">Lịch thanh toán </div>
+										<div className="row y-gap-5 justify-between">
+											<div className="col-auto">
+												<div className="text-15">Trước khi bạn ở lại, bạn sẽ trả tiền</div>
+											</div>
+											<div className="col-auto"><div className="text-15">2000000</div>
+											</div>
+										</div>
+									</div>
+									<div className="px-30 py-30 border-light rounded-4 mt-30">
+										<div className="text-20 fw-500 mb-15">Bạn có mã khuyến mãi không?</div>
+										<div className="form-input ">
+											<input required="" type="text" />
+											<label className="lh-1 text-16 text-light-1">Nhập mã khuyến mãi</label>
+										</div>
+										<button className="button -outline-blue-1 text-blue-1 px-30 py-15 mt-20">Áp dụng</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					)}
+					{currentTab === 3 && (
+						<div className="container">
+							<div className="col-xl-8 col-lg-8 mx-auto">
+								<div className="order-completed-wrapper">
+									<div className="d-flex flex-column items-center mt-40 lg:md-40 sm:mt-24">
+										<div className="size-80 flex-center rounded-full bg-dark-3 mt-4">
+											<i className="fa fa-check-circle fa-8x text-success "></i>
+										</div>
+										<div className="text-30 lh-1 fw-600 font-weight-bold text-dark  mx-auto mt-2">Hệ thống, đơn đặt phòng của bạn đã được gửi thành công!</div>
+										<div className="text-15 text-light-1  mx-auto">Booking details has been sent to: admin@bookingcore.test</div>
+									</div>
+									<div className="border-type-1 rounded-8 px-50 py-35 mt-2">
+										<div className="row">
+											<div className="row  y-gap-5 justify-between">
+												<div className=" col-auto text-15 lh-12 font-weight-bold text-dark ">Số đơn đặt hàng</div>
+												<div className=" col-auto text-15 lh-12 fw-500 blue-1 ">13119</div>
+											</div>
+											<div className="row  y-gap-5 justify-between">
+												<div className="col-auto text-15 lh-12 font-weight-bold text-dark">Ngày</div>
+												<div className="col-auto text-15 lh-12 fw-500 blue-1 ">27/07/2021</div>
+											</div>
+											<div className="row  y-gap-5 justify-between">
+												<div className="col-auto text-15 lh-12 font-weight-bold text-dark">Tất cả</div>
+												<div className="col-auto text-15 lh-12 fw-500 blue-1">21000000</div>
+											</div>
+											<div className="row  y-gap-5 justify-between">
+												<div className="col-auto text-15 lh-12 font-weight-bold text-dark">Phương thức thanh toán</div>
+												<div className="col-auto text-15 lh-12 fw-500 blue-1">Chuyển khoản</div>
+											</div>
+										</div>
+									</div>
+									<div className="border-type-1 rounded-8 px-50 py-35 mt-2">
+										<h4 className="text-20 fw-500 mb-30 font-weight-bold text-dark">Thông tin của bạn</h4>
+										<div className="row y-gap-10">
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Tên</div>
+													<div className="text-15 lh-16 fw-500 blue-1">System</div>
+												</div>
+											</div>
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Họ</div>
+													<div className="text-15 lh-16 fw-500 blue-1">Admin</div>
+												</div>
+											</div>
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Email</div>
+													<div className="text-15 lh-16 fw-500 blue-1">admin@bookingcore.test</div>
+												</div>
+											</div>
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Số điện thoại</div>
+													<div className="text-15 lh-16 fw-500 blue-1">112 666 888</div>
+												</div>
+											</div>
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Địa chỉ</div>
+													<div className="text-15 lh-16 fw-500 blue-1">Thủ Đức</div>
+												</div>
+											</div>
+											
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Thành phố</div>
+													<div className="text-15 lh-16 fw-500 blue-1">HCM</div>
+												</div>
+											</div>
+											
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Mã bưu điện</div>
+													<div className="text-15 lh-16 fw-500 blue-1">7100</div>
+												</div>
+											</div>
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Quốc gia</div>
+													<div className="text-15 lh-16 fw-500 blue-1">Việt Nam</div>
+												</div>
+											</div>
+											<div className="col-12">
+												<div className="d-flex justify-between ">
+													<div className="text-15 lh-16 font-weight-bold text-dark">Yêu cầu đặc biệt</div>
+													<div className="text-15 lh-16 fw-500 blue-1">Phòng vui</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					)}
+					<div className="row justify-content-center mx-auto">
+						<div className="col-auto">
+							<button className="button h-60 px-24 -blue-1 bg-light-2" disabled={currentTab === 1} onClick={goToPreviousTab}>Trước</button>
+						</div>
+						<div className="col-auto">
+							<button className="button h-60 px-24 --blue-1 bg-light-2" disabled={currentTab === 3} onClick={goToNextTab}>Sau
+								<div className="fa fa-arrow-right ml-15">
+								</div>
+							</button>
+						</div>
 					</div>
 				</div>
-			</section>
+			</section >
 		</>
 	)
 }

@@ -37,7 +37,14 @@ export default function Room() {
     const roomsPerPage = 6; // Số lượng phòng trên mỗi trang
     const [selectedTypes, setSelectedTypes] = useState([]);
     const [selectedRating, setSelectedRating] = useState([]);
+    const [heartStates, setHeartStates] = useState({});
 
+    const handleHeartClick = (roomId) => {
+        setHeartStates(prevState => ({
+            ...prevState,
+            [roomId]: !prevState[roomId]
+        }));
+    };
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -89,6 +96,7 @@ export default function Room() {
             console.error("Error sorting rooms by price:", error);
         }
     };
+    // type room
     const handleTypeChange = async (e) => {
         const selectedType = e.target.value;
         console.log("Selected Type:", selectedType); // Log selected type to check its value
@@ -108,7 +116,7 @@ export default function Room() {
         try {
             const response = await getRoomsByType(updatedSelectedTypes);
             console.log("Response:", response); // Log response to see what data is returned
-            // setRooms(response);
+            setRooms(response);
         } catch (error) {
             console.error("Error filtering rooms:", error);
         }
@@ -347,22 +355,35 @@ export default function Room() {
                                             {/* Ví dụ: */}
                                             <div className="room-item shadow rounded overflow-hidden">
                                                 {/* <img className="img-fluid" src={room.img} alt={`Room ${room.id}`} style={{ width: "500px", height: "300px" }} /> */}
-                                                <img
-                                                    className="img-fluid"
-                                                    src={roomImages[room.id] ? roomImages[room.id].img : ""}
-                                                    alt={`Room ${room.id}`}
-                                                    style={{ height: "240px" }}
-                                                />
+                                                <div style={{ position: 'relative', width: 'fit-content' }}>
+                                                    <img
+                                                        className="img-fluid"
+                                                        src={roomImages[room.id] ? roomImages[room.id].img : ""}
+                                                        alt={`Room ${room.id}`}
+                                                        style={{ height: "240px" }}
+                                                    />
+                                                    <div
+                                                        className="position-absolute end-0 top-0 mt-2 me-2"
+                                                        onClick={() => handleHeartClick(room.id)}
+                                                        style={{ cursor: 'pointer' }}
+                                                        title="Lưu yêu thích"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="bottom"
+                                                    >
+                                                        <i className={`fa${heartStates[room.id] ? 's' : 'r'} fa-heart text-danger`} style={{ fontSize: '24px' }}></i>
+                                                    </div>
+                                                </div>
                                                 <div className="position-relative">
                                                     <small
-                                                        className="position-absolute start-0 top-100 translate-middle-y bg-warning text-white rounded py-1 px-3 ms-4">{room.price}/ đêm</small>
+                                                        className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4">{room.price}/ đêm</small>
+
                                                 </div>
                                                 <div className="p-4 mt-2">
                                                     <h5 className="mb-0 text-uppercase text-dark">{getTypeRoomLabel(room.typeRoom)}</h5>
                                                     <div className="d-flex mb-3">
                                                         <small className="border-end me-3 pe-3"><i className="fa fa-bed text-dark me-2"></i>{room.amenities} </small>
-                                                        {/* <small className="border-end me-3 pe-3"><i className="fa fa-bath text-dark me-2"></i>{room.amenities}</small> */}
-                                                        {/* <small><i className="fa fa-wifi text-dark me-2"></i>{room.amenities}</small> */}
+                                                        {/* <small className="border-end me-3 pe-3"><i className="fa fa-bath text-dark me-2"></i>{room.amenities}</small>
+                                                        <small><i className="fa fa-wifi text-dark me-2"></i>{room.amenities}</small> */}
                                                     </div>
                                                     {/* <p className="text-body mb-3">{room.description}</p> */}
                                                     <div className="d-flex justify-content-between">
@@ -391,10 +412,10 @@ export default function Room() {
                         </li>
                         <li className="page-item">
                             <a className="page-link active">{currentPage}</a>
-                            </li>
+                        </li>
                         <li className="page-item">
                             <a className="page-link" onClick={() => handlePagination('next')} aria-label="Next">
-                            <span aria-hidden="true">
+                                <span aria-hidden="true">
                                     <span className="lnr lnr-chevron-right"></span>
                                 </span>
                             </a>

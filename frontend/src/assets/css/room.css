@@ -1,0 +1,105 @@
+.x-gap-40>* {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.y-gap-30>* {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.size-40 {
+    flex-shrink: 0;
+    width: 40px;
+    
+}
+.rounded-full {
+    border-radius: 100%;
+}
+.bg-blue-1 {
+    background-color: var(--color-blue-1) !important;
+}
+.ml-10 {
+    margin-left: 10px !important;
+}
+.fw-500 {
+    font-weight: 500;
+}
+
+.text-18 {
+    font-size: 20px;
+}
+.text-30{
+    font-size: 30px;
+}
+.blue-1 {
+    color: #5143d9; /* Màu văn bản xanh */
+}
+
+.bg-blue-1 {
+    background-color: #5143d9; /* Màu nền xanh */
+}
+.h-1 {
+    height: 1px !important;
+}
+.y-gap-20 {
+    display: flex;
+}
+
+
+.booking-sidebar {
+    margin-left: 80px;
+}
+.border-light  {
+    border: 1px solid #d8d6d6 !important;
+}
+
+.rounded-4 {
+    border-radius: 4px !important;
+}
+.px-30 {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+.py-30 {
+    padding-top: 30px !important;
+    padding-bottom: 30px !important;
+}
+.bg-border {
+    border: 1px solid #d8d6d6 !important;
+}
+.h-full {
+    height: 100% !important;
+}
+.border-top-light {
+    border: 1px solid #d8d6d6 !important;
+}
+
+.mt-30 {
+    margin-top: 30px !important;
+}
+.justify-between {
+    justify-content: space-between !important;
+}
+.border-type-1 {
+    border: 1px dashed #5143d9 ;
+}
+.rounded-8 {
+    border-radius: 8px;
+}
+.px-50 {
+    padding-left: 50px !important;
+    padding-right: 50px !important;
+}
+.mt-40 {
+    margin-top: 40px !important;
+}
+.py-35 {
+    padding-top: 35px !important;
+    padding-bottom: 35px !important;
+}
