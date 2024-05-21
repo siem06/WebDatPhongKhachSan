@@ -28,7 +28,7 @@ class RoomController {
       typeRoom: req.body.typeRoom,
       status: req.body.status,
       description: req.body.description,
-      amenities: req.body.amenities,
+      idService: req.body.idService,
       note: req.body.note,
     };
     let result = roomModel.create(data);
@@ -46,7 +46,7 @@ class RoomController {
       typeRoom: req.body.typeRoom,
       status: req.body.status,
       description: req.body.description,
-      amenities: req.body.amenities,
+      idService: req.body.idService,
       note: req.body.note,
     };
     let result = roomModel.update(req.params.id, data);

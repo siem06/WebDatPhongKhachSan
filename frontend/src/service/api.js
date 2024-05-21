@@ -257,6 +257,15 @@ export const getAllRooms = async () => {
     throw error;
   }
 };
+export const getRoomsById = async (id) => {
+  try {
+    const response = await instance.get(`/room/${id}`);
+    console.log("yyy",response)
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 // Api image room
 export const getAllImage = async (id) => {
   try {
@@ -305,3 +314,23 @@ export const getReviewByRoomId = async (rating) => {
     throw error;
   }
 };
+// 
+export const getAllBooking = async () => {
+  try {
+    const response = await instance.get("/booking");
+    return response.data;
+    console.log(response)
+  } catch (error) {
+    throw error;
+  }
+};
+// api booking
+export const postBooking = async (bookingData) => {
+  try {
+    const response = await instance.post("/booking", bookingData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+

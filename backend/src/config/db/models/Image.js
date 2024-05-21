@@ -7,7 +7,7 @@ module.exports = new (class ImageModel extends Model {
   // load Image
   get_all_with_images(roomId) {
     return new Promise(function (myResolve, myReject) {
-      const query = "SELECT Room.id, Room.typeRoom, Room.price, Room.status, Room.description, Room.amenities, Room.note, Image.img \
+      const query = "SELECT Room.id, Room.typeRoom, Room.price, Room.status, Room.description, Room.idService, Room.note, Image.img \
                 FROM Room \
                 LEFT JOIN Image ON Room.id = Image.idRoom \
                 WHERE Room.id = ?";

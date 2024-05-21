@@ -12,11 +12,13 @@ import "../assets/css/style.css";
 import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
 import imgs from "../assets/image";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getAllImage, getAllRooms, getAllRoomsSortedByPrice, getReviewByRoomId, getRoomsByType } from "../service/api";
 
 
 export default function Room() {
+    const navigation = useNavigate();
+
     const getTypeRoomLabel = (typeRoom) => {
         switch (typeRoom) {
             case 1:
@@ -138,13 +140,32 @@ export default function Room() {
         }
     };
 
+    // Xử lý sự kiện khi nhấn nút "Đặt ngay"
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
 
+    const handleBooking = (roomId) => {
+        if (!loggedInUser) {
+            alert("Vui lòng đăng nhập để đặt phòng")
+            return;
+        }
+        console.log(roomId)
+        // const roomId = 1; // Thay thế bằng ID phòng thực tế
+        // const accountId = 1; // Thay thế bằng ID tài khoản thực tế
+        navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`);
+    };
+    const loginBooking = () => {
+        if (!loggedInUser) {
+            // alert(<div className="py-15 px-20 rounded-4 text-15 text-dark">
+            //     <a className="text-blue-1 fw-500" href="/login">Đăng nhập</a>
+            //     để đặt phòng với các chi tiết đã lưu của bạn hoặc
+            //     <a className="text-blue-1 fw-500" href="/register">đăng ký</a>
+            //     để quản lý đặt chỗ của bạn khi đang di chuyển!</div>)
+        }
 
+    };
 
     // Render UI
-
-
     return (
         <>
             <>
@@ -375,20 +396,35 @@ export default function Room() {
                                                 </div>
                                                 <div className="position-relative">
                                                     <small
-                                                        className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4">{room.price}/ đêm</small>
+                                                        className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4">{room.price}/ ngày</small>
 
                                                 </div>
                                                 <div className="p-4 mt-2">
                                                     <h5 className="mb-0 text-uppercase text-dark">{getTypeRoomLabel(room.typeRoom)}</h5>
                                                     <div className="d-flex mb-3">
-                                                        <small className="border-end me-3 pe-3"><i className="fa fa-bed text-dark me-2"></i>{room.amenities} </small>
+                                                        {/* <small className="border-end me-3 pe-3"><i className="fa fa-bed text-dark me-2"></i>{room.amenities} </small> */}
                                                         {/* <small className="border-end me-3 pe-3"><i className="fa fa-bath text-dark me-2"></i>{room.amenities}</small>
                                                         <small><i className="fa fa-wifi text-dark me-2"></i>{room.amenities}</small> */}
                                                     </div>
                                                     {/* <p className="text-body mb-3">{room.description}</p> */}
                                                     <div className="d-flex justify-content-between">
                                                         <Link className="btn btn-sm btn-dark text-white button_hover rounded py-2 px-4 " to="/room_detail">Chi tiết</Link>
-                                                        <Link className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4 " to="/payment">Đặt ngay</Link>
+
+                                                        <Link className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4 " to="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault(); // Prevent the default link action
+                                                                handleBooking(room.id);
+                                                            }}>Đặt ngay</Link>
+                                                        {/* <button className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4 " onClick={() => handleBooking(room.id)}
+                                                            >Đặt ngay</button> */}
+                                                        {/* <Link
+                                                            className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4"
+                                                            to="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault(); // Prevent the default link action
+                                                                handleBooking(room.id);
+                                                            }}
+                                                        ></Link> */}
                                                     </div>
                                                 </div>
                                             </div>
