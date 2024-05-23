@@ -13,7 +13,14 @@ const { options } = require("./routes/Account");
 
 dotenv.config();
 const app = express();
-
+const paypal = require("paypal-rest-sdk");
+paypal.configure({
+  mode: "sandbox",
+  client_id:
+    "AVxHtK_CCRhl5wJzy0DSfSCSP1PbOIyatGFLX1ty2daEyj02dvFJDOCcL7h5QLv3jceUwexB3tFVd1sr",
+  client_secret:
+    "EGEfy-Q47Pax4ziuIQqslxOJIiSbn9A1FHSrSmEG-cZNCVFjvVLNwGufKssORk5q-v0r7HqkZwO-kqya",
+});
 app.use(
   cors({
     origin: "http://localhost:3000",
