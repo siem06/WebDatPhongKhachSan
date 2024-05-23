@@ -345,8 +345,10 @@ class AccountController {
       });
 
       const userId = req.session.userId;
-      const thumbnailLink = response.data.thumbnailLink;
-      await accountModel.saveAvatarToDatabase(userId, thumbnailLink);
+      const linkAvatar = `https://drive.google.com/thumbnail?id=${response.data.id}`;
+
+      // const thumbnailLink = response.data.thumbnailLink;
+      await accountModel.saveAvatarToDatabase(userId, linkAvatar);
       const user = await accountModel.find(userId);
 
       res.send({ message: "Uploaded file successfully", user });

@@ -1,16 +1,16 @@
 const favoriteModel = require("../config/db/models/Favorite");
 class FavoriteController {
-  get(req, res) {
-    let result = favoriteModel.get_all();
+  findById(req, res) {
+    let result = favoriteModel.find(req.params.id);
     result
       .then(function (value) {
-        console.log(value);
         res.json(value);
       })
       .catch(function (error) {
         console.log(error);
       });
   }
+
   find(req, res) {
     let result = favoriteModel.find(req.params.id);
     result
@@ -53,7 +53,8 @@ class FavoriteController {
       });
   }
   delete(req, res) {
-    let result = favoriteModel.delete(req.params.id);
+    const { idAccount, idRoom } = req.body;
+    let result = favoriteModel.delete(idAccount, idRoom);
     result
       .then(function (value) {
         console.log(value);

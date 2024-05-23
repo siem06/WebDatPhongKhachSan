@@ -52,6 +52,11 @@ class BookingController {
       statusBooking: req.body.statusBooking,
       note: req.body.note,
     };
+    Object.keys(data).forEach((key) => {
+      if (data[key] === undefined || data[key] === null) {
+        delete data[key];
+      }
+    });
     let result = bookingModel.update(req.params.id, data);
     result
       .then(function (value) {
@@ -79,23 +84,24 @@ class BookingController {
       idRoom: req.body.idRoom,
       totalPrice: req.body.totalPrice,
       totalRoom: req.body.totalRoom,
-      totalDate:req.body.totalDate,
+      totalDate: req.body.totalDate,
       checkinDate: req.body.checkinDate,
       checkoutDate: req.body.checkoutDate,
       statusBooking: req.body.statusBooking,
       note: req.body.note,
+      bookingDate: new Date(),
     };
-  
-    bookingModel.createBooking(data)
+
+    bookingModel
+      .createBooking(data)
       .then(function (newBooking) {
         res.json(newBooking);
       })
       .catch(function (error) {
-        console.error('Error creating booking:', error);
-        res.status(500).json({ error: 'Error creating booking' });
+        console.error("Error creating booking:", error);
+        res.status(500).json({ error: "Error creating booking" });
       });
   }
-  
 }
 
 module.exports = new BookingController();
