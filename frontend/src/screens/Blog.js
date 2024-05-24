@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import imgs from "../assets/image/index.js";
+import ArticleBlog from "../components/ArticleBlog";
 import Breadcrumb from "../components/Breadcrumb";
 import CategoriesBlog from "../components/CategoriesBlog";
-import ArticleBlog from "../components/ArticleBlog";
-import imgs from "../assets/image/index.js";
 import { getBlogArticle, getBlogCategory } from "../service/api.js";
 export default function Blog() {
   // const categories_blog = [

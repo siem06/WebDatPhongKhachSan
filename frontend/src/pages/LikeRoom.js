@@ -1,22 +1,29 @@
-import React from "react";
-import imgs from "../assets/image/index.js";
-import Room from "../components/Room/index.js";
+import React, { useEffect, useState } from "react";
 import Button from "../components/Button/Button.js";
+import { getLikeRoom } from "../service/api.js";
 export default function LikeRoom() {
-  const rooms = [
-    {
-      name: "Double Deluxe Room",
-      price: "250",
-      img: imgs.room1,
-    },
-    {
-      name: "Single Deluxe Room",
-      price: "200",
-      img: imgs.room2,
-    },
-    { name: "Honeymoon Suit", price: "50", img: imgs.room3 },
-    { name: "Economy Double", price: "200", img: imgs.room4 },
-  ];
+  const [rooms, setRooms] = useState([]);
+  const [heartStates, setHeartStates] = useState({});
+  const handleHeartClick = (roomId) => {
+    setHeartStates((prevState) => ({
+      ...prevState,
+      [roomId]: !prevState[roomId],
+    }));
+  };
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    async function getLike() {
+      try {
+        const userId = loggedInUser.user.id;
+        const response = await getLikeRoom(userId);
+        setRooms(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    getLike();
+  }, []);
   return (
     <>
       <div className="card border bg-transparent">
@@ -33,75 +40,85 @@ export default function LikeRoom() {
               />
             </div>
           </div>
-          {rooms.map((room, index) => (
-            <div className="card shadow p-2" key={index}>
-              <div className="row g-0">
-                <div className="col-md-3">
-                  <img
-                    src={room.img}
-                    className="card-img rounded-2"
-                    alt="Card image"
-                    style={{ height: "160px" }}
-                  />
-                </div>
-
-                <div className="col-md-9">
-                  <div className="card-body py-md-2 d-flex flex-column h-100">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <ul className="list-inline small mb-0">
-                        <li className="list-inline-item me-0">
-                          <i className="fa-solid fa-star text-warning"></i>
-                        </li>
-                        <li className="list-inline-item me-0">
-                          <i className="fa-solid fa-star text-warning"></i>
-                        </li>
-                        <li className="list-inline-item me-0">
-                          <i className="fa-solid fa-star text-warning"></i>
-                        </li>
-                        <li className="list-inline-item me-0">
-                          <i className="fa-solid fa-star text-warning"></i>
-                        </li>
-                        <li className="list-inline-item">
-                          <i className="fa-solid fa-star-half-alt text-warning"></i>
-                        </li>
-                      </ul>
-
-                      <ul className="list-inline mb-0">
-                        <li className="list-inline-item">
-                          <button className="btn btn-sm btn-round btn-danger mb-0">
-                            <i className="fa-solid fa-fw fa-heart"></i>
-                          </button>
-                        </li>
-                      </ul>
+          {rooms !== null ? (
+            rooms.map((room, index) => (
+              <div className="card shadow p-2" key={index}>
+                <div className="row g-0">
+                  <div className="col-md-3">
+                    <img
+                      src={room.img}
+                      className="card-img rounded-2"
+                      alt="Card image"
+                      style={{ height: "160px" }}
+                    />
+                    <div
+                      className="position-absolute end-0 top-0 mt-2 me-2"
+                      onClick={() => handleHeartClick(room.id)}
+                      style={{ cursor: "pointer" }}
+                      title="Lưu yêu thích"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="bottom"
+                    >
+                      <i
+                        className={`fa${heartStates[room.id] ? "s" : "r"}
+                               fa-heart text-danger`}
+                        style={{ fontSize: "24px" }}
+                      ></i>
                     </div>
+                  </div>
 
-                    <h5 className="card-title mb-1">
-                      <a href="hotel-detail.html">{room.name}</a>
-                    </h5>
-                    <small>
-                      <i className="bi bi-geo-alt me-2"></i>31J W Spark Street,
-                      California - 24578
-                    </small>
-
-                    <div className="d-sm-flex justify-content-sm-between align-items-center">
-                      <div className="d-flex align-items-center">
-                        <h5 className="fw-bold mb-0 me-1">{room.price}$</h5>
-                        <span className="mb-0 me-2">/day</span>
+                  <div className="col-md-9">
+                    <div className="card-body py-md-2 d-flex flex-column h-100">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <ul className="list-inline small mb-0">
+                          <li className="list-inline-item me-0">
+                            <i className="fa-solid fa-star text-warning"></i>
+                          </li>
+                          <li className="list-inline-item me-0">
+                            <i className="fa-solid fa-star text-warning"></i>
+                          </li>
+                          <li className="list-inline-item me-0">
+                            <i className="fa-solid fa-star text-warning"></i>
+                          </li>
+                          <li className="list-inline-item me-0">
+                            <i className="fa-solid fa-star text-warning"></i>
+                          </li>
+                          <li className="list-inline-item">
+                            <i className="fa-solid fa-star-half-alt text-warning"></i>
+                          </li>
+                        </ul>
                       </div>
-                      <div className=" mt-sm-0">
-                        <a
-                          href="hotel-detail.html"
-                          className="btn btn-sm btn-dark w-100 mb-0"
-                        >
-                          View hotel
-                        </a>
+
+                      <h5 className="card-title mb-1">
+                        <a href="hotel-detail.html">{room.name}</a>
+                      </h5>
+                      <small>
+                        <i className="bi bi-geo-alt me-2"></i>31J W Spark
+                        Street, California - 24578
+                      </small>
+
+                      <div className="d-sm-flex justify-content-sm-between align-items-center">
+                        <div className="d-flex align-items-center">
+                          <h5 className="fw-bold mb-0 me-1">{room.price}$</h5>
+                          <span className="mb-0 me-2">/day</span>
+                        </div>
+                        <div className=" mt-sm-0">
+                          <a
+                            href="hotel-detail.html"
+                            className="btn btn-sm btn-dark w-100 mb-0"
+                          >
+                            View hotel
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>dd</p>
+          )}
         </div>
       </div>
     </>

@@ -13,7 +13,7 @@ export default function Breadcrumb({ currently, classNameImg }) {
       <div className="container">
         <div className="page-cover text-center">
           <h2 className="page-cover-tittle">{currently}</h2>
-          <ol className="breadcrumb justify-content-center">
+          <ol className="breadcrumb  justify-content-center">
             <li>
               <NavLink className="nav-link font-size-16" to="/">
                 Trang chủ

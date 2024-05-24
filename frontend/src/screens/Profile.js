@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import ProfileInfo from "../pages/ProfileInfo";
-import HistoryBook from "../pages/HistoryBook";
-import "../assets/css/profile.css";
-import LikeRoom from "../pages/LikeRoom";
-import { logout } from "../service/api";
-import { useNavigate } from "react-router-dom";
-import { stringAvatar } from "../utils/UserLogo";
 import Avatar from "@mui/material/Avatar";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../assets/css/profile.css";
+import HistoryBook from "../pages/HistoryBook";
+import LikeRoom from "../pages/LikeRoom";
+import ProfileInfo from "../pages/ProfileInfo";
+import { logout } from "../service/api";
+import { stringAvatar } from "../utils/UserLogo";
 
 export default function Profile({ setLoggedIn }) {
   const [selectedOption, setSelectedOption] = useState("profile");
@@ -56,12 +56,12 @@ export default function Profile({ setLoggedIn }) {
       <div className="row">
         <div className="col-md-3 sidebar bg-light">
           <nav className=" navbar-expand-lg navbar-light nabar-right card border p-3">
-            <div class="text-center mb-3">
-              <div class="avatar avatar-xl mb-2">
+            <div className="text-center mb-3">
+              <div className="avatar avatar-xl mb-2">
                 {user && <Avatar {...stringAvatar(user.useName)} />}
               </div>
-              <h6 class="mb-0">{user == null ? "Name" : user.useName}</h6>
-              <a href="#" class="text-reset text-primary-hover small">
+              <h6 className="mb-0">{user == null ? "Name" : user.useName}</h6>
+              <a href="#" className="text-reset text-primary-hover small">
                 {user == null ? "" : user.email}
               </a>
             </div>
@@ -73,7 +73,7 @@ export default function Profile({ setLoggedIn }) {
                   }`}
                   onClick={() => handleOptionChange("profile")}
                 >
-                  <i class="bi bi-person fa-fw me-2"></i>
+                  <i className="bi bi-person fa-fw me-2"></i>
                   Thông tin
                 </button>
               </li>
@@ -84,7 +84,7 @@ export default function Profile({ setLoggedIn }) {
                   }`}
                   onClick={() => handleOptionChange("history")}
                 >
-                  <i class="bi bi-ticket-perforated fa-fw me-2"></i>
+                  <i className="bi bi-ticket-perforated fa-fw me-2"></i>
                   Lịch sử đặt phòng
                 </button>
               </li>
@@ -95,7 +95,7 @@ export default function Profile({ setLoggedIn }) {
                   }`}
                   onClick={() => handleOptionChange("likeRoom")}
                 >
-                  <i class="bi bi-heart fa-fw me-2"></i>
+                  <i className="bi bi-heart fa-fw me-2"></i>
                   Phòng yêu thích
                 </button>
               </li>
@@ -106,7 +106,7 @@ export default function Profile({ setLoggedIn }) {
                   }`}
                   onClick={handleLogout}
                 >
-                  <i class="fas fa-sign-out-alt fa-fw me-2"></i>
+                  <i className="fas fa-sign-out-alt fa-fw me-2"></i>
                   Đăng xuất
                 </button>
               </li>

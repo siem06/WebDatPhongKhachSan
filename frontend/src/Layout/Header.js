@@ -2,17 +2,16 @@ import React, { useState } from "react";
 import Logo from "../assets/image/Logo.png";
 import { NavLink } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
-
+import { getRoomsByType } from "../service/api";
+import { stringAvatar } from "../utils/UserLogo";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../assets/css/style.css";
-import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
-import { getRoomsByType } from "../service/api";
 
-export default function Header({ loggedIn }) {
+export default function Header({ loggedIn, user }) {
   const [active, setActive] = useState("/");
   const getActiveClass = (path) => {
     return active === path ? "active" : "";
@@ -42,17 +41,17 @@ export default function Header({ loggedIn }) {
     }
   };
   const handleRoomTypeSelect = async (type) => {
-    console.log("kkkk", type)
+    console.log("kkkk", type);
     try {
-        // Gọi API để lấy danh sách phòng theo loại phòng
-        const rooms = await getRoomsByType(type);
-        setRooms(rooms);
-        // Xử lý logic hiển thị danh sách phòng, ví dụ: lưu vào state hoặc hiển thị trực tiếp
-        console.log(rooms);
+      // Gọi API để lấy danh sách phòng theo loại phòng
+      const rooms = await getRoomsByType(type);
+      setRooms(rooms);
+      // Xử lý logic hiển thị danh sách phòng, ví dụ: lưu vào state hoặc hiển thị trực tiếp
+      console.log(rooms);
     } catch (error) {
-        console.error("Error fetching rooms by type:", error);
+      console.error("Error fetching rooms by type:", error);
     }
-};
+  };
   return (
     <header className="header_area">
       <div className="d">
@@ -68,18 +67,19 @@ export default function Header({ loggedIn }) {
               type="button"
               onClick={toggleSidebar}
             >
-              <span class="lnr lnr-list"></span>
+              <span className="lnr lnr-list"></span>
             </button>
           </div>
 
           <div
-            className={`collapse navbar-collapse offset justif justify-content-center ${showSidebar ? "show" : ""
-              } right-sidebar`}
+            className={`collapse navbar-collapse offset justif justify-content-center ${
+              showSidebar ? "show" : ""
+            } right-sidebar`}
             id="navbarSupportedContent"
           >
             <ul className="nav navbar-nav menu_nav ml-auto ">
               <li className="nav-item btn-close" onClick={closeMenuOnMobile}>
-                <span class="lnr lnr-cross"></span>
+                <span className="lnr lnr-cross"></span>
               </li>
               <li className={`nav-item ${getActiveClass("/")}`}>
                 <NavLink
@@ -99,9 +99,13 @@ export default function Header({ loggedIn }) {
                   GIỚI THIỆU
                 </NavLink>
               </li>
-              <li className={`nav-item submenu dropdown ${isDropdownOpen ? "show" : ""}`}
+              <li
+                className={`nav-item submenu dropdown ${
+                  isDropdownOpen ? "show" : ""
+                }`}
                 onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}>
+                onMouseLeave={handleMouseLeave}
+              >
                 <NavLink
                   className="nav-link dropdown-toggle "
                   data-toggle="dropdown"
@@ -180,10 +184,7 @@ export default function Header({ loggedIn }) {
                   className={`nav-item d-flex justify-content-center align-items-center `}
                 >
                   <NavLink className="nav-link" to="/profile">
-                    <Avatar
-                      alt="hemy Sharp"
-                      src="/static/images/avatar/1.jpg"
-                    />
+                    {user && <Avatar {...stringAvatar(user.useName)} />}
                   </NavLink>
                 </li>
               ) : (

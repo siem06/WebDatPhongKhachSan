@@ -1,14 +1,11 @@
 import React, { useEffect } from "react";
-import "../assets/css/profile.css";
 import Table from "react-bootstrap/Table";
-import Button from "../components/Button/Button";
-import ModalDetail from "../Layout/ModalDetail";
 import { Link, useNavigate } from "react-router-dom";
+import ModalDetail from "../Layout/ModalDetail";
+import "../assets/css/profile.css";
+import Button from "../components/Button/Button";
 
 export default function HistoryBook() {
-  const navigation = useNavigate();
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
-
   useEffect(() => {
     const tabs = document.querySelectorAll(".tab-item");
     const panes = document.querySelectorAll(".tab-pane");

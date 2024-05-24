@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 import Home from "./screens/Home";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
@@ -30,11 +30,18 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   console.log("app", loggedInUser);
+  useEffect(() => {
+    if (loggedInUser) return setLoggedIn(true);
+  }, []);
   return (
     <div>
       {(!loggedInUser || loggedInUser.user.role === 0) && (
         <>
-          <Header loggedIn={loggedIn} />
+          {loggedInUser ? (
+            <Header loggedIn={loggedIn} user={loggedInUser.user} />
+          ) : (
+            <Header loggedIn={loggedIn} />
+          )}
           <Routes>
             <Route path="/" exact element={<Home />} />
             <Route path="/about" element={<About />} />
