@@ -138,6 +138,41 @@ export const deleteUser = async (idUser) => {
   }
 };
 // end call api Account
+// begin like rooom
+export const getLikeRoom = async (idAccount) => {
+  try {
+    const response = await instance.get(`/roomfavorite/${idAccount}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const addRoomLike = async (idAccount, idRoom) => {
+  try {
+    const response = await instance.post(`/roomfavorite`, {
+      idAccount,
+      idRoom,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const removeRoomLike = async (idAccount, idRoom) => {
+  try {
+    await instance.delete(`/roomfavorite`, {
+      data: {
+        idAccount,
+        idRoom,
+      },
+    });
+    console.log("success");
+    // return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+// end like rooom
 // begin call api About-us
 export const getAboutus = async () => {
   try {
@@ -260,7 +295,7 @@ export const getAllRooms = async () => {
 export const getRoomsById = async (id) => {
   try {
     const response = await instance.get(`/room/${id}`);
-    console.log("yyy",response)
+    console.log("yyy", response);
     return response.data;
   } catch (error) {
     throw error;
@@ -314,12 +349,11 @@ export const getReviewByRoomId = async (rating) => {
     throw error;
   }
 };
-// 
+//
 export const getAllBooking = async () => {
   try {
     const response = await instance.get("/booking");
     return response.data;
-    console.log(response)
   } catch (error) {
     throw error;
   }
@@ -333,4 +367,32 @@ export const postBooking = async (bookingData) => {
     throw error;
   }
 };
-
+//checkout
+export const getPayment = async () => {
+  try {
+    const response = await instance.get("/payment/check");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const createPayment = async (idBooking, methodPay, totalPay) => {
+  try {
+    const response = await instance.post("/payment/create", {
+      idBooking,
+      methodPay,
+      totalPay,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const updateBooking = async (id, data) => {
+  try {
+    const response = await instance.put(`/booking/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

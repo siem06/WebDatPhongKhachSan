@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../assets/css/profile.css";
+import imgs from "../assets/image";
 import Button from "../components/Button/Button";
 import Input from "../components/Input/Input";
-import imgs from "../assets/image";
 import { changePassword, updateProfile, uploadAvatar } from "../service/api";
-import { useNavigate } from "react-router-dom";
 
 export default function ProfileInfo() {
   const navigation = useNavigate();
@@ -99,10 +99,17 @@ export default function ProfileInfo() {
     }
   };
 
-  const handleImgChange = (event) => {
+  const handleImgChange = async (event) => {
     const file = event.target.files[0];
-    setImg(file);
-    setSelectedFile(file);
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatar(reader.result);
+      };
+      reader.readAsDataURL(file);
+      await handleUpload(file);
+    }
   };
 
   const handleUpload = async () => {
@@ -143,14 +150,13 @@ export default function ProfileInfo() {
             <div className="col-12">
               <label className="form-label">Cập nhật ảnh của bạn</label>
               <div className="d-flex align-items-center">
-                <span className="position-relative me-4" title="Thay đổi ảnh">
-                  <span className="avatar avatar-xl">
+                <span className="position-relative d-flex" title="Thay đổi ảnh">
+                  <span className="avatar avatar-xl me-4">
                     <img
                       id="uploadfile-1-preview"
-                      className="avatar-img rounded-circle border border-white border-3 shadow"
-                      // src="https://drive.google.com/thumbnail?id=1TQteHOL2N6-APAph5lIa4qjsX4Lqi1l3"
+                      className="avatar-img border-white rounded-circle custom-img"
                       src={avatar}
-                      alt="ff"
+                      alt="avatar"
                     />
                   </span>
                   <div className="d-flex justify-content-between align-items-center">
@@ -158,13 +164,16 @@ export default function ProfileInfo() {
                       type="file"
                       accept="image/*"
                       onChange={handleImgChange}
+                      style={{ display: "none" }}
+                      id="fileInput"
                     />
                     <button
-                      className="m-2"
-                      onClick={handleUpload}
-                      disabled={!selectedFile}
+                      className=" btn-changAva text-capitalize"
+                      onClick={() =>
+                        document.getElementById("fileInput").click()
+                      }
                     >
-                      Upload Image
+                      Đổi ảnh
                     </button>
                   </div>
                 </span>

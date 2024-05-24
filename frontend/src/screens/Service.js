@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
-
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "../assets/css/style.css";
-import "../assets/css/style.css.map";
+import React, { useEffect, useState } from "react";
 import "../assets/css/responsive.css";
-import FacilitieItem from "../components/FacilitiesItem";
+import "../assets/css/style.css";
 import imgs from "../assets/image";
 import Breadcrumb from "../components/Breadcrumb";
+import FacilitieItem from "../components/FacilitiesItem";
 import { getService } from "../service/api";
 export default function Service() {
   const img = [
@@ -66,25 +64,6 @@ export default function Service() {
 
   return (
     <>
-      {/* <section className="breadcrumb_area">
-        <div
-          className="overlay bg-parallax"
-          data-stellar-ratio="0.8"
-          data-stellar-vertical-offset="0"
-          data-background=""
-        ></div>
-        <div className="container">
-          <div className="page-cover text-center">
-            <h2 className="page-cover-tittle">Dịch vụ</h2>
-            <ol className="breadcrumb">
-              <li>
-                <a href="/home">Trang chủ</a>
-              </li>
-              <li className="active">Dịch vụ</li>
-            </ol>
-          </div>
-        </div>
-      </section> */}
       <Breadcrumb currently="Dịch vụ" classNameImg="bg-parallax" />
       <section className="facilities_area section_gap">
         <div
@@ -109,7 +88,7 @@ export default function Service() {
             <p>Không khí khách sạn dễ chịu và thư giãn</p>
           </div>
           <div
-            class="row imageGallery1"
+            className="row imageGallery1"
             id="gallery"
             style={{ position: "relative", height: "1100px" }}
           >

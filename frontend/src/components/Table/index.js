@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
-import DataTable from "react-data-table-component";
-import ModalDetail from "../../Layout/ModalDetail";
-import Button from "../Button/Button";
+import { TextField } from "@mui/material";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
+import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
-import { TextField } from "@mui/material";
-import UploadImg from "../Form/UploadImg";
+import React, { useState } from "react";
+import DataTable from "react-data-table-component";
 import { createBlogCate, uploadImg } from "../../service/api";
-import Loading from "../Loading";
+import Button from "../Button/Button";
+import UploadImg from "../Form/UploadImg";
 const style = {
   position: "absolute",
   top: "50%",
@@ -23,7 +21,7 @@ const style = {
   p: 4,
   justifyContent: "center",
 };
-export default function Table({ columns, data, type }) {
+export default function Table({ columns, data, type, model }) {
   const customStyles = {
     headCells: {
       style: {
@@ -94,6 +92,7 @@ export default function Table({ columns, data, type }) {
           <div>
             {/* <Button </Button> */}
             <Button onClick={handleOpen} title="Tạo" />
+            {model && <Modal />}
             <Modal
               aria-labelledby="transition-modal-title"
               aria-describedby="transition-modal-description"
@@ -186,6 +185,7 @@ export default function Table({ columns, data, type }) {
         customStyles={customStyles}
         selectableRowsHighlight
         highlightOnHover
+        responsive
         // subHeader
         // subHeaderAlign="right"
         // onRowClicked={() => setModalShow(true)}

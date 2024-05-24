@@ -1,15 +1,14 @@
 import React from "react";
-import Header from "../Layout/Header";
 // import 'linearicons/style.css';
 import "linearicons/dist/web-font/style.css";
+import imgs from "../assets/image/index.js";
 import Button from "../components/Button/Button";
+import CategoriesBlog from "../components/CategoriesBlog";
+import CommentItem from "../components/CommentItem";
+import FacilitieItem from "../components/FacilitiesItem";
 import Input from "../components/Input/Input";
 import InputGroup from "../components/InputGroup";
 import Room from "../components/Room";
-import FacilitieItem from "../components/FacilitiesItem";
-import CommentItem from "../components/CommentItem";
-import CategoriesBlog from "../components/CategoriesBlog";
-import imgs from "../assets/image/index.js";
 export default function Home() {
   const blogs = [
     {

@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import Button from "../components/Button/Button";
 
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "../assets/css/style.css";
-import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
+import "../assets/css/style.css";
 import imgs from "../assets/image";
 import { getAboutus } from "../service/api";
 export default function About() {
