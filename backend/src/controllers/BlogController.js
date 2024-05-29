@@ -132,7 +132,8 @@ class BlogController {
         fields: "id, webContentLink, thumbnailLink",
       });
 
-      const thumbnailLink = response.data.thumbnailLink;
+      // const thumbnailLink = response.data.thumbnailLink;
+      const thumbnailLink = `https://drive.google.com/thumbnail?id=${response.data.id}&sz=w1000`;
 
       res.send({ message: "Uploaded file successfully", thumbnailLink });
     } catch (err) {

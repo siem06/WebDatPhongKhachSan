@@ -11,3 +11,19 @@
     display: block !important;
   }
 }
+@media (min-width: 200px) and (max-width: 991px) {
+  .collapse1 {
+    display: flex;
+    flex-direction: row;
+  }
+  .item-hidden {
+    display: none !important;
+  }
+  .header-nav {
+    display: flex !important;
+    flex-direction: row;
+  }
+}
+.collapse1 {
+  display: flex;
+}

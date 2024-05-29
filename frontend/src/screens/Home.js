@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import 'linearicons/style.css';
 import "linearicons/dist/web-font/style.css";
 import imgs from "../assets/image/index.js";
@@ -9,30 +9,23 @@ import FacilitieItem from "../components/FacilitiesItem";
 import Input from "../components/Input/Input";
 import InputGroup from "../components/InputGroup";
 import Room from "../components/Room";
+import { getBlogCategory, getService } from "../service/api.js";
 export default function Home() {
-  const blogs = [
-    {
-      img: imgs.blog1,
-      topic: "Kỳ nghỉ mùa hè 2024",
-      description:
-        "Kế hoạch dự kiến các chương trình ưu đãi khuyến mãi mùa hè 2024",
-      date: "31st March,2024",
-    },
-    {
-      img: imgs.blog2,
-      topic: "Kỳ nghỉ mùa hè 2024",
-      description:
-        "Kế hoạch dự kiến các chương trình ưu đãi khuyến mãi mùa hè 2024",
-      date: "31st March,2024",
-    },
-    {
-      img: imgs.blog3,
-      topic: "Kỳ nghỉ mùa hè 2024",
-      description:
-        "Kế hoạch dự kiến các chương trình ưu đãi khuyến mãi mùa hè 2024",
-      date: "31st March,2024",
-    },
-  ];
+  const [blogs, setBlogs] = useState(null);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (!blogs) {
+          const categoryData = await getBlogCategory();
+          setBlogs(categoryData);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchData();
+  }, [blogs]);
   const comments = [
     {
       name: "Fanny Spencer",
@@ -59,44 +52,20 @@ export default function Home() {
       img: imgs.testtimonial1,
     },
   ];
-  const facilities = [
-    {
-      icon: "lnr lnr-dinner",
-      name: "Nhà hàng",
-      description:
-        "Không gian lịch lãm và ấm cúng, nơi bạn sẽ được trải nghiệm những hương vị tinh tế và dịch vụ hoàn hảo.",
-    },
-    {
-      icon: "lnr lnr-bicycle",
-      name: "Câu lạc bộ thể thao",
-      description:
-        "Với các tiện ích hiện đại và đa dạng như phòng tập gym, hồ bơi, sân tennis và sân cầu lông,...",
-    },
-    {
-      icon: "lnr lnr-shirt",
-      name: "Hồ bơi",
-      description:
-        "Nơi lý tưởng để bạn tận hưởng những khoảnh khắc bình yên và thư giãn hòa mình vào thiên nhiên. ",
-    },
-    {
-      icon: "lnr lnr-apartment",
-      name: "Double Deluxe Room",
-      description:
-        "Với thiết kế rộng rãi và tiện nghi hiện đại, mang đến cho bạn một trải nghiệm tuyệt vời với mọi tiện ích bạn cần.",
-    },
-    {
-      icon: "lnr lnr-construction",
-      name: "Bar",
-      description:
-        "Một điểm đến lý tưởng để thư giãn và tận hưởng đồ uống ngon. Hòa mình vào các bữa tiệc hội nhập bạn bè.",
-    },
-    {
-      icon: "lnr lnr-heart-pulse",
-      name: "Gymnesium",
-      description:
-        "Một không gian hoàn hảo để bạn rèn luyện cơ thể và nâng cao sức khỏe, với cơ sở vật chất hiện đại và chất lượng.",
-    },
-  ];
+  const [facilities, setFacilities] = useState(null);
+
+  useEffect(() => {
+    async function getServices() {
+      try {
+        const data = await getService();
+        setFacilities(data);
+      } catch (error) {
+        console.error("Error fetching about data:", error);
+      }
+    }
+
+    getServices();
+  }, []);
   const rooms = [
     {
       name: "Double Deluxe Room",

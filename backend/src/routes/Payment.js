@@ -5,7 +5,7 @@ const paymentRouter = express.Router();
 paymentRouter.get("/check", paymentController.checkPayment);
 paymentRouter.post("/create", paymentController.create);
 
-// paymentRouter.post("/paypalBooking", paymentController.paypalBooking);
-// paymentRouter.post("/check", paymentController.checkPayment);
+paymentRouter.post("/create-paypal-order", paymentController.paypalOrder);
+paymentRouter.post("/send", paymentController.sendInfo);
 
 module.exports = paymentRouter;

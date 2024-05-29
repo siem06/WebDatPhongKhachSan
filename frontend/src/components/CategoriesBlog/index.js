@@ -20,7 +20,9 @@ export default function CategoriesBlog({
           />
         </div>
         <div
-          className={`d-flex text-content ${positionBlog && "positionBlog"}`}
+          className={`d-flex text-content text-decoration-none ${
+            positionBlog && "positionBlog"
+          }`}
         >
           <div className="text detail">
             <div className={`${tags && "tags"}`}>
@@ -31,7 +33,10 @@ export default function CategoriesBlog({
                 Life Style
               </a>
             </div>
-            <a href="blog-details.html" className="content_hover">
+            <a
+              href="blog-details.html"
+              className=" text-decoration-none content_hover"
+            >
               <h5 className="text">{category.topic}</h5>
             </a>
             <div className="border_line"></div>

@@ -14,6 +14,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import dayjs from "dayjs";
+import "../assets/css/style.css.map";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import React, { useEffect, useState } from "react";
@@ -27,9 +28,13 @@ import {
   getPayment,
   getRoomsById,
   postBooking,
+  sendEmail,
   updateBooking,
+  verify,
 } from "../service/api";
 import Breadcrumb from "../components/Breadcrumb";
+import Notification from "../components/Notification";
+import Paypal from "../components/Paypal";
 export default function Payment() {
   const [currentTab, setCurrentTab] = useState(1);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -44,6 +49,7 @@ export default function Payment() {
   const [useName, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
+  const [notification, setNotification] = useState(null);
 
   const getTypeRoomLabel = (typeRoom) => {
     switch (typeRoom) {
@@ -149,11 +155,11 @@ export default function Payment() {
       const response = await postBooking(bookingData);
       localStorage.setItem("booking", JSON.stringify(response));
       console.log("Booking", response);
-      alert("Đặt phòng thành công");
+      // alert("Đặt phòng thành công");
       return bookingData;
     } catch (error) {
       console.error("Có lỗi xảy ra khi đặt phòng:", error);
-      alert("Đặt phòng thất bại");
+      // alert("Đặt phòng thất bại");
       return null;
     }
   };
@@ -162,6 +168,11 @@ export default function Payment() {
     if (currentTab === 1) {
       setCurrentTab(2);
       const booking = await saveBookingToDatabase();
+      if (booking) {
+        showNotification("warning", "Hãy thanh toán để hoàn tất đặt phòng!");
+      } else {
+        showNotification("error", "Đặt phòng thất bại");
+      }
     } else if (currentTab === 2) {
       setCurrentTab(3);
     }
@@ -218,14 +229,17 @@ export default function Payment() {
   const [orderId, setOrderId] = useState(false);
   const createOrder = (data, actions) => {
     const book = JSON.parse(localStorage.getItem("booking"));
+    const vndPrice = book.totalPrice;
+    const exchangeRate = 25000;
+    const usdPrice = (vndPrice / exchangeRate).toFixed(2);
     return actions.order
       .create({
         purchase_units: [
           {
-            description: "Book",
+            description: `booking hotel ${roomId}`,
             amount: {
               currency_code: "USD",
-              value: book.totalPrice.toString(),
+              value: usdPrice.toString(),
             },
           },
         ],
@@ -240,36 +254,59 @@ export default function Payment() {
   };
 
   const onApprove = async (data, actions) => {
-    const book = JSON.parse(localStorage.getItem("booking"));
-    const datanew = {
-      statusBooking: 1,
-    };
-    console.log("jj", book);
-    await createPayment(book.id, 1, book.totalPrice);
-    await updateBooking(book.id, datanew);
-    return actions.order.capture().then(function (details) {
+    try {
+      const book = JSON.parse(localStorage.getItem("booking"));
+      const datanew = {
+        statusBooking: 1,
+      };
+
+      console.log("Booking details:", book);
+      await createPayment(book.id, 1, book.totalPrice);
+      await updateBooking(book.id, datanew);
+
+      const details = await actions.order.capture();
       const { payer } = details;
 
-      alert("success");
+      // Assuming `otp` and `email` are available in the current scope
+      await sendEmail(loggedInUser.user.email, book);
+
+      showNotification("success", "Bạn đã đặt phòng thành công!");
       setCurrentTab(3);
-    });
+    } catch (error) {
+      console.error("Error during approval process:", error);
+      showNotification(
+        "error",
+        "Đã xảy ra lỗi trong quá trình đặt phòng. Vui lòng thử lại."
+      );
+    }
   };
 
   const onError = (data, actions) => {
     // console.error("Error during payment:", error);
-    alert("Thanh toán thất bại");
+    showNotification("error", "Đặt phòng thất bại!");
+
+    // alert("Thanh toán thất bại");
   };
   const [paymentMethod, setPaymentMethod] = useState("Tiền mặt");
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
   };
-
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => {
+      setNotification(null);
+    }, 30000); // 30 giây
+  };
   return (
     <>
       {/* // <!--================Breadcrumb Area =================--> */}
       <Breadcrumb currently="Thanh toán" classNameImg="service_banner_two" />
 
       {/* // <!--================Breadcrumb Area =================-->*/}
+      {notification && (
+        <Notification type={notification.type} message={notification.message} />
+      )}
+
       <section className="pt-40 layout-pb-md mt-5">
         <div className="container">
           <div className="row x-gap-40 y-gap-30 items-center">
@@ -471,7 +508,12 @@ export default function Payment() {
                             ) || "Loading..."}
                           </div>
                           <div className=" col-auto text-14 lh-15 font-weight-bold text-dark  ">
-                            {(roomDetails && roomDetails.price) || "Loading..."}
+                            {(roomDetails &&
+                              roomDetails.price.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })) ||
+                              "Loading..."}
                             / ngày
                           </div>
                         </div>
@@ -594,7 +636,10 @@ export default function Payment() {
                           {roomCount} phòng
                         </div>
                         <div className="fw-500 font-weight-bold text-dark">
-                          {totalPrice}
+                          {totalPrice.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
                         </div>
                       </div>
                     </div>
@@ -712,7 +757,10 @@ export default function Payment() {
                         </div>
                         <div className="col-auto">
                           <div className="text-18 lh-13 fw-500">
-                            {book.totalPrice}
+                            {book.totalPrice.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
                           </div>
                         </div>
                       </div>
@@ -726,7 +774,11 @@ export default function Payment() {
                       </div>
                       <div className="col-auto">
                         <div className="text-15 text-danger font-weight-bold fs-4">
-                          {book.totalPrice} VND
+                          {book.totalPrice.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}{" "}
+                          VND
                         </div>
                       </div>
                     </div>
@@ -747,14 +799,19 @@ export default function Payment() {
                   </div> */}
                   <div className="px-30 py-30 border-light rounded-4 mt-30">
                     {paymentMethod === "PayPal" && sdkReady ? (
-                      <PayPalScriptProvider options={initialOptions}>
-                        <PayPalButtons
-                          style={{ shape: "rect", layout: "vertical" }}
-                          onApprove={onApprove}
-                          onError={onError}
-                          createOrder={createOrder}
-                        />
-                      </PayPalScriptProvider>
+                      // <PayPalScriptProvider options={initialOptions}>
+                      //   <PayPalButtons
+                      //     style={{ shape: "rect", layout: "vertical" }}
+                      //     onApprove={onApprove}
+                      //     onError={onError}
+                      //     createOrder={createOrder}
+                      //   />
+                      // </PayPalScriptProvider>
+                      <Paypal
+                        onCreateOrder={createOrder}
+                        onApproveOrder={onApprove}
+                        onError={onError}
+                      />
                     ) : (
                       <button
                         className="button -outline-blue-1 text-blue-1 px-30 py-15 mt-20"
@@ -780,7 +837,7 @@ export default function Payment() {
                       Hệ thống, đơn đặt phòng của bạn đã được gửi thành công!
                     </div>
                     <div className="text-15 text-light-1  mx-auto mt-2">
-                      Booking details has been sent to:
+                      Chi tiết đơn đặt phòng đã được gửi đến mail:
                       {loggedInUser.user.email}
                     </div>
                   </div>
@@ -807,7 +864,10 @@ export default function Payment() {
                           Tất cả
                         </div>
                         <div className="col-auto text-15 lh-12 fw-500 blue-1">
-                          {book.totalPrice}
+                          {book.totalPrice.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
                         </div>
                       </div>
                       <div className="row  y-gap-5 justify-between">

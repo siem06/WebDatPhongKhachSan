@@ -5,6 +5,7 @@ import "owl.carousel/dist/assets/owl.carousel.min.css";
 import React, { useEffect, useState } from "react";
 import "../assets/css/responsive.css";
 import "../assets/css/style.css";
+import "../assets/css/style.css.map";
 import imgs from "../assets/image";
 import Breadcrumb from "../components/Breadcrumb";
 import FacilitieItem from "../components/FacilitiesItem";

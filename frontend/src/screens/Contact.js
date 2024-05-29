@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -6,28 +6,48 @@ import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "../assets/css/responsive.css";
 import "../assets/css/style.css";
+import "../assets/css/style.css.map";
+import Breadcrumb from "../components/Breadcrumb";
+import { createContact } from "../service/api";
 export default function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [topic, setTopic] = useState("");
+  const [content, setContent] = useState("");
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleName = (event) => {
+    setName(event.target.value);
+  };
+  const handleTopic = (event) => {
+    setTopic(event.target.value);
+  };
+
+  const handleContent = (event) => {
+    setContent(event.target.value);
+  };
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    try {
+      await createContact(name, email, topic, content);
+      setLoading(false);
+      setContent("");
+      setName("");
+      setEmail("");
+      setTopic("");
+      alert("Thành công");
+    } catch (e) {
+      setLoading(false);
+      console.log("lỗi", e);
+    }
+  };
   return (
     <>
-      <section className="breadcrumb_area">
-        <div
-          className="overlay bg-parallax"
-          data-stellar-ratio="0.8"
-          data-stellar-vertical-offset="0"
-          data-background=""
-        ></div>
-        <div className="container">
-          <div className="page-cover text-center">
-            <h2 className="page-cover-tittle">Liên hệ </h2>
-            <ol className="breadcrumb">
-              <li>
-                <a href="/Home">Trang chủ</a>
-              </li>
-              <li className="active">Liên hệ</li>
-            </ol>
-          </div>
-        </div>
-      </section>
+      <Breadcrumb currently="Liên hệ" />
 
       <section className="contact_area section_gap">
         <div className="container">
@@ -67,7 +87,7 @@ export default function Contact() {
             <div className="col-md-9">
               <form
                 className="row contact_form"
-                action="contact_process.php"
+                action="contact"
                 method="post"
                 id="contactForm"
                 novalidate="novalidate"
@@ -80,6 +100,8 @@ export default function Contact() {
                       id="name"
                       name="name"
                       placeholder="Tên của bạn"
+                      value={name}
+                      onChange={handleName}
                     />
                   </div>
                   <div className="form-group">
@@ -89,6 +111,8 @@ export default function Contact() {
                       id="email"
                       name="email"
                       placeholder="Email của bạn"
+                      value={email}
+                      onChange={handleEmailChange}
                     />
                   </div>
                   <div className="form-group">
@@ -98,6 +122,8 @@ export default function Contact() {
                       id="subject"
                       name="subject"
                       placeholder="Tiêu đề câu hỏi"
+                      value={topic}
+                      onChange={handleTopic}
                     />
                   </div>
                 </div>
@@ -109,6 +135,8 @@ export default function Contact() {
                       id="message"
                       rows="1"
                       placeholder="Nội dung câu hỏi"
+                      value={content}
+                      onChange={handleContent}
                     ></textarea>
                   </div>
                 </div>
@@ -117,6 +145,8 @@ export default function Contact() {
                     type="submit"
                     value="submit"
                     className="btn theme_btn button_hover "
+                    style={{ backgroundColor: "#4433e4", color: "#fff" }}
+                    onClick={handleSubmit}
                   >
                     Gửi
                   </button>

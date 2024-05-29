@@ -10,6 +10,7 @@ const paymentRouter = require("./Payment");
 const reviewRouter = require("./Review");
 const imageRouter = require("./Image");
 const roomfavorite = require("./RoomFavorite");
+const paymentController = require("../controllers/PaymentController");
 
 function route(app) {
   app.use("/accounts", accountRouter);

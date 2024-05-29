@@ -4,6 +4,7 @@ import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../assets/css/style.css";
+import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
 
 import Sidebar from "../components/RightSide";

@@ -24,7 +24,6 @@ class ContactController {
   }
   create(req, res) {
     const data = {
-      idAccount: req.body.idAccount,
       name: req.body.name,
       email: req.body.email,
       topic: req.body.topic,
