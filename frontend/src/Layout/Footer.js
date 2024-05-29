@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "../assets/css/responsive.css";
+import "../assets/css/style.css.map";
 import "../assets/css/style.css";
 import imgs from "../assets/image/index.js";
 import Button from "../components/Button/Button";

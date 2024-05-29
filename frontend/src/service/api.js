@@ -396,3 +396,30 @@ export const updateBooking = async (id, data) => {
     throw error;
   }
 };
+//begin api contact
+export const createContact = async (name, email, topic, content) => {
+  try {
+    const response = await instance.post("/contact", {
+      name,
+      email,
+      topic,
+      content,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+//end api contact
+//send email
+export const sendEmail = async (email, data) => {
+  try {
+    const response = await instance.post("/payment/send", {
+      email,
+      data,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

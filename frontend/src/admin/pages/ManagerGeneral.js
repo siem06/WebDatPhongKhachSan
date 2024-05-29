@@ -12,7 +12,6 @@ import {
   getBlogAllCate,
 } from "../../service/api";
 import Edit from "@mui/icons-material/Edit";
-import Model from "../layout/Model";
 
 export default function ManagerGeneral() {
   const [cateBlog, setCateBlog] = useState(null);
@@ -23,7 +22,6 @@ export default function ManagerGeneral() {
   const handleEdit = (rowData) => {
     setIsModalOpen(true);
     console.log("Data của hàng được chọn:", rowData);
-    // Thực hiện các hành động khác tùy thuộc vào dữ liệu của hàng được chọn
   };
   const handleDelete = async (rowData) => {
     try {
@@ -86,11 +84,6 @@ export default function ManagerGeneral() {
       selector: (row) => row.topic,
       sortable: true,
     },
-    // {
-    //   name: "Danh mục",
-    //   selector: (row) => row.topic,
-    //   sortable: true,
-    // },
     {
       key: "status",
       name: "Trạng thái",
@@ -152,26 +145,20 @@ export default function ManagerGeneral() {
     },
   ];
 
-  // const [userData, setUserData] = useState({
-  //   id: "1",
-  //   slogan: "siem",
-  //   content: "jdhiwj",
-  //   img: "kk",
-  // });
   const initialValues = {
     slogan1: aboutus ? aboutus.slogan1 : "",
     slogan2: aboutus ? aboutus.slogan2 : "",
     content: aboutus ? aboutus.content : "",
     img: aboutus ? aboutus.img : "",
   };
-  console.log("s", initialValues);
+  // console.log("s", initialValues);
   const schema = yup.object().shape({
     slogan: yup.string().required(),
     content: yup.string().required(),
     img: yup.string().required().oneOf([true], "terms must be accepted"),
   });
   const handleSubmit = (values) => {
-    console.log(values); // Do something with form values
+    console.log(values);
   };
   return (
     <main className="main-content position-relative border-radius-lg ">
@@ -195,7 +182,12 @@ export default function ManagerGeneral() {
                     Danh sách bài đăng nổi bật
                   </h4>
                   {cateBlog && (
-                    <Table columns={columns} data={cateBlog} type="1" />
+                    <Table
+                      columns={columns}
+                      data={cateBlog}
+                      type="1"
+                      model={isModalOpen}
+                    />
                   )}
                 </div>
               </div>
@@ -206,7 +198,6 @@ export default function ManagerGeneral() {
                     <Table columns={columns} data={aricleBlog} type="2" />
                   )}
                 </div>
-                {isModalOpen && <Model onClose={() => setIsModalOpen(false)} />}
               </div>
             </div>
             <div className="tab-pane">

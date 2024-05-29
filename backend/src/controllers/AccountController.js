@@ -345,7 +345,7 @@ class AccountController {
       });
 
       const userId = req.session.userId;
-      const linkAvatar = `https://drive.google.com/thumbnail?id=${response.data.id}`;
+      const linkAvatar = `https://drive.google.com/thumbnail?id=${response.data.id}&sz=w1000`;
 
       // const thumbnailLink = response.data.thumbnailLink;
       await accountModel.saveAvatarToDatabase(userId, linkAvatar);

@@ -3,8 +3,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../assets/css/responsive.css";
+import "../assets/css/style.css.map";
 import "../assets/css/style.css";
 import Breadcrumb from "../components/Breadcrumb";
 import Button from "../components/Button/Button";
@@ -218,7 +219,9 @@ export default function Room() {
       return;
     }
     //  const
-    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`);
+    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`, {
+      state: loggedInUser.user.id,
+    });
   };
 
   // Render UI
@@ -463,7 +466,11 @@ export default function Room() {
                       </div>
                       <div className="position-relative">
                         <small className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4">
-                          {room.price}/ ngày
+                          {room.price.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                          / ngày
                         </small>
                       </div>
                       <div className="p-4 mt-2">

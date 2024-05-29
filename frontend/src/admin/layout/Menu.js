@@ -45,7 +45,7 @@ export default function Menu({ setLoggedIn, classname }) {
         </div>
         {/* <hr className="horizontal light mt-0 mb-2" /> */}
         <div
-          className="navbar-collapse w-auto max-height-vh-100 overflow-visible"
+          className="navbar-collapse1 w-auto max-height-vh-100 overflow-visible"
           id="sidenav-collapse-main"
         >
           <ul className="navbar-nav">
@@ -166,7 +166,7 @@ export default function Menu({ setLoggedIn, classname }) {
                 <span className="nav-link-text ms-1">Profile</span>
               </a>
             </li>
-            <li className="nav-item">
+            <li className="nav-item ">
               <NavLink className="nav-link text-white" onClick={handleLogout}>
                 <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                   <i className="material-icons opacity-10">logout</i>

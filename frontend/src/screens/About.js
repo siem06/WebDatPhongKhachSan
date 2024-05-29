@@ -8,6 +8,7 @@ import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import "../assets/css/responsive.css";
 import "../assets/css/style.css";
+import "../assets/css/style.css.map";
 import imgs from "../assets/image";
 import { getAboutus } from "../service/api";
 export default function About() {

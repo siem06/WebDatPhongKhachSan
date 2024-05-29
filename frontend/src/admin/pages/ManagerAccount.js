@@ -2,12 +2,10 @@ import { useMemo, useState, useEffect } from "react";
 import {
   MRT_EditActionButtons,
   MaterialReactTable,
-  // createRow,
   useMaterialReactTable,
 } from "material-react-table";
 import {
   Box,
-  Button,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -21,11 +19,11 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-// import { usStates } from "../assets/makeDate.ts";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../layout/Header.js";
 import { deleteUser, getAll, updateProfile } from "../../service/api.js";
+import { Button } from "@mui/base";
 
 const Example = () => {
   const [validationErrors, setValidationErrors] = useState({});
@@ -64,7 +62,6 @@ const Example = () => {
           required: true,
           error: !!validationErrors?.phone,
           helperText: validationErrors?.phone,
-          //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
@@ -80,7 +77,6 @@ const Example = () => {
           required: true,
           error: !!validationErrors?.email,
           helperText: validationErrors?.email,
-          //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
@@ -91,23 +87,25 @@ const Example = () => {
       {
         accessorKey: "status",
         header: "Trạng thái",
-        required: true,
-        error: !!validationErrors?.status,
-        helperText: validationErrors?.status,
-        renderCell: ({ value }) => (value === 1 ? "Hiện" : "Ẩn"),
-        onFocus: () =>
-          setValidationErrors({
-            ...validationErrors,
-            status: undefined,
-          }),
+        // Cell: ({ value }) => <span>{value === "1" ? "Hiện" : "Ẩn"}</span>,
+        Cell: ({ status }) => (status === "1" ? "Hiện" : "Ẩn"),
+      },
+      {
+        accessorKey: "role",
+        header: "Quyền hạn",
+        required: false,
+
+        // error: !!validationErrors?.role,
+        // helperText: validationErrors?.role,
+        // Cell: ({ value }) => (value === "0" ? "Hiện" : "Ẩn"),
       },
     ],
     [validationErrors]
   );
 
   //call CREATE hook
-  const { mutateAsync: createUser, isPending: isCreatingUser } =
-    useCreateUser();
+  // const { mutateAsync: createUser, isPending: isCreatingUser } =
+  // useCreateUser();
   //call READ hook
   const {
     data: fetchedUsers = [],
@@ -130,7 +128,7 @@ const Example = () => {
       return;
     }
     setValidationErrors({});
-    await createUser(values);
+    // await createUser(values);
     table.setCreatingRow(null); //exit creating mode
   };
 
@@ -148,7 +146,7 @@ const Example = () => {
 
   //DELETE action
   const openDeleteConfirmModal = (row) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa tài khoàn này!")) {
       deleteUser(row.original.id);
     }
   };
@@ -173,26 +171,9 @@ const Example = () => {
     },
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateUser,
-    onEditingRowCancel: () => setValidationErrors({}),
-    onEditingRowSave: handleSaveUser,
-    //optionally customize modal content
-    renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
-      <>
-        <DialogTitle variant="h3">Create New User</DialogTitle>
-        <DialogContent
-          sx={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-        >
-          {internalEditComponents} {/* or render custom edit components here */}
-        </DialogContent>
-        <DialogActions>
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </DialogActions>
-      </>
-    ),
-    //optionally customize modal content
     renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
       <>
-        <DialogTitle variant="h3">Edit User</DialogTitle>
+        <DialogTitle variant="h3">Chỉnh sửa</DialogTitle>
         <DialogContent
           sx={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
         >
@@ -205,7 +186,7 @@ const Example = () => {
     ),
     renderRowActions: ({ row, table }) => (
       <Box sx={{ display: "flex", gap: "1rem" }}>
-        <Tooltip title="Edit" style={{ width: "24px" }}>
+        <Tooltip title="Edit" sx={{ width: "24px" }}>
           <IconButton onClick={() => table.setEditingRow(row)}>
             <EditIcon />
           </IconButton>
@@ -218,25 +199,44 @@ const Example = () => {
         </Tooltip>
       </Box>
     ),
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Button
-        variant="contained"
-        onClick={() => {
-          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
-          //or you can pass in a row object to set default values with the `createRow` helper function
-          // table.setCreatingRow(
-          //   createRow(table, {
-          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
-          //   }),
-          // );
-        }}
-      >
-        Create New User
-      </Button>
-    ),
+    onEditingRowCancel: () => setValidationErrors({}),
+    onEditingRowSave: handleSaveUser,
+    //optionally customize modal content
+    // renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
+    //   <>
+    //     {/* <DialogTitle variant="h3">Create New User</DialogTitle> */}
+
+    //     <DialogContent
+    //       sx={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+    //     >
+    //       {internalEditComponents} {/* or render custom edit components here */}
+    //     </DialogContent>
+    //     <DialogActions>
+    //       <MRT_EditActionButtons variant="text" table={table} row={row} />
+    //     </DialogActions>
+    //   </>
+    // ),
+    //optionally customize modal content
+
+    // renderTopToolbarCustomActions: ({ table }) => (
+    //   <Button
+    //     variant="contained"
+    //     onClick={() => {
+    //       table.setCreatingRow(true); //simplest way to open the create row modal with no default values
+    //       //or you can pass in a row object to set default values with the `createRow` helper function
+    //       // table.setCreatingRow(
+    //       //   createRow(table, {
+    //       //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
+    //       //   }),
+    //       // );
+    //     }}
+    //   >
+    //     Create New User
+    //   </Button>
+    // ),
     state: {
       isLoading: isLoadingUsers,
-      isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,
+      isSaving: isUpdatingUser || isDeletingUser,
       showAlertBanner: isLoadingUsersError,
       showProgressBars: isFetchingUsers,
     },
@@ -246,28 +246,29 @@ const Example = () => {
 };
 
 //CREATE hook (post new user to api)
-function useCreateUser() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (user) => {
-      //send api update request here
+// function useCreateUser() {
+//   const queryClient = useQueryClient();
+//   return useMutation({
+//     mutationFn: async (user) => {
 
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (newUserInfo) => {
-      queryClient.setQueryData(["users"], (prevUsers) => [
-        ...prevUsers,
-        {
-          ...newUserInfo,
-          id: (Math.random() + 1).toString(36).substring(7),
-        },
-      ]);
-    },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
-  });
-}
+//       //send api update request here
+
+//       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
+//       return Promise.resolve();
+//     },
+//     //client side optimistic update
+//     onMutate: (newUserInfo) => {
+//       queryClient.setQueryData(["users"], (prevUsers) => [
+//         ...prevUsers,
+//         {
+//           ...newUserInfo,
+//           id: (Math.random() + 1).toString(36).substring(7),
+//         },
+//       ]);
+//     },
+//     // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
+//   });
+// }
 
 //READ hook (get users from api)
 function useGetUsers() {
@@ -276,8 +277,7 @@ function useGetUsers() {
     queryFn: async () => {
       //send api request here
       const data = await getAll();
-      console.log("datashow", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return Promise.resolve(data);
     },
     refetchOnWindowFocus: false,
@@ -292,7 +292,7 @@ function useUpdateUser() {
       const data = await updateProfile(user.id, user);
       console.log("datashow", data);
       //send api update request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return Promise.resolve();
     },
     //client side optimistic update
@@ -314,7 +314,7 @@ function useDeleteUser() {
     mutationFn: async (userId) => {
       //send api update request here
       await deleteUser(userId);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return Promise.resolve();
     },
     //client side optimistic update
