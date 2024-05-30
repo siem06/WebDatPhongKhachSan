@@ -219,11 +219,12 @@ export default function Room() {
       return;
     }
     //  const
-    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`, {
-      state: loggedInUser.user.id,
-    });
-  };
-
+    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`
+   
+  )};
+  const link_detail = (roomId) => {
+    navigation(`/room_detail?roomId=${roomId}`)
+    };
   // Render UI
   return (
     <>
@@ -447,6 +448,10 @@ export default function Room() {
                           }
                           alt={`Room ${room.id}`}
                           style={{ height: "240px" }}
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevent the default link action
+                            link_detail(room.id);
+                          }}
                         />
                         <div
                           className="position-absolute end-0 top-0 mt-2 me-2"
@@ -464,7 +469,11 @@ export default function Room() {
                           ></i>
                         </div>
                       </div>
-                      <div className="position-relative">
+                      <div className="position-relative" 
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevent the default link action
+                        link_detail(room.id);
+                      }}>
                         <small className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4">
                           {room.price.toLocaleString("vi-VN", {
                             style: "currency",
@@ -474,7 +483,11 @@ export default function Room() {
                         </small>
                       </div>
                       <div className="p-4 mt-2">
-                        <h5 className="mb-0 text-uppercase text-dark">
+                        <h5 className="mb-0 text-uppercase text-dark"
+                        onClick={(e) => {
+                          e.preventDefault(); // Prevent the default link action
+                          link_detail(room.id);
+                        }}>
                           {getTypeRoomLabel(room.typeRoom)}
                         </h5>
                         <div className="d-flex mb-3">
@@ -486,9 +499,9 @@ export default function Room() {
                         <div className="d-flex justify-content-between">
                           <Link
                             className="btn btn-sm btn-dark text-white button_hover rounded py-2 px-4 "
-                            to="/room_detail"
+                            to="#"
                           >
-                            Chi tiết
+                            Thêm phòng
                           </Link>
 
                           <Link

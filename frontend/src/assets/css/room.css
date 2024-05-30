@@ -133,3 +133,21 @@
     padding-left: 24px !important;
     padding-right: 24px !important;
 }
+@media (min-width: 0px)and(max-width:992) {
+    .date-custom {
+        display: flex;
+        flex-direction: column !important;
+    }
+    /* .flex-md-row {
+        flex-direction: row !important;
+    } */
+}
+@media (min-width: 993px)  {
+    .date-custom {
+        display: flex;
+        flex-direction: row !important;
+    }
+}
+/* .date-custom {
+    flex-direction: row ;
+} */

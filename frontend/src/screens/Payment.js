@@ -568,7 +568,7 @@ export default function Payment() {
                       </div>
                     </div>
                     <div className="border-top-light  mb-20"></div>
-                    <div className=" y-gap-20 justify-between">
+                    <div className="  justify-between  date-custom">
                       <div className="col-auto">
                         <div className="text-15 text-dark">Nhận phòng</div>
                         {/* <div className="fw-500 font-weight-bold text-dark">Chủ nhật, 26/5/2022</div> */}
@@ -587,10 +587,10 @@ export default function Payment() {
                           </LocalizationProvider>
                         </Box>
                       </div>
-                      <div className="col-auto md:d-none">
+                      <div className="col-auto d-none d-md-block">
                         <div className="h-full w-1 bg-border"></div>
                       </div>
-                      <div className="col-auto text-right md:text-left">
+                      <div className="col-auto text-right text-md-left mt-3 mt-md-0">
                         <div className="text-15 text-dark">Trả phòng</div>
                         {/* <div className="fw-500 font-weight-bold text-dark">Thứ 2, 27/5/2024</div> */}
                         {/* <div className="text-15 text-light-1 text-dark">01:00 – 11:00</div> */}

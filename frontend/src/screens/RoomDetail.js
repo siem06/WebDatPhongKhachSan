@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate , useLocation} from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
@@ -9,32 +10,62 @@ import "../assets/css/responsive.css";
 
 import Sidebar from "../components/RightSide";
 import CardGrid from "../components/CardGrid_ImgDetail";
+import { getAllImage, getRoomsById } from "../service/api";
+import Breadcrumb from "../components/Breadcrumb";
 export default function RoomDetail() {
+  const navigation = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const roomId = searchParams.get("roomId");
+  const accountId = searchParams.get("accountId");
+  const [roomDetails, setRoomDetails] = useState(null);
+  const [roomImages, setRoomImages] = useState([]);
+    // Xử lý sự kiện khi nhấn nút "Đặt ngay"
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+    const handleBooking = (roomId) => {
+      if (!loggedInUser) {
+        alert("Vui lòng đăng nhập để đặt phòng");
+        return;
+      }
+      //  const
+      navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`);
+    };
+    useEffect(() => {
+      
+      const fetchRoomData = async () => {
+        try {
+          const roomData = await getRoomsById(roomId);
+          const imagesData = await getAllImage(roomId);
+          const imagesObj = {};
+          imagesObj[roomId] = imagesData[0];
+          setRoomDetails(roomData);
+          setRoomImages(imagesObj);
+        } catch (error) {
+          console.error("Failed to fetch room data", error);
+        }
+      };
+      fetchRoomData();
+  }, [roomId]);
+  const getTypeRoomLabel = (typeRoom) => {
+    switch (typeRoom) {
+      case 1:
+        return "Phòng Tiêu chuẩn";
+      case 2:
+        return "Phòng Cao cấp";
+      case 3:
+        return "Phòng Đặc biệt";
+      case 4:
+        return "Phòng Tổng thống";
+      default:
+        return "Không xác định";
+    }
+  };
   return (
     <main>
-      {/* // <!-- Breadcrumb Section Begin --> */}
-      <section className="breadcrumb_area">
-        <div
-          className="overlay bg-parallax"
-          data-stellar-ratio="0.8"
-          data-stellar-vertical-offset="0"
-          data-background=""
-        ></div>
-        <div className="container">
-          <div className="page-cover text-center">
-            <h2 className="page-cover-tittle">Chi tiết phòng</h2>
-            <ol className="breadcrumb">
-              <li>
-                <a href="/home">Trang chủ</a>
-              </li>
-              <li className="active">Chi tiết phòng</li>
-            </ol>
-          </div>
-        </div>
-      </section>
-      {/* // <!-- Breadcrumb Section End -->
+    <Breadcrumb currently="Chi tiết phòng" classNameImg="service_banner_two" />
 
-// <!-- Room Details Section Begin --> */}
+
 
       <section className="pt-0 mt-5">
         <div className="container" data-sticky-container="">
@@ -54,8 +85,13 @@ export default function RoomDetail() {
                       <div className="carousel-item active">
                         <img
                           className="d-block w-100"
-                          src="img/room-1.jpg"
-                          alt="First slide"
+                          src={
+                            roomImages && roomImages[roomId]
+                              ? roomImages[roomId].img
+                              : ""
+                          }
+                          alt={`Room ${roomId}`}
+                         
                         />
                       </div>
                       <div className="carousel-item">
@@ -101,66 +137,19 @@ export default function RoomDetail() {
                 </div>
                 {/* <!-- Card header --> */}
                 <div className="d-lg-flex justify-content-lg-between  card-header border-bottom bg-transparent ">
-                  <h2 className="mb-0">PHÒNG TỔNG THỐNG</h2>
-                  <ul className="list-inline text-end ">
-                    {/* <!-- Heart icon --> */}
-                    <li className="list-inline-item ">
-                      <a href="#" className="btn  btn-light px-2">
-                        <i className="fa-solid fa-lg fa-heart "></i>
-                      </a>
-                    </li>
-                    {/* <!-- Share icon --> */}
-                    <li className="list-inline-item dropdown">
-                      {/* Share button */}
-                      <a
-                        href="#"
-                        className="btn btn-light px-2"
-                        role="button"
-                        id="dropdownShare"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        <i className="fa-solid fa-lg fa-share-alt"></i>
-                      </a>
-                      {/* dropdown button */}
-                      <ul
-                        className="dropdown-menu dropdown-menu-end min-w-auto shadow rounded"
-                        aria-labelledby="dropdownShare"
-                        data-popper-placement="top-end"
-                        style={{
-                          position: "absolute",
-                          inset: "auto 0px 0px auto",
-                          margin: "0px",
-                          transform: "translate3d(0px, -41.6px, 0px)",
-                          display: "block",
-                          zIndex: 1000, // Đảm bảo popper hiển thị trên các phần tử khác
+                  <h2 className="mb-0">{getTypeRoomLabel(
+                              roomDetails && roomDetails.typeRoom
+                            ) || "Loading..."}</h2>
+                  <button
+                        className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleBooking(roomId);
                         }}
+                        style={{ width: "150px", height: "50px" }}
                       >
-                        <li>
-                          <a className="dropdown-item" href="#">
-                            <i className="fab fa-twitter-square me-2"></i>
-                            Twitter
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="#">
-                            <i className="fab fa-facebook-square me-2"></i>
-                            Facebook
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="#">
-                            <i className="fab fa-linkedin me-2"></i>LinkedIn
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="#">
-                            <i className="fa-solid fa-copy me-2"></i>Copy link
-                          </a>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
+                        Đặt ngay
+                      </button>
                 </div>
                 {/* <!-- Card body START --> */}
                 <div className="card-body  ">
