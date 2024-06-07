@@ -185,7 +185,7 @@ export default function Header({ loggedIn, user }) {
                   className={`nav-item d-flex justify-content-center align-items-center `}
                 >
                   <NavLink className="nav-link" to="/profile">
-                    {user && <Avatar {...stringAvatar(user.useName)} />}
+                    {user && <Avatar {...stringAvatar(user.email)} />}
                   </NavLink>
                 </li>
               ) : (

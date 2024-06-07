@@ -10,6 +10,8 @@ export default function Input({
   value,
   onChange,
   disabled,
+  className,
+  styleInput,
 }) {
   return (
     <>
@@ -21,9 +23,10 @@ export default function Input({
           value={value}
           onChange={onChange}
           type={type}
-          className="form-control"
+          className={`form-control ${className}`}
           placeholder={placeholder}
           disabled={disabled}
+          style={styleInput}
         />
         <span className="input-group-addon">
           <i className={icon} aria-hidden="true"></i>

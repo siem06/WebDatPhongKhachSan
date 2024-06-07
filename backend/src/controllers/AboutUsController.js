@@ -16,7 +16,7 @@ class AboutUsController {
     result
       .then(function (value) {
         console.log(value);
-        res.json(value);
+        res.json(value[0]);
       })
       .catch(function (error) {
         console.log(error);
@@ -53,16 +53,13 @@ class AboutUsController {
   }
   update(req, res) {
     const data = {
-      slogan1: req.body.slogan1,
-      slogan2: req.body.slogan2,
-      content: req.body.content,
-      img: req.body.img,
+      information: req.body.information,
       status: req.body.status,
     };
     let result = aboutusModel.update(req.params.id, data);
     result
       .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {

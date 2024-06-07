@@ -23,6 +23,19 @@ module.exports = new (class UsersModel extends Model {
 
     return otp;
   }
+  findById(id) {
+    let cThis = this;
+    return new Promise(function (myResolve, myReject) {
+      db.query(
+        "SELECT * FROM ?? WHERE id = ? ",
+        [cThis.table, id],
+        function (error, result) {
+          if (error) throw error;
+          myResolve(result[0]);
+        }
+      );
+    });
+  }
   //
   findByEmail(email) {
     let cThis = this;

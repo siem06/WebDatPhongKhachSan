@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Header from "../layout/Header";
-import Table from "../../components/Table";
-import FormInformation from "../../components/Form";
+import Edit from "@mui/icons-material/Edit";
+import React, { useEffect, useState } from "react";
 import * as yup from "yup";
+import QuillEditor from "../../components/QuillEditor/QuillEditor";
+import Table from "../../components/Table";
 import {
   deleteBlog,
   getAboutus,
   getAllService,
   getBlogAllArticle,
   getBlogAllCate,
+  updateAboutus,
 } from "../../service/api";
-import Edit from "@mui/icons-material/Edit";
+import Header from "../layout/Header";
+import Button from "../../components/Button/Button";
 
 export default function ManagerGeneral() {
   const [cateBlog, setCateBlog] = useState(null);
   const [aricleBlog, setArticleBlog] = useState(null);
   const [service, setService] = useState(null);
-  const [aboutus, setAboutus] = useState(null);
+  const [aboutus, setAboutus] = useState({ status: 1, information: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleEdit = (rowData) => {
     setIsModalOpen(true);
@@ -32,6 +34,24 @@ export default function ManagerGeneral() {
     }
   };
 
+  // console.log("s", initialValues);
+  // const schema = yup.object().shape({
+  //   slogan: yup.string().required(),
+  //   content: yup.string().required(),
+  //   img: yup.string().required().oneOf([true], "terms must be accepted"),
+  // });
+  // const handleSubmit = (values) => {
+  //   console.log(values);
+  // };
+
+  const handlUpdateAboutus = async () => {
+    try {
+      await updateAboutus(1, aboutus);
+      alert("successfully updated");
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
     async function getAll() {
       try {
@@ -145,21 +165,6 @@ export default function ManagerGeneral() {
     },
   ];
 
-  const initialValues = {
-    slogan1: aboutus ? aboutus.slogan1 : "",
-    slogan2: aboutus ? aboutus.slogan2 : "",
-    content: aboutus ? aboutus.content : "",
-    img: aboutus ? aboutus.img : "",
-  };
-  // console.log("s", initialValues);
-  const schema = yup.object().shape({
-    slogan: yup.string().required(),
-    content: yup.string().required(),
-    img: yup.string().required().oneOf([true], "terms must be accepted"),
-  });
-  const handleSubmit = (values) => {
-    console.log(values);
-  };
   return (
     <main className="main-content position-relative border-radius-lg ">
       <Header pageCurrent="Quản lý chung" />
@@ -212,11 +217,15 @@ export default function ManagerGeneral() {
               <div className="row">
                 <h4 className="bg-secondary p-3">Thông tin Abouts us</h4>
                 {aboutus !== null ? (
-                  <FormInformation
-                    initialValues={initialValues}
-                    validationSchema={schema}
-                    onSubmit={handleSubmit}
-                  />
+                  <div className="editer">
+                    <QuillEditor
+                      value={aboutus.information}
+                      setValue={(content) =>
+                        setAboutus({ ...aboutus, information: content })
+                      }
+                    />
+                    <Button onClick={handlUpdateAboutus} title="Lưu" />
+                  </div>
                 ) : (
                   <p>Loading...</p>
                 )}

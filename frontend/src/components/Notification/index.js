@@ -1,25 +1,21 @@
 import React, { useEffect } from "react";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
-import "react-notifications/lib/notifications.css";
+import { ToastContainer, toast } from "react-toastify";
 
 const Notification = ({ type, message }) => {
   useEffect(() => {
     if (type && message) {
       switch (type) {
         case "success":
-          NotificationManager.success(message);
+          toast.success(message, {});
           break;
         case "error":
-          NotificationManager.error(message);
+          toast.error(message);
           break;
         case "info":
-          NotificationManager.info(message);
+          toast.info(message);
           break;
         case "warning":
-          NotificationManager.warning(message);
+          toast.warning(message);
           break;
         default:
           break;
@@ -27,7 +23,20 @@ const Notification = ({ type, message }) => {
     }
   }, [type, message]);
 
-  return <NotificationContainer />;
+  return (
+    <ToastContainer
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+    />
+  );
 };
 
 export default Notification;

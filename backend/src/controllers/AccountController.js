@@ -1,6 +1,6 @@
 const accountModel = require("../config/db/models/Account");
 const bcrypt = require("bcrypt");
-const sendConfirmationEmail = require("../config/db/models/SendEmail");
+const { sendConfirmationEmail } = require("../config/db/models/SendEmail");
 const keys = require("../key.json");
 const fs = require("fs");
 const { google } = require("googleapis");
@@ -200,7 +200,6 @@ class AccountController {
 
     try {
       const value = await accountModel.findByEmail(email);
-      console.log(value);
       if (!value) {
         return res.status(401).json({ message: "Tài khoản không tồn tại" });
       }
@@ -294,29 +293,36 @@ class AccountController {
         res.status(500).json({ error: "Internal server error" });
       });
   }
-  changePassword(req, res) {
+  async changePassword(req, res) {
     const { oldPass, newPass, reNewPass } = req.body;
-    if (newPass !== reNewPass)
+
+    if (newPass !== reNewPass) {
       return res.status(401).json({ message: "Mật khẩu không khớp!" });
+    }
+
     const userId = req.session.userId;
 
-    accountModel
-      .findById(userId)
-      .then(async (user) => {
-        const validaPassword = await bcrypt.compare(oldPass, user.password);
-        if (validaPassword) {
-          var salt = bcrypt.genSaltSync(10);
-          var pass_encrypt = bcrypt.hashSync(newPass, salt);
-          accountModel.update(userId, { password: pass_encrypt });
-          return res.json({ message: "Thành công!" });
-        } else {
-          return res.status(401).json({ message: "Mật khẩu không đúng!" });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        return res.status(500).json({ message: "Interval error" });
-      });
+    try {
+      const user = await accountModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Người dùng không tồn tại!" });
+      }
+
+      const validPassword = await bcrypt.compare(oldPass, user.password);
+      if (!validPassword) {
+        return res.status(401).json({ message: "Mật khẩu không đúng!" });
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const passEncrypt = bcrypt.hashSync(newPass, salt);
+
+      await accountModel.update(userId, { password: passEncrypt });
+
+      return res.json({ message: "Thành công!" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Lỗi hệ thống!" });
+    }
   }
 
   async uploadFile(req, res) {
@@ -348,9 +354,8 @@ class AccountController {
       const linkAvatar = `https://drive.google.com/thumbnail?id=${response.data.id}&sz=w1000`;
 
       // const thumbnailLink = response.data.thumbnailLink;
-      await accountModel.saveAvatarToDatabase(userId, linkAvatar);
+      const s = await accountModel.saveAvatarToDatabase(userId, linkAvatar);
       const user = await accountModel.find(userId);
-
       res.send({ message: "Uploaded file successfully", user });
     } catch (err) {
       console.error("Error uploading file:", err);

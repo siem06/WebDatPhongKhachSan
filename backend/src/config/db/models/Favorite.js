@@ -39,4 +39,15 @@ module.exports = new (class FavoriteModel extends Model {
       });
     });
   }
+  deleteAll() {
+    return new Promise((resolve, reject) => {
+      const query = "DELETE FROM favorite ";
+      db.query(query, (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results);
+      });
+    });
+  }
 })();

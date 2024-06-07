@@ -1,3 +1,14 @@
 .labelText {
-    color: #fff;
-  }
+  color: #fff;
+}
+.form-input {
+  border: 1px solid #ccc !important;
+  padding: 10px;
+}
+.form-input:focus {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border: 2px solid #000000 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}

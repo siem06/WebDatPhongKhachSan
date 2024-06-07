@@ -11,43 +11,40 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import dayjs from "dayjs";
-import "../assets/css/style.css.map";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import React, { useEffect, useState } from "react";
+import CurrencyFormat from "react-currency-format";
 import { useLocation } from "react-router-dom";
 import "../assets/css/responsive.css";
 import "../assets/css/room.css";
 import "../assets/css/style.css";
+import "../assets/css/style.css.map";
+import Breadcrumb from "../components/Breadcrumb";
+import Notification from "../components/Notification";
+import Paypal from "../components/Paypal";
 import {
-  createPayment,
+  createBookingDetails,
   getAllImage,
   getPayment,
   getRoomsById,
   postBooking,
   sendEmail,
-  updateBooking,
-  verify,
 } from "../service/api";
-import Breadcrumb from "../components/Breadcrumb";
-import Notification from "../components/Notification";
-import Paypal from "../components/Paypal";
 export default function Payment() {
   const [currentTab, setCurrentTab] = useState(1);
-  const [selectedTab, setSelectedTab] = useState(0);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const roomId = searchParams.get("roomId");
   const accountId = searchParams.get("accountId");
-  const [roomDetails, setRoomDetails] = useState(null);
+  const [roomDetails, setRoomDetails] = useState({});
   const [roomImages, setRoomImages] = useState([]);
-  const [email, setEmail] = useState("");
-  const [useName, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [useName, setName] = useState("");
+  // const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
   const [notification, setNotification] = useState(null);
 
@@ -65,74 +62,45 @@ export default function Payment() {
         return "Không xác định";
     }
   };
-  const initialOptions = {
-    clientId:
-      "AVxHtK_CCRhl5wJzy0DSfSCSP1PbOIyatGFLX1ty2daEyj02dvFJDOCcL7h5QLv3jceUwexB3tFVd1sr",
-    // currency: "",
-  };
-  const handleName = (event) => {
-    setName(event.target.value);
-  };
-  const handleEmail = (event) => {
-    setEmail(event.target.value);
-  };
-  const handlePhone = (event) => {
-    setPhone(event.target.value);
-  };
   const handleNote = (event) => {
     setNote(event.target.value);
   };
-  const handleTabClick = (index) => {
-    setSelectedTab(index);
-  };
-  // Hàm để xử lý khi người dùng chuyển tab
   const handleTabChange = (tab) => {
     setCurrentTab(tab);
   };
-
-  // Hàm để chuyển tab sang trang trước
+  const [paymentMethod, setPaymentMethod] = useState("VNPAY");
+  const handlePaymentMethodChange = (event) => {
+    setPaymentMethod(event.target.value);
+  };
   const goToPreviousTab = () => {
     if (currentTab > 1) {
       setCurrentTab(currentTab - 1);
     }
   };
 
-  // Hàm để chuyển tab sang trang sau
-  const goToNextTab = () => {
-    if (currentTab < 3) {
-      setCurrentTab(currentTab + 1);
-    }
-  };
-
-  // Hàm để kiểm tra xem tab hiện tại có phải là tab được chọn không
   const isActiveTab = (tab) => {
     return tab === currentTab;
   };
-  // State cho số lượng phòng
   const [roomCount, setRoomCount] = useState(1);
 
-  // Hàm tăng số lượng phòng
   const increaseRoomCount = () => {
     setRoomCount(roomCount + 1);
   };
 
-  // Hàm giảm số lượng phòng
   const decreaseRoomCount = () => {
     if (roomCount > 1) {
       setRoomCount(roomCount - 1);
     }
   };
-  // Ngày nhận trả phòng
   const [checkInDate, setCheckInDate] = useState(dayjs());
   const [checkOutDate, setCheckOutDate] = useState(dayjs());
   const [daysDiff, setDaysDiff] = useState(0);
   const handleDateChange = (newValue) => {
     const startDate = dayjs(checkInDate).startOf("day");
-    // const endDate = dayjs(checkOutDate);
     const endDate = dayjs(newValue).startOf("day");
     const diff = endDate.diff(startDate, "day");
-    setDaysDiff(diff); // Cập nhật giá trị daysDiff
-    setCheckOutDate(newValue); // Cập nhật ngày trả phòng
+    setDaysDiff(diff);
+    setCheckOutDate(newValue);
   };
 
   const totalPrice =
@@ -142,7 +110,6 @@ export default function Payment() {
   const saveBookingToDatabase = async () => {
     const bookingData = {
       idAccount: accountId,
-      idRoom: roomId,
       totalPrice: totalPrice,
       totalRoom: roomCount,
       totalDate: daysDiff,
@@ -150,16 +117,23 @@ export default function Payment() {
       checkoutDate: checkOutDate,
       statusBooking: 0,
       note: note,
+      methodPay: paymentMethod,
     };
+
     try {
       const response = await postBooking(bookingData);
+      const details = {
+        idBooking: response.id,
+        idRoom: roomId,
+      };
+      const detailsBooking = await createBookingDetails(details);
       localStorage.setItem("booking", JSON.stringify(response));
       console.log("Booking", response);
-      // alert("Đặt phòng thành công");
+      console.log("detail", detailsBooking);
+
       return bookingData;
     } catch (error) {
       console.error("Có lỗi xảy ra khi đặt phòng:", error);
-      // alert("Đặt phòng thất bại");
       return null;
     }
   };
@@ -167,12 +141,7 @@ export default function Payment() {
   const handleButtonClick = async () => {
     if (currentTab === 1) {
       setCurrentTab(2);
-      const booking = await saveBookingToDatabase();
-      if (booking) {
-        showNotification("warning", "Hãy thanh toán để hoàn tất đặt phòng!");
-      } else {
-        showNotification("error", "Đặt phòng thất bại");
-      }
+      showNotification("warning", "Hãy thanh toán để hoàn tất đặt phòng!");
     } else if (currentTab === 2) {
       setCurrentTab(3);
     }
@@ -180,20 +149,20 @@ export default function Payment() {
 
   const book = JSON.parse(localStorage.getItem("booking"));
 
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const handleStepChange = (step) => {
-    setCurrentTab(step);
-    setBookingSuccess(false);
-  };
+  // const [bookingSuccess, setBookingSuccess] = useState(false);
+  // const handleStepChange = (step) => {
+  //   setCurrentTab(step);
+  //   setBookingSuccess(false);
+  // };
 
-  const handleNextStep = () => {
-    if (currentTab < 3) {
-      setCurrentTab(currentTab + 1);
-      if (currentTab + 1 === 3) {
-        setBookingSuccess(true);
-      }
-    }
-  };
+  // const handleNextStep = () => {
+  //   if (currentTab < 3) {
+  //     setCurrentTab(currentTab + 1);
+  //     if (currentTab + 1 === 3) {
+  //       setBookingSuccess(true);
+  //     }
+  //   }
+  // };
   const [sdkReady, setSdkReady] = useState(false);
   const addPaypalScript = async () => {
     const { data } = await getPayment();
@@ -261,8 +230,9 @@ export default function Payment() {
       };
 
       console.log("Booking details:", book);
-      await createPayment(book.id, 1, book.totalPrice);
-      await updateBooking(book.id, datanew);
+      // await createPayment(book.id, 1, book.totalPrice);
+      // await updateBooking(book.id, datanew);\
+      await saveBookingToDatabase();
 
       const details = await actions.order.capture();
       const { payer } = details;
@@ -281,28 +251,16 @@ export default function Payment() {
     }
   };
 
-  const onError = (data, actions) => {
-    // console.error("Error during payment:", error);
-    showNotification("error", "Đặt phòng thất bại!");
-
-    // alert("Thanh toán thất bại");
-  };
-  const [paymentMethod, setPaymentMethod] = useState("Tiền mặt");
-  const handlePaymentMethodChange = (event) => {
-    setPaymentMethod(event.target.value);
-  };
   const showNotification = (type, message) => {
     setNotification({ type, message });
-    setTimeout(() => {
-      setNotification(null);
-    }, 30000); // 30 giây
+  };
+  const onError = () => {
+    showNotification("error", "Đặt phòng thất bại!");
   };
   return (
     <>
-      {/* // <!--================Breadcrumb Area =================--> */}
       <Breadcrumb currently="Thanh toán" classNameImg="service_banner_two" />
 
-      {/* // <!--================Breadcrumb Area =================-->*/}
       {notification && (
         <Notification type={notification.type} message={notification.message} />
       )}
@@ -395,7 +353,9 @@ export default function Payment() {
                         required
                         type="text"
                         value={loggedInUser.user.useName}
-                        onChange={handleName}
+                        readOnly={true}
+                        // onChange={handleName}
+                        disabled
                       />
                     </div>
                   </div>
@@ -409,7 +369,9 @@ export default function Payment() {
                         required
                         type="text"
                         value={loggedInUser.user.email}
-                        onChange={handleEmail}
+                        disabled
+                        readOnly={true}
+                        // onChange={handleEmail}
                       />
                     </div>
                   </div>
@@ -423,7 +385,9 @@ export default function Payment() {
                         required
                         type="text"
                         value={loggedInUser.user.phone}
-                        onChange={handlePhone}
+                        readOnly={true}
+                        disabled
+                        // onChange={handlePhone}
                       />
                     </div>
                   </div>
@@ -455,7 +419,7 @@ export default function Payment() {
                     <div className="row y-gap-20 items-center justify-between">
                       <div className="col-auto">
                         <div className="text-14 text-light-1 text-dark">
-                          Bằng cách tiến hành đặt phòng này, tôi đồng ý với{" "}
+                          Bằng cách tiến hành đặt phòng này, tôi đồng ý với
                           <a className="text-blue-1 fw-500" href="/register">
                             Tôi đồng ý với Điều khoản sử dụng và Chính sách
                             quyền riêng tư của Luxurious
@@ -508,13 +472,16 @@ export default function Payment() {
                             ) || "Loading..."}
                           </div>
                           <div className=" col-auto text-14 lh-15 font-weight-bold text-dark  ">
-                            {(roomDetails &&
-                              roomDetails.price.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })) ||
-                              "Loading..."}
-                            / ngày
+                            <CurrencyFormat
+                              value={book.totalPrice}
+                              thousandSeparator={true}
+                              suffix={"VND/ Ngày"}
+                              decimalScale={2}
+                              className="text-black customInput"
+                              style={{
+                                border: "none",
+                              }}
+                            />
                           </div>
                         </div>
                         <div className=" y-gap-20 justify-between mt-2">
@@ -576,7 +543,7 @@ export default function Payment() {
                         <Box style={{ padding: "5px" }}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
-                              label="Chọn ngày nhận phòng"
+                              // label="Chọn ngày nhận phòng"
                               value={checkInDate}
                               onChange={(newValue) => setCheckInDate(newValue)}
                               minDate={dayjs().startOf("day")} // Chỉ cho phép chọn từ ngày hiện tại
@@ -597,7 +564,7 @@ export default function Payment() {
                         <Box style={{ padding: "5px" }}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
-                              label="Chọn ngày trả phòng"
+                              // label="Chọn ngày trả phòng"
                               value={checkOutDate}
                               // onChange={(newValue) => setCheckInDate(newValue)}
                               // renderInput={(params) => <TextField {...params} />}
@@ -636,10 +603,16 @@ export default function Payment() {
                           {roomCount} phòng
                         </div>
                         <div className="fw-500 font-weight-bold text-dark">
-                          {totalPrice.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
+                          <CurrencyFormat
+                            value={book.totalPrice}
+                            thousandSeparator={true}
+                            suffix={"VND"}
+                            decimalScale={2}
+                            className="text-black customInput"
+                            style={{
+                              border: "none",
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -672,11 +645,6 @@ export default function Payment() {
                           value={paymentMethod}
                           onChange={handlePaymentMethodChange}
                         >
-                          <FormControlLabel
-                            value="Tiền mặt"
-                            control={<Radio />}
-                            label="Tiền mặt"
-                          />
                           <FormControlLabel
                             value="VNPAY"
                             control={<Radio />}
@@ -757,10 +725,16 @@ export default function Payment() {
                         </div>
                         <div className="col-auto">
                           <div className="text-18 lh-13 fw-500">
-                            {book.totalPrice.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
+                            <CurrencyFormat
+                              value={book.totalPrice}
+                              thousandSeparator={true}
+                              suffix={"VND"}
+                              decimalScale={2}
+                              className="text-black customInput"
+                              style={{
+                                border: "none",
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
@@ -774,11 +748,16 @@ export default function Payment() {
                       </div>
                       <div className="col-auto">
                         <div className="text-15 text-danger font-weight-bold fs-4">
-                          {book.totalPrice.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}{" "}
-                          VND
+                          <CurrencyFormat
+                            value={book.totalPrice}
+                            thousandSeparator={true}
+                            suffix={"VND"}
+                            decimalScale={2}
+                            className="text-black customInput"
+                            style={{
+                              border: "none",
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -799,24 +778,13 @@ export default function Payment() {
                   </div> */}
                   <div className="px-30 py-30 border-light rounded-4 mt-30">
                     {paymentMethod === "PayPal" && sdkReady ? (
-                      // <PayPalScriptProvider options={initialOptions}>
-                      //   <PayPalButtons
-                      //     style={{ shape: "rect", layout: "vertical" }}
-                      //     onApprove={onApprove}
-                      //     onError={onError}
-                      //     createOrder={createOrder}
-                      //   />
-                      // </PayPalScriptProvider>
                       <Paypal
                         onCreateOrder={createOrder}
                         onApproveOrder={onApprove}
                         onError={onError}
                       />
                     ) : (
-                      <button
-                        className="button -outline-blue-1 text-blue-1 px-30 py-15 mt-20"
-                        // onClick={handlePayment}
-                      >
+                      <button className="button -outline-blue-1 text-blue-1 px-30 py-15 mt-20">
                         Thanh toán
                       </button>
                     )}
@@ -864,10 +832,16 @@ export default function Payment() {
                           Tất cả
                         </div>
                         <div className="col-auto text-15 lh-12 fw-500 blue-1">
-                          {book.totalPrice.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
+                          <CurrencyFormat
+                            value={book.totalPrice}
+                            thousandSeparator={true}
+                            suffix={"VND/ Ngày"}
+                            decimalScale={2}
+                            className="text-black customInput"
+                            style={{
+                              border: "none",
+                            }}
+                          />
                         </div>
                       </div>
                       <div className="row  y-gap-5 justify-between">
@@ -955,23 +929,44 @@ export default function Payment() {
           )}
           <div className="row justify-content-center mx-auto mt-4 mb-4">
             <div className="col-auto">
-              <button
-                className="button h-60 px-24 blue-1 bg-light-1"
-                disabled={currentTab === 1}
-                onClick={goToPreviousTab}
-              >
-                Trước
-              </button>
+              {currentTab === 3 ? (
+                <button
+                  className="button h-60 px-24 blue-1 bg-light-1 text-white d-none"
+                  disabled={currentTab === 1 || currentTab === 3}
+                  onClick={goToPreviousTab}
+                >
+                  Quay lại
+                </button>
+              ) : (
+                <button
+                  className="button h-60 px-24 blue-1 bg-light-1 text-white"
+                  disabled={currentTab === 1 || currentTab === 3}
+                  onClick={goToPreviousTab}
+                >
+                  Quay lại
+                </button>
+              )}
             </div>
             <div className="col-auto">
-              <button
-                className="button h-60 px-24 blue-1 bg-light-1"
-                disabled={currentTab === 3}
-                onClick={handleButtonClick}
-              >
-                Sau
-                <div className="fa fa-arrow-right ml-15"></div>
-              </button>
+              {currentTab === 3 ? (
+                <button
+                  className="button h-60 px-24 blue-1 bg-light-1 text-white d-none"
+                  disabled={currentTab === 3}
+                  onClick={handleButtonClick}
+                >
+                  Tiếp theo
+                  <div className="fa fa-arrow-right ml-15"></div>
+                </button>
+              ) : (
+                <button
+                  className="button h-60 px-24 blue-1 bg-light-1 text-white"
+                  disabled={currentTab === 3}
+                  onClick={handleButtonClick}
+                >
+                  Tiếp theo
+                  {/* <div className="fa fa-arrow-right ml-15"></div> */}
+                </button>
+              )}
             </div>
           </div>
         </div>

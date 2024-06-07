@@ -3806,3 +3806,6 @@ a:hover {
 a {
   text-decoration: none !important;
 }
+.customInput:focus-visible {
+  outline: none;
+}
