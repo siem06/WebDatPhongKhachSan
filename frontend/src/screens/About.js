@@ -12,14 +12,14 @@ import "../assets/css/style.css.map";
 import imgs from "../assets/image";
 import { getAboutus } from "../service/api";
 export default function About() {
-  const [aboutData, setAboutData] = useState(null);
+  const [aboutData, setAboutData] = useState({});
 
   useEffect(() => {
     async function getAbout() {
       try {
         const data = await getAboutus();
         console.log("Data from API:", data);
-        setAboutData(data[0]);
+        setAboutData(data);
       } catch (error) {
         console.error("Error fetching about data:", error);
       }
@@ -34,7 +34,13 @@ export default function About() {
       <section className="about_history_area section_gap">
         <div className="container">
           <div className="row">
-            <div className="col-md-6 d_flex align-items-center">
+            <div className="fff">
+              <div
+                className="ql-editor"
+                dangerouslySetInnerHTML={{ __html: aboutData.information }}
+              />
+            </div>
+            {/* <div className="col-md-6 d_flex align-items-center">
               <div className="about_content ">
                 <h2 className="title title_color">
                   {aboutData && aboutData.slogan1}
@@ -46,7 +52,7 @@ export default function About() {
             </div>
             <div className="col-md-6">
               <img className="img-fluid" src={imgs.about_bg} alt="img" />
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

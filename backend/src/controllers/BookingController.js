@@ -4,7 +4,7 @@ class BookingController {
     let result = bookingModel.get_all_booking();
     result
       .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -15,7 +15,7 @@ class BookingController {
     let result = bookingModel.find(req.params.id);
     result
       .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -35,7 +35,7 @@ class BookingController {
     let result = bookingModel.create(data);
     result
       .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -60,7 +60,7 @@ class BookingController {
     let result = bookingModel.update(req.params.id, data);
     result
       .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -71,7 +71,7 @@ class BookingController {
     let result = bookingModel.delete(req.params.id);
     result
       .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -81,15 +81,16 @@ class BookingController {
   createBooking(req, res) {
     const data = {
       idAccount: req.body.idAccount,
-      idRoom: req.body.idRoom,
+      // idRoom: req.body.idRoom,
       totalPrice: req.body.totalPrice,
       totalRoom: req.body.totalRoom,
       totalDate: req.body.totalDate,
       checkinDate: req.body.checkinDate,
       checkoutDate: req.body.checkoutDate,
-      statusBooking: req.body.statusBooking,
+      statusBooking: 1,
       note: req.body.note,
       bookingDate: new Date(),
+      methodPay: req.body.methodPay,
     };
 
     bookingModel
@@ -100,6 +101,19 @@ class BookingController {
       .catch(function (error) {
         console.error("Error creating booking:", error);
         res.status(500).json({ error: "Error creating booking" });
+      });
+  }
+  getBookingByIdA(req, res) {
+    const userId = req.params.id;
+    console.log("id: " + userId);
+
+    let result = bookingModel.getBookingByIdA(userId);
+    result
+      .then(function (value) {
+        res.json(value);
+      })
+      .catch(function (error) {
+        console.log(error);
       });
   }
 }

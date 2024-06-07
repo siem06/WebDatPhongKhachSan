@@ -58,7 +58,7 @@ export default function Profile({ setLoggedIn }) {
           <nav className=" navbar-expand-lg navbar-light nabar-right card border p-3">
             <div className="text-center mb-3">
               <div className="avatar avatar-xl mb-2">
-                {user && <Avatar {...stringAvatar(user.useName)} />}
+                {user && <Avatar {...stringAvatar(user.email)} />}
               </div>
               <h6 className="mb-0">{user == null ? "Name" : user.useName}</h6>
               <a href="#" className="text-reset text-primary-hover small">

@@ -1,29 +1,68 @@
 import React, { useEffect, useState } from "react";
 import Button from "../components/Button/Button.js";
-import { getLikeRoom } from "../service/api.js";
+import {
+  getLikeRoom,
+  removeRoomLike,
+  removeRoomLikeAll,
+} from "../service/api.js";
 export default function LikeRoom() {
   const [rooms, setRooms] = useState([]);
   const [heartStates, setHeartStates] = useState({});
-  const handleHeartClick = (roomId) => {
-    setHeartStates((prevState) => ({
-      ...prevState,
-      [roomId]: !prevState[roomId],
-    }));
-  };
-  useEffect(() => {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
-    async function getLike() {
-      try {
-        const userId = loggedInUser.user.id;
-        const response = await getLikeRoom(userId);
-        setRooms(response);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+  const getLike = async () => {
+    try {
+      const loggedInUser = JSON.parse(localStorage.getItem("user"));
+      const userId = loggedInUser.user.id;
+      const response = await getLikeRoom(userId);
+      setRooms(response);
+      const initialHeartStates = {};
+      response.forEach((room) => {
+        initialHeartStates[room.id] = true;
+      });
+      setHeartStates(initialHeartStates);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
+  };
 
+  useEffect(() => {
     getLike();
   }, []);
+
+  const handleRemoveFavorite = async (idAccount, idRoom) => {
+    try {
+      await removeRoomLike(idAccount, idRoom);
+      setHeartStates((prevState) => ({ ...prevState, [idRoom]: false }));
+      getLike();
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+    }
+  };
+  const handleHeartClick = async (idRoom) => {
+    const isFavorite = heartStates[idRoom];
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    try {
+      if (isFavorite) {
+        await handleRemoveFavorite(loggedInUser.user.id, idRoom);
+      }
+      setHeartStates((prevState) => ({
+        ...prevState,
+        [idRoom]: !prevState[idRoom],
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const handleDeleteAll = async (idRoom) => {
+    const isFavorite = heartStates[idRoom];
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    try {
+      await removeRoomLikeAll();
+      setHeartStates({});
+      getLike();
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <>
       <div className="card border bg-transparent">
@@ -37,6 +76,7 @@ export default function LikeRoom() {
               <Button
                 title="Xóa tất cả"
                 className=" mb-0 text-danger btn-delete"
+                onClick={handleDeleteAll}
               />
             </div>
           </div>
@@ -60,8 +100,9 @@ export default function LikeRoom() {
                       data-bs-placement="bottom"
                     >
                       <i
-                        className={`fa${heartStates[room.id] ? "s" : "r"}
-                               fa-heart text-danger`}
+                        className={`fa${
+                          heartStates[room.id] ? "s" : "r"
+                        } fa-heart text-danger`}
                         style={{ fontSize: "24px" }}
                       ></i>
                     </div>

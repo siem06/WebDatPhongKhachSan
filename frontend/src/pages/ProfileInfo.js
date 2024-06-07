@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import CurrencyFormat from "react-currency-format";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/profile.css";
 import imgs from "../assets/image";
 import Button from "../components/Button/Button";
 import Input from "../components/Input/Input";
+import Notification from "../components/Notification";
 import { changePassword, updateProfile, uploadAvatar } from "../service/api";
 
 export default function ProfileInfo() {
@@ -16,16 +18,17 @@ export default function ProfileInfo() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [birthday, setBirthday] = useState("");
-
+  const [notification, setNotification] = useState("");
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [reNewPass, setReNewPass] = useState("");
   const [error, setError] = useState("");
   const [classSuccess, setClassSuccess] = useState("text-success");
   const [avatar, setAvatar] = useState(imgs.author);
-
+  const [loggedInUser, setLoggedInUser] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
   useEffect(() => {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
     if (!loggedInUser) {
       console.log("Thông tin người dùng chưa đăng nhập");
       navigation("/login");
@@ -57,9 +60,7 @@ export default function ProfileInfo() {
   const handlePhone = (event) => {
     setPhone(event.target.value);
   };
-  const handleEmail = (event) => {
-    setEmail(event.target.value);
-  };
+
   const handleBirthday = (event) => {
     setBirthday(event.target.value);
   };
@@ -79,23 +80,35 @@ export default function ProfileInfo() {
         user: { ...userData.user, ...newData },
       };
       setUserData(updatedUserData);
-      alert("Thông tin đã chỉnh sửa thành công!");
+      setLoggedInUser(
+        localStorage.setItem("user", JSON.stringify(updatedUserData))
+      );
+      showNotification("success", "Thông đã đã chỉnh sửa thành công!");
+
+      // alert("Thông tin đã chỉnh sửa thành công!");
     } catch (error) {
       console.log("Error", error);
+      showNotification("error", "Đã có lỗi! Hãy thử lại!");
     }
   };
 
   const handleChangePassword = async (event) => {
     event.preventDefault();
+    if (newPass !== reNewPass) {
+      setClassSuccess("text-danger");
+      setError("Mật khẩu mới và mật khẩu nhập lại không khớp!");
+      return;
+    }
+
     try {
       const data = await changePassword(oldPass, newPass, reNewPass);
-      setClassSuccess("text-success");
-
-      setError(data.message);
+      showNotification("success", data.message);
+      setOldPass("");
+      setNewPass("");
+      setReNewPass("");
     } catch (error) {
       console.log("Error", error);
-      setClassSuccess("text-danger");
-      setError(error.response.data.message);
+      showNotification("success", error.response?.data?.message);
     }
   };
 
@@ -109,13 +122,14 @@ export default function ProfileInfo() {
       };
       reader.readAsDataURL(file);
       await handleUpload(file);
+      showNotification("success", "Cập nhật ảnh đại điện thành công!");
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (file) => {
     try {
       const formData = new FormData();
-      formData.append("avatar", selectedFile);
+      formData.append("avatar", file);
 
       const result = await uploadAvatar(formData);
 
@@ -123,16 +137,19 @@ export default function ProfileInfo() {
         ...userData,
         user: { ...userData.user, avatar: result.user.avatar },
       };
-      // Lưu dữ liệu người dùng đã được cập nhật
       localStorage.setItem("user", JSON.stringify(updatedUserData));
-      // Cập nhật lại dữ liệu người dùng trong state
       setUserData(updatedUserData);
       setAvatar(result.user.avatar || imgs.author);
       setResultMessage({ type: "success", message: result });
     } catch (error) {
       console.error(error.message);
       setResultMessage({ type: "error", message: error.message });
+    } finally {
+      setSelectedFile(null);
     }
+  };
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
   };
 
   if (!userData) {
@@ -142,6 +159,12 @@ export default function ProfileInfo() {
   return (
     <div className="rounded bg-white mb-5">
       <div className="row">
+        {notification && (
+          <Notification
+            type={notification.type}
+            message={notification.message}
+          />
+        )}
         <div className="border-righ">
           <div className="card border p-3">
             <div className="d-flex justify-content-between align-items-center mb-3 border-bottom">
@@ -181,36 +204,49 @@ export default function ProfileInfo() {
             </div>
             <div className="row mt-2">
               <div className="col-md-6">
+                <label className="form-label">
+                  Họ và tên <span className="text-danger"></span>
+                </label>
                 <Input
-                  title="Họ và tên"
                   placeholder={
                     userData.user ? userData.user.useName : "Chưa có thông tin"
                   }
-                  type="text"
                   value={useName}
                   onChange={handleUseName}
+                  className=" rounded-2 form-input"
+                  styleInput={{ padding: "10px" }}
                 />
               </div>
               <div className="col-md-6">
                 <label className="form-label">
                   Ngày sinh <span className="text-danger">*</span>
                 </label>
-                <Input
+                <CurrencyFormat
                   placeholder={userData.user.birthday}
-                  type="text"
                   value={birthday}
                   onChange={handleBirthday}
+                  style={{
+                    backgroundColor: "transparent",
+                  }}
+                  format="##/##/####"
+                  mask={["d", "d", "m", "m", "y", "y", "y", "y"]}
                 />
               </div>
             </div>
             <div className="row mt-3">
               <div className="col-md-12">
-                <Input
-                  title="Số điện thoại"
+                <label className="form-label">
+                  Số điện thoại <span className="text-danger"></span>
+                </label>
+                <CurrencyFormat
                   placeholder={userData.user.phone}
-                  type="text"
                   value={phone}
                   onChange={handlePhone}
+                  style={{
+                    backgroundColor: "transparent",
+                  }}
+                  format="+84 ###-###-###"
+                  mask=""
                 />
               </div>
               <div className="col-md-12">
@@ -219,7 +255,7 @@ export default function ProfileInfo() {
                   placeholder={userData.user.email}
                   type="text"
                   value={email}
-                  onChange={handleEmail}
+                  disabled
                 />
               </div>
               <div className="text-end m-2 d-flex justify-content-end">

@@ -10,8 +10,7 @@ const paymentRouter = require("./Payment");
 const reviewRouter = require("./Review");
 const imageRouter = require("./Image");
 const roomfavorite = require("./RoomFavorite");
-const paymentController = require("../controllers/PaymentController");
-
+const bookingDetailsRoute = require("./BookingDetails");
 function route(app) {
   app.use("/accounts", accountRouter);
   app.use("/home", accountRouter);
@@ -26,7 +25,7 @@ function route(app) {
   app.use("/review", reviewRouter);
   app.use("/image", imageRouter);
   app.use("/roomfavorite", roomfavorite);
-
+  app.use("/bookingDetails", bookingDetailsRoute);
   // app.use('blog', )
 }
 

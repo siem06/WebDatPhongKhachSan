@@ -4,6 +4,7 @@ import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import * as CurrencyFormat from "react-currency-format";
 import "../assets/css/responsive.css";
 import "../assets/css/style.css.map";
 import "../assets/css/style.css";
@@ -141,7 +142,7 @@ export default function Room() {
 
     fetchData();
     fetchFavoriteRooms();
-  }, [currentPage]); // Fetch lại dữ liệu khi currentPage thay đổi
+  }, [currentPage]);
 
   // Xử lý sự kiện khi chuyển trang
   const handlePagination = (direction) => {
@@ -219,12 +220,11 @@ export default function Room() {
       return;
     }
     //  const
-    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`
-   
-  )};
+    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`);
+  };
   const link_detail = (roomId) => {
-    navigation(`/room_detail?roomId=${roomId}`)
-    };
+    navigation(`/room_detail?roomId=${roomId}`);
+  };
   // Render UI
   return (
     <>
@@ -469,25 +469,35 @@ export default function Room() {
                           ></i>
                         </div>
                       </div>
-                      <div className="position-relative" 
-                      onClick={(e) => {
-                        e.preventDefault(); // Prevent the default link action
-                        link_detail(room.id);
-                      }}>
-                        <small className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4">
-                          {room.price.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                          / ngày
-                        </small>
-                      </div>
-                      <div className="p-4 mt-2">
-                        <h5 className="mb-0 text-uppercase text-dark"
+                      <div
+                        className="position-relative"
                         onClick={(e) => {
                           e.preventDefault(); // Prevent the default link action
                           link_detail(room.id);
-                        }}>
+                        }}
+                      >
+                        <small className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4 d-flex justify-content-start">
+                          <CurrencyFormat
+                            value={room.price}
+                            thousandSeparator={true}
+                            suffix={"VND/ Ngày"}
+                            decimalScale={2}
+                            className="text-white "
+                            style={{
+                              backgroundColor: "transparent",
+                              border: "none",
+                            }}
+                          />
+                        </small>
+                      </div>
+                      <div className="p-4 mt-2">
+                        <h5
+                          className="mb-0 text-uppercase text-dark"
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevent the default link action
+                            link_detail(room.id);
+                          }}
+                        >
                           {getTypeRoomLabel(room.typeRoom)}
                         </h5>
                         <div className="d-flex mb-3">

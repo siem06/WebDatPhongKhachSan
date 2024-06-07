@@ -25,7 +25,9 @@ import ForgotPassword from "./screens/ForgotPassword";
 
 import RoomDetail from "./screens/RoomDetail";
 import Payment from "./screens/Payment";
-
+import "react-quill/dist/quill.snow.css";
+import "react-toastify/dist/ReactToastify.min.css";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));

@@ -172,6 +172,15 @@ export const removeRoomLike = async (idAccount, idRoom) => {
     throw error;
   }
 };
+export const removeRoomLikeAll = async () => {
+  try {
+    await instance.delete(`/roomfavorite/deleteAll`);
+    console.log("success");
+    // return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 // end like rooom
 // begin call api About-us
 export const getAboutus = async () => {
@@ -190,6 +199,14 @@ export const createAboutus = async (slogan1, slogan2, content, img) => {
       content,
       img,
     });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const updateAboutus = async (id, newData) => {
+  try {
+    const response = await instance.put(`/aboutus/${id}`, newData);
     return response.data;
   } catch (error) {
     throw error;
@@ -367,6 +384,25 @@ export const postBooking = async (bookingData) => {
     throw error;
   }
 };
+export const getBookingById = async (id) => {
+  try {
+    const response = await instance.get(`/booking/getBooking/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// begin api bookingDetails
+export const createBookingDetails = async (data) => {
+  try {
+    const response = await instance.post("/bookingDetails", data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+// end api bookingDetails
 //checkout
 export const getPayment = async () => {
   try {

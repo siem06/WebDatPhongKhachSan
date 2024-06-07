@@ -1,7 +1,7 @@
-const favoriteModel = require("../config/db/models/Favorite");
-class FavoriteController {
+const bookingDetailsModel = require("../config/db/models/BookingDetails");
+class BookingDetailsController {
   findById(req, res) {
-    let result = favoriteModel.find(req.params.id);
+    let result = bookingDetailsModel.find(req.params.id);
     result
       .then(function (value) {
         res.json(value);
@@ -12,10 +12,10 @@ class FavoriteController {
   }
 
   find(req, res) {
-    let result = favoriteModel.find(req.params.id);
+    let result = bookingDetailsModel.find(req.params.id);
     result
       .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -24,13 +24,12 @@ class FavoriteController {
   }
   create(req, res) {
     const data = {
-      idAccount: req.body.idAccount,
+      idBooking: req.body.idBooking,
       idRoom: req.body.idRoom,
     };
-    let result = favoriteModel.create(data);
+    let result = bookingDetailsModel.create(data);
     result
       .then(function (value) {
-        console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -42,10 +41,9 @@ class FavoriteController {
       idAccount: req.body.idAccount,
       idRoom: req.body.idRoom,
     };
-    let result = favoriteModel.update(req.params.id, data);
+    let result = bookingDetailsModel.update(req.params.id, data);
     result
       .then(function (value) {
-        console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -54,21 +52,10 @@ class FavoriteController {
   }
   delete(req, res) {
     const { idAccount, idRoom } = req.body;
-    let result = favoriteModel.delete(idAccount, idRoom);
+    let result = bookingDetailsModel.delete(idAccount, idRoom);
     result
       .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-  deleteAll(req, res) {
-    let result = favoriteModel.deleteAll();
-    result
-      .then(function (value) {
-        console.log(value);
+        // console.log(value);
         res.json(value);
       })
       .catch(function (error) {
@@ -77,4 +64,4 @@ class FavoriteController {
   }
 }
 
-module.exports = new FavoriteController();
+module.exports = new BookingDetailsController();
