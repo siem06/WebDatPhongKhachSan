@@ -14,7 +14,7 @@ export default function ProfileInfo() {
   const [userData, setUserData] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [resultMessage, setResultMessage] = useState(null);
-  const [useName, setUseName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [birthday, setBirthday] = useState("");
@@ -36,7 +36,7 @@ export default function ProfileInfo() {
       // Lưu dữ liệu người dùng vào state
       setUserData(loggedInUser);
       setAvatar(loggedInUser.user.avatar || imgs.author);
-      setUseName(loggedInUser.user.useName || "");
+      setUserName(loggedInUser.user.username || "");
       setEmail(loggedInUser.user.email || "");
       setPhone(loggedInUser.user.phone || "");
       setBirthday(loggedInUser.user.birthday || "");
@@ -55,7 +55,7 @@ export default function ProfileInfo() {
     setReNewPass(event.target.value);
   };
   const handleUseName = (event) => {
-    setUseName(event.target.value);
+    setUserName(event.target.value);
   };
   const handlePhone = (event) => {
     setPhone(event.target.value);
@@ -69,7 +69,7 @@ export default function ProfileInfo() {
     try {
       // Tạo đối tượng newData từ các giá trị state tương ứng
       const newData = {
-        useName: useName,
+        useName: username,
         email: email,
         phone: phone,
         birthday: birthday,
@@ -208,10 +208,8 @@ export default function ProfileInfo() {
                   Họ và tên <span className="text-danger"></span>
                 </label>
                 <Input
-                  placeholder={
-                    userData.user ? userData.user.useName : "Chưa có thông tin"
-                  }
-                  value={useName}
+                  placeholder={userData.user.username}
+                  value={username}
                   onChange={handleUseName}
                   className=" rounded-2 form-input"
                   styleInput={{ padding: "10px" }}

@@ -9,7 +9,15 @@ import CommentItem from "../components/CommentItem";
 import FacilitieItem from "../components/FacilitiesItem";
 import Input from "../components/Input/Input";
 import InputGroup from "../components/InputGroup";
-import { addRoomLike, getAllImage, getAllRooms, getBlogCategory, getService, removeRoomLike } from "../service/api.js";
+import {
+  addRoomLike,
+  getAllImage,
+  getAllRooms,
+  getBlogCategory,
+  getLikeRoom,
+  getService,
+  removeRoomLike,
+} from "../service/api.js";
 export default function Home() {
   const [blogs, setBlogs] = useState(null);
   useEffect(() => {
@@ -54,7 +62,35 @@ export default function Home() {
   ];
   const [facilities, setFacilities] = useState(null);
 
+  const [rooms, setRooms] = useState([]);
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getAllRooms();
+        setRooms(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    const fetchFavoriteRooms = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+          const favoriteRooms = await getLikeRoom(user.user.id);
+          const favoriteRoomIds = favoriteRooms.map((room) => room.roomId);
+
+          setHeartStates((prevState) => {
+            const newState = { ...prevState };
+            favoriteRoomIds.forEach((roomId) => {
+              newState[roomId] = true;
+            });
+            return newState;
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching favorite rooms:", error);
+      }
+    };
     async function getServices() {
       try {
         const data = await getService();
@@ -65,45 +101,7 @@ export default function Home() {
     }
 
     getServices();
-  }, []);
-
-  const getTypeRoomLabel = (typeRoom) => {
-    switch (typeRoom) {
-      case 1:
-        return "Phòng Tiêu chuẩn";
-      case 2:
-        return "Phòng Cao cấp";
-      case 3:
-        return "Phòng Đặc biệt";
-      case 4:
-        return "Phòng Tổng thống";
-      default:
-        return "Không xác định";
-    }
-  };
-  const [rooms, setRooms] = useState([]);
-  const [roomImages, setRoomImages] = useState({});
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Lấy danh sách phòng cho trang hiện tại
-        const response = await getAllRooms();
-        setRooms(response);
-
-        // Lấy ảnh đầu tiên của mỗi phòng
-        const imagePromises = response.map((room) => getAllImage(room.id));
-        const images = await Promise.all(imagePromises);
-
-        // Tạo object chứa ảnh của mỗi phòng
-        const imagesObj = {};
-        images.forEach((image, index) => {
-          imagesObj[response[index].id] = image[0];
-        });
-        setRoomImages(imagesObj);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+    fetchFavoriteRooms();
     fetchData();
   }, []);
   // Lấy 3 phòng đầu tiên từ danh sách phòng
@@ -112,9 +110,9 @@ export default function Home() {
   // Xử lý sự kiện khi nhấn nút "Đặt ngay"
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   //  xử lý xử lý sự kiện nút "Chi tiết phòng"
-  const link_detail = () => {
-    navigation(`/room_detail`)
-  };
+  // const link_detail = () => {
+  //   navigation(`/room_detail`);
+  // };
   const handleBooking = (roomId) => {
     if (!loggedInUser) {
       alert("Vui lòng đăng nhập để đặt phòng");
@@ -124,25 +122,27 @@ export default function Home() {
     navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`);
   };
   const [heartStates, setHeartStates] = useState({});
-  const handleAddFavorite = async (idAccount, idRoom) => {
+  const handleAddFavorite = async (userId, roomId) => {
     try {
-      await addRoomLike(idAccount, idRoom);
-      setHeartStates((prevState) => ({ ...prevState, [idRoom]: true }));
+      await addRoomLike(userId, roomId);
+      console.log("Room added", heartStates[1]);
+      console.log("Room addesssd", heartStates[5]);
+      setHeartStates((prevState) => ({ ...prevState, [roomId]: true }));
     } catch (error) {
       console.error("Error adding favorite:", error);
     }
   };
-  const handleRemoveFavorite = async (idAccount, idRoom) => {
+  const handleRemoveFavorite = async (userId, roomId) => {
     try {
-      await removeRoomLike(idAccount, idRoom);
-      setHeartStates((prevState) => ({ ...prevState, [idRoom]: false }));
+      await removeRoomLike(userId, roomId);
+      setHeartStates((prevState) => ({ ...prevState, [roomId]: false }));
       console.log("ll,", heartStates);
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
   };
-  const handleHeartClick = async (idRoom) => {
-    const isFavorite = heartStates[idRoom];
+  const handleHeartClick = async (roomId) => {
+    const isFavorite = heartStates[roomId];
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
       alert("Bạn cần đăng nhập để thích phòng.");
@@ -152,23 +152,23 @@ export default function Home() {
     try {
       if (isFavorite) {
         console.log("Favorite1", isFavorite);
-        const s = await handleRemoveFavorite(user.user.id, idRoom); // Bỏ thích nếu đã thích trước đó
+        const s = await handleRemoveFavorite(user.user.id, roomId); // Bỏ thích nếu đã thích trước đó
         console.log(s);
-        console.log(user.user.id, idRoom);
+        console.log(user.user.id, roomId);
 
         console.log("Favorite11", isFavorite);
 
         setHeartStates((prevState) => ({
           ...prevState,
-          [idRoom]: false,
+          [roomId]: false,
         }));
       } else {
-        await handleAddFavorite(user.user.id, idRoom); // Thêm vào danh sách yêu thích nếu chưa thích trước đó
+        await handleAddFavorite(user.user.id, roomId); // Thêm vào danh sách yêu thích nếu chưa thích trước đó
         console.log("Favorite111", isFavorite);
 
         setHeartStates((prevState) => ({
           ...prevState,
-          [idRoom]: true,
+          [roomId]: true,
         }));
       }
     } catch (error) {
@@ -281,14 +281,10 @@ export default function Home() {
                 {/* Ví dụ: */}
                 <div className="room-item shadow rounded overflow-hidden">
                   {/* <img className="img-fluid" src={room.img} alt={`Room ${room.id}`} style={{ width: "500px", height: "300px" }} /> */}
-                  <div
-                    style={{ position: "relative", width: "fit-content" }}
-                  >
+                  <div style={{ position: "relative", width: "fit-content" }}>
                     <img
                       className="img-fluid"
-                      src={
-                        roomImages[room.id] ? roomImages[room.id].img : ""
-                      }
+                      src={room.images[0].img}
                       alt={`Room ${room.id}`}
                       style={{ height: "340px" }}
                     />
@@ -301,8 +297,9 @@ export default function Home() {
                       data-bs-placement="bottom"
                     >
                       <i
-                        className={`fa${heartStates[room.id] ? "s" : "r"
-                          } fa-heart text-danger`}
+                        className={`fa${
+                          heartStates[room.id] ? "s" : "r"
+                        } fa-heart text-danger`}
                         style={{ fontSize: "24px" }}
                       ></i>
                     </div>
@@ -318,7 +315,7 @@ export default function Home() {
                   </div>
                   <div className="p-4 mt-2">
                     <h5 className="mb-0 text-uppercase text-dark">
-                      {getTypeRoomLabel(room.typeRoom)}
+                      {room.type}
                     </h5>
                     <div className="d-flex mb-3">
                       {/* <small className="border-end me-3 pe-3"><i className="fa fa-bed text-dark me-2"></i>{room.amenities} </small> */}

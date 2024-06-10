@@ -1,0 +1,77 @@
+const config = require("../config/db.js");
+
+const Sequelize = require("sequelize");
+
+const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
+  host: config.HOST,
+  dialect: config.dialect,
+  pool: {
+    max: config.pool.max,
+    min: config.pool.min,
+    acquire: config.pool.acquire,
+    idle: config.pool.idle,
+  },
+});
+
+const db = {};
+
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+const bookingModel = require("./Booking.js");
+const userModel = require("./Account.js");
+const roleModel = require("./Role.js");
+const roomModel = require("./Room.js");
+const imageModel = require("./Image.js");
+const reviewModel = require("./Review.js");
+const favoriteModel = require("./Favorite.js");
+const serviceModel = require("./Service.js");
+const detailModel = require("./BookingDetail.js");
+
+db.user = userModel(sequelize, Sequelize);
+db.role = roleModel(sequelize, Sequelize);
+db.room = roomModel(sequelize, Sequelize);
+db.booking = bookingModel(sequelize, Sequelize);
+db.image = imageModel(sequelize, Sequelize);
+db.review = reviewModel(sequelize, Sequelize);
+db.favorite = favoriteModel(sequelize, Sequelize);
+db.service = serviceModel(sequelize, Sequelize);
+db.detail = detailModel(sequelize, Sequelize);
+
+db.role.belongsToMany(db.user, {
+  through: "user_roles",
+});
+db.user.belongsToMany(db.role, {
+  through: "user_roles",
+});
+
+db.room.belongsToMany(db.user, {
+  through: "favorites",
+  as: "favoriteRooms",
+});
+db.user.belongsToMany(db.room, {
+  through: "favorites",
+  as: "favoriteUsers",
+});
+
+db.booking.belongsToMany(db.room, {
+  through: "booking_details",
+  foreignKey: "bookingId",
+});
+db.room.belongsToMany(db.booking, {
+  through: "booking_details",
+  foreignKey: "roomId",
+});
+
+db.room.belongsToMany(db.service, { through: "room_services" });
+db.service.belongsToMany(db.room, { through: "room_services" });
+
+db.user.hasMany(db.booking, { as: "bookings", foreignKey: "userId" });
+db.booking.belongsTo(db.user, { foreignKey: "userId" });
+
+db.room.hasMany(db.image, { as: "images", foreignKey: "roomId" });
+db.room.hasMany(db.review, { foreignKey: "roomId" });
+
+db.ROLES = ["user", "admin", "moderator"];
+
+module.exports = db;

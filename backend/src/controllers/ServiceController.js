@@ -1,80 +1,88 @@
-const serviceModel = require("../config/db/models/Service");
+const { where } = require("sequelize");
+const db = require("../models");
+
 class ServiceController {
-  get(req, res) {
-    let result = serviceModel.get_all();
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  async get(req, res) {
+    try {
+      const services = await db.service.findAll();
+      res.json(services);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  getService(req, res) {
-    let result = serviceModel.getByStatus();
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async getService(req, res) {
+    try {
+      const services = await db.service.findAll({ where: { status: 1 } });
+      res.json(services);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  find(req, res) {
-    let result = serviceModel.find(req.params.id);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async find(req, res) {
+    try {
+      const service = await db.service.findByPk(req.params.id);
+      if (!service) {
+        return res.status(404).json({ error: "Service not found" });
+      }
+      res.json(service);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  create(req, res) {
-    const data = {
-      typeService: req.body.typeService,
-      content: req.body.content,
-      logo: req.body.logo,
-    };
-    let result = serviceModel.create(data);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async create(req, res) {
+    try {
+      const data = {
+        typeService: req.body.typeService,
+        content: req.body.content,
+        logo: req.body.logo,
+        status: req.body.status,
+      };
+      const newService = await db.service.create(data);
+      res.json(newService);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  update(req, res) {
-    const data = {
-      typeService: req.body.typeService,
-      content: req.body.content,
-      logo: req.body.logo,
-    };
-    let result = serviceModel.update(req.params.id, data);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async update(req, res) {
+    try {
+      const data = {
+        typeService: req.body.typeService,
+        content: req.body.content,
+        logo: req.body.logo,
+        status: req.body.status,
+      };
+      const service = await db.service.findByPk(req.params.id);
+      if (!service) {
+        return res.status(404).json({ error: "Service not found" });
+      }
+      await service.update(data);
+      res.json(service);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  delete(req, res) {
-    let result = serviceModel.delete(req.params.id);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async delete(req, res) {
+    try {
+      const service = await db.service.findByPk(req.params.id);
+      if (!service) {
+        return res.status(404).json({ error: "Service not found" });
+      }
+      await service.destroy();
+      res.json({ message: "Service deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 }
 

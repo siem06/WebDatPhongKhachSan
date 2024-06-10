@@ -1,65 +1,76 @@
-const imageModel = require("../config/db/models/Image");
+const db = require("../models");
+
 class ImageController {
-  get(req, res) {
-    let result = imageModel.get_all_with_images(req.params.id);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+  async get(req, res) {
+    try {
+      const images = await db.image.findAll({
+        where: {
+          id: req.params.id,
+        },
       });
+      console.log(images);
+      res.json(images);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   }
-  find(req, res) {
-    let result = imageModel.find(req.params.id);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async find(req, res) {
+    try {
+      const image = await db.image.findByPk(req.params.id);
+      console.log(image);
+      res.json(image);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   }
-  create(req, res) {
-    const data = {
-      img: req.body.img,
-    };
-    let result = imageModel.create(data);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+
+  async create(req, res) {
+    try {
+      const image = await db.image.create({
+        img: req.body.img,
       });
+      console.log(image);
+      res.json(image);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   }
-  update(req, res) {
-    const data = {
-      img: req.body.img,
-    };
-    let result = imageModel.update(req.params.id, data);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async update(req, res) {
+    try {
+      const image = await db.image.update(
+        { img: req.body.img },
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      );
+      console.log(image);
+      res.json(image);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   }
-  delete(req, res) {
-    let result = imageModel.delete(req.params.id);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+
+  async delete(req, res) {
+    try {
+      const result = await db.image.destroy({
+        where: {
+          id: req.params.id,
+        },
       });
+      console.log(result);
+      res.json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   }
 }
 

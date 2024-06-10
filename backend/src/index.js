@@ -10,6 +10,7 @@ const path = require("path");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { options } = require("./routes/Account");
+const db = require("./models/index.js");
 
 dotenv.config();
 const app = express();
@@ -45,6 +46,11 @@ app.use(express.static(path.join(__dirname, "static")));
 app.use(morgan("combined"));
 app.engine("handlebars", handlebars.engine());
 app.set("view engine", "handlebars");
+
+db.sequelize.sync();
+// db.sequelize.sync({ focus: true }).then(() => {
+//   console.log("Database synchronized");
+// });
 
 route(app);
 const port = process.env.PORT || 5000;

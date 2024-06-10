@@ -3,8 +3,8 @@ const bookingDetailsController = require("../controllers/BookingDetailsControlle
 const bookingDetailsRoute = express.Router();
 
 bookingDetailsRoute.post("/", bookingDetailsController.create);
-bookingDetailsRoute.get("/:id", bookingDetailsController.find);
-bookingDetailsRoute.put("/:id", bookingDetailsController.update);
-bookingDetailsRoute.delete("/:id", bookingDetailsController.delete);
+// bookingDetailsRoute.get("/:id", bookingDetailsController.find);
+// bookingDetailsRoute.put("/:id", bookingDetailsController.update);
+// bookingDetailsRoute.delete("/:id", bookingDetailsController.delete);
 
 module.exports = bookingDetailsRoute;
