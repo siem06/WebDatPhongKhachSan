@@ -37,7 +37,7 @@ function App() {
   }, []);
   return (
     <div>
-      {(!loggedInUser || loggedInUser.user.role === 0) && (
+      {(!loggedInUser || loggedInUser.roles[0] === 1) && (
         <>
           {loggedInUser ? (
             <Header loggedIn={loggedIn} user={loggedInUser.user} />
@@ -68,7 +68,7 @@ function App() {
         </>
       )}
 
-      {loggedInUser && loggedInUser.user.role === 1 && (
+      {loggedInUser && loggedInUser.roles[0] === 2 && (
         <>
           <Menu setLoggedIn={setLoggedIn} />
           <Routes>

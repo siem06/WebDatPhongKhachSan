@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import ModalDetail from "../Layout/ModalDetail";
-import { login } from "../service/api";
+import { getByIdUserAll, login } from "../service/api";
 const Login = ({ setLoggedIn }) => {
   const [modalShow, setModalShow] = React.useState(false);
   const [email, setEmail] = useState("");
@@ -22,9 +22,10 @@ const Login = ({ setLoggedIn }) => {
     try {
       const user = await login(email.trim(), password);
       localStorage.setItem("user", JSON.stringify(user));
-      console.log("role", user.user.role);
+
+      console.log("role", user);
       setLoggedIn(true);
-      if (user.user.role === 1) {
+      if (user.user.roles[0].id === 2) {
         navigation("/dashboard");
       } else {
         navigation("/");

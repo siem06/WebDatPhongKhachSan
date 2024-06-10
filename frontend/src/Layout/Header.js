@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Logo from "../assets/image/Logo.png";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import { getRoomsByType } from "../service/api";
 import { stringAvatar } from "../utils/UserLogo";
@@ -11,7 +11,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../assets/css/style.css";
 import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
-
+import BedroomParentIcon from "@mui/icons-material/BedroomParent";
 export default function Header({ loggedIn, user }) {
   const [active, setActive] = useState("/");
   const getActiveClass = (path) => {
@@ -179,6 +179,11 @@ export default function Header({ loggedIn, user }) {
                 >
                   LIÊN HỆ
                 </NavLink>
+              </li>
+              <li className={`nav-item `}>
+                <Link className="nav-link" to="/selectedRooms">
+                  <BedroomParentIcon />
+                </Link>
               </li>
               {loggedIn ? (
                 <li

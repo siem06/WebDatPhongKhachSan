@@ -108,6 +108,14 @@ export const getByIdUser = async (id) => {
     throw error;
   }
 };
+export const getByIdUserAll = async (id) => {
+  try {
+    const response = await instance.get(`/accounts/getAll/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 export const uploadAvatar = async (formData) => {
   try {
     const response = await instance.post("/accounts/uploadImage", formData, {
@@ -139,35 +147,35 @@ export const deleteUser = async (idUser) => {
 };
 // end call api Account
 // begin like rooom
-export const getLikeRoom = async (idAccount) => {
+export const getLikeRoom = async (userId) => {
   try {
-    const response = await instance.get(`/roomfavorite/${idAccount}`);
+    const response = await instance.get(`/roomfavorite/${userId}`);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-export const addRoomLike = async (idAccount, idRoom) => {
+export const addRoomLike = async (userId, roomId) => {
   try {
     const response = await instance.post(`/roomfavorite`, {
-      idAccount,
-      idRoom,
+      userId,
+      roomId,
     });
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-export const removeRoomLike = async (idAccount, idRoom) => {
+export const removeRoomLike = async (userId, roomId) => {
   try {
-    await instance.delete(`/roomfavorite`, {
+    const response = await instance.delete(`/roomfavorite`, {
       data: {
-        idAccount,
-        idRoom,
+        userId,
+        roomId,
       },
     });
     console.log("success");
-    // return response.data;
+    return response.data;
   } catch (error) {
     throw error;
   }
@@ -312,7 +320,6 @@ export const getAllRooms = async () => {
 export const getRoomsById = async (id) => {
   try {
     const response = await instance.get(`/room/${id}`);
-    console.log("yyy", response);
     return response.data;
   } catch (error) {
     throw error;
@@ -379,6 +386,7 @@ export const getAllBooking = async () => {
 export const postBooking = async (bookingData) => {
   try {
     const response = await instance.post("/booking", bookingData);
+    console.log(response.data, "sss");
     return response.data;
   } catch (error) {
     throw error;

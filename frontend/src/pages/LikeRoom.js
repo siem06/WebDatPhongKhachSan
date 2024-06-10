@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Button from "../components/Button/Button.js";
 import {
+  getByIdUserAll,
   getLikeRoom,
+  getRoomsById,
   removeRoomLike,
   removeRoomLikeAll,
 } from "../service/api.js";
 export default function LikeRoom() {
   const [rooms, setRooms] = useState([]);
   const [heartStates, setHeartStates] = useState({});
+
   const getLike = async () => {
     try {
       const loggedInUser = JSON.parse(localStorage.getItem("user"));
       const userId = loggedInUser.user.id;
-      const response = await getLikeRoom(userId);
-      setRooms(response);
+      const response = await getByIdUserAll(userId);
+      console.log("llllllllll", response.favoriteUsers);
+      // const response = await getLikeRoom(userId);
+      setRooms(response.favoriteUsers);
       const initialHeartStates = {};
       response.forEach((room) => {
         initialHeartStates[room.id] = true;
@@ -23,46 +28,54 @@ export default function LikeRoom() {
       console.error("Error fetching data:", error);
     }
   };
-
   useEffect(() => {
     getLike();
   }, []);
 
-  const handleRemoveFavorite = async (idAccount, idRoom) => {
+  const handleRemoveFavorite = async (userId, roomId) => {
     try {
-      await removeRoomLike(idAccount, idRoom);
-      setHeartStates((prevState) => ({ ...prevState, [idRoom]: false }));
-      getLike();
+      await removeRoomLike(userId, roomId);
+      setHeartStates((prevState) => ({ ...prevState, [roomId]: false }));
+      console.log("ll,", heartStates);
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
   };
-  const handleHeartClick = async (idRoom) => {
-    const isFavorite = heartStates[idRoom];
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const handleHeartClick = async (roomId) => {
+    const isFavorite = heartStates[roomId];
+    const user = JSON.parse(localStorage.getItem("user"));
+
     try {
       if (isFavorite) {
-        await handleRemoveFavorite(loggedInUser.user.id, idRoom);
+        await handleRemoveFavorite(user.user.id, roomId);
+        console.log("ll,", roomId);
+        setHeartStates((prevState) => ({
+          ...prevState,
+          [roomId]: false,
+        }));
       }
-      setHeartStates((prevState) => ({
-        ...prevState,
-        [idRoom]: !prevState[idRoom],
-      }));
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
     }
   };
-  const handleDeleteAll = async (idRoom) => {
-    const isFavorite = heartStates[idRoom];
+  const handleDeleteAll = async () => {
     const loggedInUser = JSON.parse(localStorage.getItem("user"));
     try {
-      await removeRoomLikeAll();
+      await removeRoomLikeAll(loggedInUser.user.id);
       setHeartStates({});
       getLike();
     } catch (err) {
       console.error(err);
     }
   };
+  // const getRoomById = async (id) => {
+  //   try {
+  //     const room = await getRoomsById(id);
+  //     setSelectedRoom(room);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   return (
     <>
       <div className="card border bg-transparent">
@@ -80,17 +93,18 @@ export default function LikeRoom() {
               />
             </div>
           </div>
-          {rooms !== null ? (
-            rooms.map((room, index) => (
-              <div className="card shadow p-2" key={index}>
+          {rooms ? (
+            rooms.map((room) => (
+              <div className="card shadow p-2" key={room.id}>
                 <div className="row g-0">
                   <div className="col-md-3">
                     <img
-                      src={room.img}
+                      src={room > 0 ? room[0].img : "hhh"}
                       className="card-img rounded-2"
-                      alt="Card image"
+                      alt="Cardimage"
                       style={{ height: "160px" }}
                     />
+
                     <div
                       className="position-absolute end-0 top-0 mt-2 me-2"
                       onClick={() => handleHeartClick(room.id)}
@@ -131,11 +145,13 @@ export default function LikeRoom() {
                       </div>
 
                       <h5 className="card-title mb-1">
-                        <a href="hotel-detail.html">{room.name}</a>
+                        <a href="hotel-detail.html">
+                          {/* {getRoomById(room.roomId)} */}
+                        </a>
                       </h5>
                       <small>
-                        <i className="bi bi-geo-alt me-2"></i>31J W Spark
-                        Street, California - 24578
+                        <i className="bi bi-geo-alt me-2"></i>
+                        {room.type}
                       </small>
 
                       <div className="d-sm-flex justify-content-sm-between align-items-center">

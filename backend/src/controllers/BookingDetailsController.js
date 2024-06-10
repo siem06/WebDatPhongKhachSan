@@ -1,66 +1,85 @@
-const bookingDetailsModel = require("../config/db/models/BookingDetails");
+const db = require("../models");
+
 class BookingDetailsController {
-  findById(req, res) {
-    let result = bookingDetailsModel.find(req.params.id);
-    result
-      .then(function (value) {
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  async findById(req, res) {
+    try {
+      const bookingDetail = await db.detail.findByPk(req.params.id);
+      if (bookingDetail) {
+        res.json(bookingDetail);
+      } else {
+        res.status(404).send("Booking detail not found");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error fetching booking detail");
+    }
   }
 
-  find(req, res) {
-    let result = bookingDetailsModel.find(req.params.id);
-    result
-      .then(function (value) {
-        // console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+  async find(req, res) {
+    try {
+      const bookingDetails = await db.detail.findAll({
+        where: {
+          id: req.params.id,
+        },
       });
+      res.json(bookingDetails);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error fetching booking details");
+    }
   }
-  create(req, res) {
-    const data = {
-      idBooking: req.body.idBooking,
-      idRoom: req.body.idRoom,
-    };
-    let result = bookingDetailsModel.create(data);
-    result
-      .then(function (value) {
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+
+  async create(req, res) {
+    const { bookingId, roomId } = req.body;
+    try {
+      const bookingDetail = await db.detail.create({
+        bookingId,
+        roomId,
       });
+      res.json(bookingDetail);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error creating booking detail");
+    }
   }
-  update(req, res) {
-    const data = {
-      idAccount: req.body.idAccount,
-      idRoom: req.body.idRoom,
-    };
-    let result = bookingDetailsModel.update(req.params.id, data);
-    result
-      .then(function (value) {
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+
+  // async update(req, res) {
+  //   const { idAccount, idRoom } = req.body;
+  //   try {
+  //     const [updatedCount] = await db.detail.update(
+  //       {
+  //         idAccount,
+  //         idRoom,
+  //       },
+  //       {
+  //         where: { id: req.params.id },
+  //       }
+  //     );
+  //     if (updatedCount) {
+  //       res.json({ message: "Booking detail updated successfully" });
+  //     } else {
+  //       res.status(404).send("Booking detail not found");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).send("Error updating booking detail");
+  //   }
+  // }
+
+  async delete(req, res) {
+    try {
+      const deletedCount = await db.detail.destroy({
+        where: { id: req.params.id },
       });
-  }
-  delete(req, res) {
-    const { idAccount, idRoom } = req.body;
-    let result = bookingDetailsModel.delete(idAccount, idRoom);
-    result
-      .then(function (value) {
-        // console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+      if (deletedCount) {
+        res.json({ message: "Booking detail deleted successfully" });
+      } else {
+        res.status(404).send("Booking detail not found");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error deleting booking detail");
+    }
   }
 }
 

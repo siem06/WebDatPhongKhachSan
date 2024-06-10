@@ -15,7 +15,6 @@ import InputGroup from "../components/InputGroup";
 
 import {
   addRoomLike,
-  getAllImage,
   getAllRooms,
   getAllRoomsSortedByPrice,
   getLikeRoom,
@@ -27,72 +26,64 @@ import {
 export default function Room() {
   const navigation = useNavigate();
 
-  const getTypeRoomLabel = (typeRoom) => {
-    switch (typeRoom) {
-      case 1:
-        return "Phòng Tiêu chuẩn";
-      case 2:
-        return "Phòng Cao cấp";
-      case 3:
-        return "Phòng Đặc biệt";
-      case 4:
-        return "Phòng Tổng thống";
-      default:
-        return "Không xác định";
-    }
-  };
+  // const getTypeRoomLabel = (typeRoom) => {
+  //   switch (typeRoom) {
+  //     case 1:
+  //       return "Phòng Tiêu chuẩn";
+  //     case 2:
+  //       return "Phòng Cao cấp";
+  //     case 3:
+  //       return "Phòng Đặc biệt";
+  //     case 4:
+  //       return "Phòng Tổng thống";
+  //     default:
+  //       return "Không xác định";
+  //   }
+  // };
   const [rooms, setRooms] = useState([]);
-  const [roomImages, setRoomImages] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const roomsPerPage = 6; // Số lượng phòng trên mỗi trang
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedRating, setSelectedRating] = useState([]);
   const [heartStates, setHeartStates] = useState({});
-  const handleAddFavorite = async (idAccount, idRoom) => {
+  const handleAddFavorite = async (userId, roomId) => {
     try {
-      await addRoomLike(idAccount, idRoom);
-      setHeartStates((prevState) => ({ ...prevState, [idRoom]: true }));
+      await addRoomLike(userId, roomId);
+
+      setHeartStates((prevState) => ({ ...prevState, [roomId]: true }));
     } catch (error) {
       console.error("Error adding favorite:", error);
     }
   };
-  const handleRemoveFavorite = async (idAccount, idRoom) => {
+  const handleRemoveFavorite = async (userId, roomId) => {
     try {
-      await removeRoomLike(idAccount, idRoom);
-      setHeartStates((prevState) => ({ ...prevState, [idRoom]: false }));
+      await removeRoomLike(userId, roomId);
+      setHeartStates((prevState) => ({ ...prevState, [roomId]: false }));
       console.log("ll,", heartStates);
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
   };
-  const handleHeartClick = async (idRoom) => {
-    const isFavorite = heartStates[idRoom];
+  const handleHeartClick = async (roomId) => {
+    const isFavorite = heartStates[roomId];
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
       alert("Bạn cần đăng nhập để thích phòng.");
       return;
     }
-
     try {
       if (isFavorite) {
         console.log("Favorite1", isFavorite);
-        const s = await handleRemoveFavorite(user.user.id, idRoom); // Bỏ thích nếu đã thích trước đó
-        console.log(s);
-        console.log(user.user.id, idRoom);
-
-        console.log("Favorite11", isFavorite);
-
+        await handleRemoveFavorite(user.user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
-          [idRoom]: false,
+          [roomId]: false,
         }));
       } else {
-        await handleAddFavorite(user.user.id, idRoom); // Thêm vào danh sách yêu thích nếu chưa thích trước đó
-        console.log("Favorite111", isFavorite);
-
+        await handleAddFavorite(user.user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
-          [idRoom]: true,
+          [roomId]: true,
         }));
       }
     } catch (error) {
@@ -103,20 +94,9 @@ export default function Room() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Lấy danh sách phòng cho trang hiện tại
         const response = await getAllRooms();
+        console.log("room,", response);
         setRooms(response);
-
-        // Lấy ảnh đầu tiên của mỗi phòng
-        const imagePromises = response.map((room) => getAllImage(room.id));
-        const images = await Promise.all(imagePromises);
-
-        // Tạo object chứa ảnh của mỗi phòng
-        const imagesObj = {};
-        images.forEach((image, index) => {
-          imagesObj[response[index].id] = image[0];
-        });
-        setRoomImages(imagesObj);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -126,7 +106,7 @@ export default function Room() {
         const user = JSON.parse(localStorage.getItem("user"));
         if (user) {
           const favoriteRooms = await getLikeRoom(user.user.id);
-          const favoriteRoomIds = favoriteRooms.map((room) => room.id);
+          const favoriteRoomIds = favoriteRooms.map((room) => room.roomId);
           setHeartStates((prevState) => {
             const newState = { ...prevState };
             favoriteRoomIds.forEach((roomId) => {
@@ -154,13 +134,17 @@ export default function Room() {
   };
 
   // Tính chỉ số phòng bắt đầu và kết thúc của trang hiện tại
+  console.log("mmm1", currentPage);
   const indexOfLastRoom = currentPage * roomsPerPage;
+  console.log("mmm2", indexOfLastRoom);
   const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
+  console.log("mmm3", indexOfFirstRoom);
   const currentRooms = rooms.slice(indexOfFirstRoom, indexOfLastRoom);
   // Trong hàm handleSortByPrice, đảm bảo rằng giá trị được truyền đúng cú pháp ('asc' hoặc 'desc')
   const handleSortByPrice = async (order) => {
     try {
       if (order === "asc" || order === "desc") {
+        console.log("ss", order);
         const sortedRooms = await getAllRoomsSortedByPrice(order);
         setRooms(sortedRooms);
       } else {
@@ -444,7 +428,7 @@ export default function Room() {
                         <img
                           className="img-fluid"
                           src={
-                            roomImages[room.id] ? roomImages[room.id].img : ""
+                            room.images.length > 0 ? room.images[0].img : "hhh"
                           }
                           alt={`Room ${room.id}`}
                           style={{ height: "240px" }}
@@ -498,7 +482,7 @@ export default function Room() {
                             link_detail(room.id);
                           }}
                         >
-                          {getTypeRoomLabel(room.typeRoom)}
+                          {room.type}
                         </h5>
                         <div className="d-flex mb-3">
                           {/* <small className="border-end me-3 pe-3"><i className="fa fa-bed text-dark me-2"></i>{room.amenities} </small> */}

@@ -1,79 +1,101 @@
-const favoriteModel = require("../config/db/models/Favorite");
+const db = require("../models");
+
 class FavoriteController {
-  findById(req, res) {
-    let result = favoriteModel.find(req.params.id);
-    result
-      .then(function (value) {
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+  async findById(req, res) {
+    try {
+      const favorite = await db.favorite.findByPk(req.params.id);
+      res.json(favorite);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  async findByIdA(req, res) {
+    try {
+      const userId = req.params.id;
+      const favorite = await db.favorite.findAll({
+        where: {
+          userId: userId,
+        },
       });
+      res.json(favorite);
+    } catch (error) {
+      console.error("Error fetching favorite rooms by user ID:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 
-  find(req, res) {
-    let result = favoriteModel.find(req.params.id);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  async find(req, res) {
+    try {
+      const favorites = await db.favorite.findAll();
+      res.json(favorites);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  create(req, res) {
-    const data = {
-      idAccount: req.body.idAccount,
-      idRoom: req.body.idRoom,
-    };
-    let result = favoriteModel.create(data);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+
+  async create(req, res) {
+    try {
+      const favorite = await db.favorite.create({
+        roomId: req.body.roomId,
+        userId: req.body.userId,
       });
+      res.json(favorite);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  update(req, res) {
-    const data = {
-      idAccount: req.body.idAccount,
-      idRoom: req.body.idRoom,
-    };
-    let result = favoriteModel.update(req.params.id, data);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
+
+  async update(req, res) {
+    try {
+      const favorite = await db.favorite.findByPk(req.params.id);
+      if (!favorite) {
+        return res.status(404).json({ error: "Favorite not found" });
+      }
+      await favorite.update({
+        roomId: req.body.roomId,
+        userId: req.body.userId,
       });
+      res.json(favorite);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  delete(req, res) {
-    const { idAccount, idRoom } = req.body;
-    let result = favoriteModel.delete(idAccount, idRoom);
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async delete(req, res) {
+    try {
+      const { roomId, userId } = req.body;
+      const favorite = await db.favorite.findOne({ where: { roomId, userId } });
+      if (!favorite) {
+        return res.status(404).json({ error: "Favorite not found" });
+      }
+      await favorite.destroy();
+      res.json({ message: "Favorite deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  deleteAll(req, res) {
-    let result = favoriteModel.deleteAll();
-    result
-      .then(function (value) {
-        console.log(value);
-        res.json(value);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  async deleteAll(req, res) {
+    try {
+      const userId = req.body.userId;
+      const favorites = await db.favorite.findAll({ where: { userId } });
+
+      await Promise.all(
+        favorites.map(async (favorite) => {
+          await favorite.destroy();
+        })
+      );
+
+      res.json({ message: "All favorites of the user deleted successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 }
 

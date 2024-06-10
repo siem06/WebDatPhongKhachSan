@@ -40,7 +40,7 @@ export default function Payment() {
   const searchParams = new URLSearchParams(location.search);
   const roomId = searchParams.get("roomId");
   const accountId = searchParams.get("accountId");
-  const [roomDetails, setRoomDetails] = useState({});
+  const [roomDetails, setRoomDetails] = useState([]);
   const [roomImages, setRoomImages] = useState([]);
   // const [email, setEmail] = useState("");
   // const [useName, setName] = useState("");
@@ -48,20 +48,20 @@ export default function Payment() {
   const [note, setNote] = useState("");
   const [notification, setNotification] = useState(null);
 
-  const getTypeRoomLabel = (typeRoom) => {
-    switch (typeRoom) {
-      case 1:
-        return "Phòng Tiêu chuẩn";
-      case 2:
-        return "Phòng Cao cấp";
-      case 3:
-        return "Phòng Đặc biệt";
-      case 4:
-        return "Phòng Tổng thống";
-      default:
-        return "Không xác định";
-    }
-  };
+  // const getTypeRoomLabel = (typeRoom) => {
+  //   switch (typeRoom) {
+  //     case 1:
+  //       return "Phòng Tiêu chuẩn";
+  //     case 2:
+  //       return "Phòng Cao cấp";
+  //     case 3:
+  //       return "Phòng Đặc biệt";
+  //     case 4:
+  //       return "Phòng Tổng thống";
+  //     default:
+  //       return "Không xác định";
+  //   }
+  // };
   const handleNote = (event) => {
     setNote(event.target.value);
   };
@@ -102,15 +102,16 @@ export default function Payment() {
     setDaysDiff(diff);
     setCheckOutDate(newValue);
   };
+  console.log("roomId", roomId);
 
   const totalPrice =
     roomDetails && roomDetails.price
-      ? roomDetails.price * daysDiff * roomCount
+      ? roomDetails.price * daysDiff
       : "Loading...";
   const saveBookingToDatabase = async () => {
     const bookingData = {
-      idAccount: accountId,
-      totalPrice: totalPrice,
+      userId: loggedInUser.user.id,
+      totalPrice: roomDetails.price * daysDiff,
       totalRoom: roomCount,
       totalDate: daysDiff,
       checkinDate: checkInDate,
@@ -121,18 +122,27 @@ export default function Payment() {
     };
 
     try {
+      // Thêm booking vào cơ sở dữ liệu
       const response = await postBooking(bookingData);
-      const details = {
-        idBooking: response.id,
-        idRoom: roomId,
-      };
-      const detailsBooking = await createBookingDetails(details);
-      localStorage.setItem("booking", JSON.stringify(response));
-      console.log("Booking", response);
-      console.log("detail", detailsBooking);
+      console.log("%%", response);
 
+      // Kiểm tra xem booking đã được thêm vào thành công hay không
+      // if (response && response.id) {
+      //   // Nếu booking đã được thêm vào, thêm booking details
+      const data = {
+        bookingId: response.id,
+        roomId: roomId,
+      };
+      await createBookingDetails(data);
+      localStorage.setItem("booking", JSON.stringify(response));
       return bookingData;
+      // } else {
+      // Xử lý khi có lỗi khi thêm booking vào cơ sở dữ liệu
+      // console.error("Có lỗi khi thêm booking vào cơ sở dữ liệu");
+      // return null;
+      // }
     } catch (error) {
+      // Xử lý lỗi khi thêm booking hoặc booking details
       console.error("Có lỗi xảy ra khi đặt phòng:", error);
       return null;
     }
@@ -148,6 +158,7 @@ export default function Payment() {
   };
 
   const book = JSON.parse(localStorage.getItem("booking"));
+  console.log("hihi", book);
 
   // const [bookingSuccess, setBookingSuccess] = useState(false);
   // const handleStepChange = (step) => {
@@ -195,10 +206,11 @@ export default function Payment() {
     }
     fetchRoomData();
   }, [roomId]);
+  console.log("de", roomDetails.images);
   const [orderId, setOrderId] = useState(false);
   const createOrder = (data, actions) => {
     const book = JSON.parse(localStorage.getItem("booking"));
-    const vndPrice = book.totalPrice;
+    const vndPrice = roomDetails.price * daysDiff;
     const exchangeRate = 25000;
     const usdPrice = (vndPrice / exchangeRate).toFixed(2);
     return actions.order
@@ -438,23 +450,25 @@ export default function Payment() {
                     </div>
                     <div className="row x-gap-15 y-gap-20">
                       <div className="col-auto">
-                        <img
-                          alt={`Room ${roomId}`}
-                          loading="lazy"
-                          decoding="async"
-                          data-nimg="1"
-                          className="size-140 rounded-4 object-cover"
-                          src={
-                            roomImages && roomImages[roomId]
-                              ? roomImages[roomId].img
-                              : ""
-                          }
-                          style={{
-                            color: "transparent",
-                            width: "220px",
-                            height: "140px",
-                          }}
-                        />
+                        {roomDetails &&
+                        roomDetails.images &&
+                        roomDetails.images.length > 0 ? (
+                          <img
+                            alt={`Room ${roomId}`}
+                            loading="lazy"
+                            decoding="async"
+                            data-nimg="1"
+                            className="size-140 rounded-4 object-cover"
+                            src={roomDetails.images[0].img}
+                            style={{
+                              color: "transparent",
+                              width: "220px",
+                              height: "140px",
+                            }}
+                          />
+                        ) : (
+                          ""
+                        )}
                       </div>
                       <div className="col">
                         <div className="d-flex x-gap-5 ">
@@ -467,13 +481,11 @@ export default function Payment() {
                         </div>
                         <div className=" y-gap-20 justify-between mt-3">
                           <div className=" col-auto lh-17 fw-500 font-weight-bold text-dark ">
-                            {getTypeRoomLabel(
-                              roomDetails && roomDetails.typeRoom
-                            ) || "Loading..."}
+                            {roomDetails.type}
                           </div>
                           <div className=" col-auto text-14 lh-15 font-weight-bold text-dark  ">
                             <CurrencyFormat
-                              value={book.totalPrice}
+                              value={roomDetails.price}
                               thousandSeparator={true}
                               suffix={"VND/ Ngày"}
                               decimalScale={2}
@@ -604,7 +616,7 @@ export default function Payment() {
                         </div>
                         <div className="fw-500 font-weight-bold text-dark">
                           <CurrencyFormat
-                            value={book.totalPrice}
+                            value={roomDetails.price * daysDiff}
                             thousandSeparator={true}
                             suffix={"VND"}
                             decimalScale={2}
@@ -687,9 +699,7 @@ export default function Payment() {
                     <div className="row y-gap-5 justify-between ">
                       <div className="col-auto">
                         <div className="text-15 font-weight-bold text-dark">
-                          {getTypeRoomLabel(
-                            roomDetails && roomDetails.typeRoom
-                          ) || "Loading..."}
+                          {roomDetails.type}
                         </div>
                       </div>
                       <div className="col-auto">
@@ -726,7 +736,7 @@ export default function Payment() {
                         <div className="col-auto">
                           <div className="text-18 lh-13 fw-500">
                             <CurrencyFormat
-                              value={book.totalPrice}
+                              value="888"
                               thousandSeparator={true}
                               suffix={"VND"}
                               decimalScale={2}
@@ -749,7 +759,7 @@ export default function Payment() {
                       <div className="col-auto">
                         <div className="text-15 text-danger font-weight-bold fs-4">
                           <CurrencyFormat
-                            value={book.totalPrice}
+                            value={roomDetails.price * daysDiff}
                             thousandSeparator={true}
                             suffix={"VND"}
                             decimalScale={2}
@@ -833,7 +843,7 @@ export default function Payment() {
                         </div>
                         <div className="col-auto text-15 lh-12 fw-500 blue-1">
                           <CurrencyFormat
-                            value={book.totalPrice}
+                            value={roomDetails.price * daysDiff}
                             thousandSeparator={true}
                             suffix={"VND/ Ngày"}
                             decimalScale={2}
@@ -955,7 +965,6 @@ export default function Payment() {
                   onClick={handleButtonClick}
                 >
                   Tiếp theo
-                  <div className="fa fa-arrow-right ml-15"></div>
                 </button>
               ) : (
                 <button
@@ -964,7 +973,6 @@ export default function Payment() {
                   onClick={handleButtonClick}
                 >
                   Tiếp theo
-                  {/* <div className="fa fa-arrow-right ml-15"></div> */}
                 </button>
               )}
             </div>

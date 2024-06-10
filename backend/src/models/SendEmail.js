@@ -40,7 +40,7 @@ function sendEmailConfi(recipientEmail, book) {
     html: `<p>Thông tin đặt phòng của bạn:</p>
            <p>Mã đặt phòng: ${book.id}</p>
            <p>Tổng giá: ${book.totalPrice}</p>
-           <p>Ngày đặt: ${book.bookingDate}</p>`,
+           <p>Ngày đặt: ${book.createdAt}</p>`,
   };
 
   return new Promise((resolve, reject) => {

@@ -4,7 +4,7 @@ import ModalDetail from "../Layout/ModalDetail";
 import "../assets/css/profile.css";
 import Button from "../components/Button/Button";
 import TableMui from "../components/Table/TableMui";
-import { getBookingById } from "../service/api";
+import { getBookingById, getByIdUserAll } from "../service/api";
 
 export default function HistoryBook() {
   const navigation = useNavigate();
@@ -45,8 +45,10 @@ export default function HistoryBook() {
   useEffect(() => {
     const dataBooking = async () => {
       try {
-        const bookingData = await getBookingById(loggedInUser.user.id);
-        setData(bookingData);
+        // const bookingData = await getBookingById(loggedInUser.user.id);
+        const bookingData = await getByIdUserAll(loggedInUser.user.id);
+        console.log("22", bookingData.bookings);
+        setData(bookingData.bookings);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -59,9 +61,9 @@ export default function HistoryBook() {
       {/* <!-- Tab items --> */}
       <div className="tabs">
         <div className="tab-item active">Tất cả</div>
-        <div className="tab-item">Giao dịch thành công</div>
-        {/* <div className="tab-item">Giao dịch thất bại</div> */}
-        <div className="tab-item">Giao dịch đã hủy</div>
+        <div className="tab-item">Sắp tới</div>
+        <div className="tab-item">Hoàn tất</div>
+        <div className="tab-item">Thất bại</div>
         <div className="line"></div>
       </div>
 
