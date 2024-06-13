@@ -1,21 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../components/Button/Button";
 import CurrencyFormat from "react-currency-format";
 import imgs from "../assets/image";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { getByIdUserAll, getRoomsById, removeCart } from "../service/api";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export default function SelectedRoom() {
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: "Hotel Room", price: 100, image: imgs.about_bg.png },
-    { id: 2, name: "Hotel Room", price: 100, image: imgs.about_bg.png },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const navigation = useNavigate();
 
-  const removeFromCart = (itemToRemove) => {
-    const updatedCartItems = cartItems.filter(
-      (item) => item.id !== itemToRemove.id
-    );
-    setCartItems(updatedCartItems);
+  useEffect(() => {
+    const getRoom = async () => {
+      try {
+        const response = await getByIdUserAll(loggedInUser.id);
+        const roomDetails = await Promise.all(
+          response.roomCarts.map(async (room) => {
+            const roomDetail = await getRoomsById(room.id);
+            return { ...room, ...roomDetail };
+          })
+        );
+        setCartItems(roomDetails);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    getRoom();
+  }, []);
+  const handleBooking = () => {
+    if (!loggedInUser) {
+      alert("Vui lòng đăng nhập để đặt phòng");
+      return;
+    }
+    const roomId = cartItems.map((item) => item.id);
+    navigation("/payment", {
+      state: {
+        roomIds: roomId,
+        accountId: loggedInUser.id,
+      },
+    });
+    console.log("id", roomId);
   };
+  const removeFromCart = async (id) => {
+    try {
+      await removeCart(id);
+      const updatedCartItems = cartItems.filter((item) => item.id !== id);
+      setCartItems(updatedCartItems);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
+  };
+  const totalPrice = cartItems.reduce((total, room) => total + room.price, 0);
 
   return (
     <div className="container mt-7">
@@ -28,7 +65,7 @@ export default function SelectedRoom() {
                 <div className="d-flex">
                   <div className="justify-content-center">
                     <img
-                      src={imgs.room1}
+                      src={room.images[0].img}
                       className="card-img rounded-2"
                       alt="Cardimage"
                       style={{ height: "60px", width: "60px" }}
@@ -58,29 +95,43 @@ export default function SelectedRoom() {
                         </ul>
                       </div>
                       <h5 className="card-title mb-1">
-                        <a href="hotel-detail.html">{room.name}</a>
+                        <Link to={`/room_detail?roomId=${room.id}`}>
+                          {room.type}
+                        </Link>
                       </h5>
-                      <small>
-                        <i className="bi bi-geo-alt me-2"></i>31J W Spark
-                        Street, California - 24578
-                      </small>
+
                       <div className="d-sm-flex justify-content-sm-between align-items-center">
                         <div className="d-flex align-items-center">
-                          <h5 className="fw-bold mb-0 me-1">{room.price}$</h5>
-                          <span className="mb-0 me-2">/day</span>
+                          <h5 className="fw-bold mb-0 me-1">
+                            <CurrencyFormat
+                              value={room.price}
+                              thousandSeparator={true}
+                              suffix={"VND/ Ngày"}
+                              decimalScale={2}
+                              className="text-black customInput"
+                              displayType={"text"}
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                              }}
+                            />
+                          </h5>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className=" mt-sm-0">
-                    <DeleteOutlineIcon className="text-danger" />
+                    <DeleteOutlineIcon
+                      className="text-danger"
+                      onClick={() => removeFromCart(room.carts.id)}
+                    />
                   </div>
                   {/* </div> */}
                 </div>
               </div>
             ))
           ) : (
-            <p>dd</p>
+            <p>Bạn chưa chọn phòng nào!</p>
           )}
         </div>
         <div className="col-10 col-md-8 col-lg-4">
@@ -93,7 +144,7 @@ export default function SelectedRoom() {
               <div className="col-10 col-md-8 col-lg-5">
                 <h5>
                   <CurrencyFormat
-                    value="432442"
+                    value={totalPrice}
                     thousandSeparator={true}
                     suffix={"VND"}
                     decimalScale={2}
@@ -107,7 +158,16 @@ export default function SelectedRoom() {
               </div>
             </div>
             <div>
-              <Button title="Đặt ngay" />
+              <Link
+                className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4 "
+                to="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleBooking();
+                }}
+              >
+                Đặt ngay
+              </Link>
             </div>
           </div>
         </div>

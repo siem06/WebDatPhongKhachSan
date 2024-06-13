@@ -13,6 +13,7 @@ import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
 import BedroomParentIcon from "@mui/icons-material/BedroomParent";
 export default function Header({ loggedIn, user }) {
+  console.log("yy", user);
   const [active, setActive] = useState("/");
   const getActiveClass = (path) => {
     return active === path ? "active" : "";
@@ -181,7 +182,7 @@ export default function Header({ loggedIn, user }) {
                 </NavLink>
               </li>
               <li className={`nav-item `}>
-                <Link className="nav-link" to="/selectedRooms">
+                <Link className="nav-link" to="/cart">
                   <BedroomParentIcon />
                 </Link>
               </li>

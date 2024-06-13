@@ -14,6 +14,7 @@ import Input from "../components/Input/Input";
 import InputGroup from "../components/InputGroup";
 
 import {
+  addCart,
   addRoomLike,
   getAllRooms,
   getAllRoomsSortedByPrice,
@@ -22,6 +23,7 @@ import {
   getRoomsByType,
   removeRoomLike,
 } from "../service/api";
+import Notification from "../components/Notification";
 
 export default function Room() {
   const navigation = useNavigate();
@@ -46,10 +48,32 @@ export default function Room() {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedRating, setSelectedRating] = useState([]);
   const [heartStates, setHeartStates] = useState({});
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const [notification, setNotification] = useState(null);
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+  };
+  const handleAddRoom = async (roomId) => {
+    if (!loggedInUser) {
+      showNotification("warning", "Hãy đăng nhập để thực hiện chức năng này!");
+
+      return;
+    }
+    try {
+      const response = await addCart(roomId, loggedInUser.id);
+      if (!response.success) {
+        showNotification("error", response.message);
+      } else {
+        showNotification("success", response.message);
+      }
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+    }
+  };
+
   const handleAddFavorite = async (userId, roomId) => {
     try {
       await addRoomLike(userId, roomId);
-
       setHeartStates((prevState) => ({ ...prevState, [roomId]: true }));
     } catch (error) {
       console.error("Error adding favorite:", error);
@@ -59,7 +83,6 @@ export default function Room() {
     try {
       await removeRoomLike(userId, roomId);
       setHeartStates((prevState) => ({ ...prevState, [roomId]: false }));
-      console.log("ll,", heartStates);
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
@@ -74,13 +97,13 @@ export default function Room() {
     try {
       if (isFavorite) {
         console.log("Favorite1", isFavorite);
-        await handleRemoveFavorite(user.user.id, roomId);
+        await handleRemoveFavorite(user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
           [roomId]: false,
         }));
       } else {
-        await handleAddFavorite(user.user.id, roomId);
+        await handleAddFavorite(user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
           [roomId]: true,
@@ -95,7 +118,6 @@ export default function Room() {
     const fetchData = async () => {
       try {
         const response = await getAllRooms();
-        console.log("room,", response);
         setRooms(response);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -105,7 +127,7 @@ export default function Room() {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
         if (user) {
-          const favoriteRooms = await getLikeRoom(user.user.id);
+          const favoriteRooms = await getLikeRoom(user.id);
           const favoriteRoomIds = favoriteRooms.map((room) => room.roomId);
           setHeartStates((prevState) => {
             const newState = { ...prevState };
@@ -124,7 +146,6 @@ export default function Room() {
     fetchFavoriteRooms();
   }, [currentPage]);
 
-  // Xử lý sự kiện khi chuyển trang
   const handlePagination = (direction) => {
     if (direction === "prev" && currentPage > 1) {
       setCurrentPage((prevPage) => prevPage - 1);
@@ -133,18 +154,12 @@ export default function Room() {
     }
   };
 
-  // Tính chỉ số phòng bắt đầu và kết thúc của trang hiện tại
-  console.log("mmm1", currentPage);
   const indexOfLastRoom = currentPage * roomsPerPage;
-  console.log("mmm2", indexOfLastRoom);
   const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
-  console.log("mmm3", indexOfFirstRoom);
   const currentRooms = rooms.slice(indexOfFirstRoom, indexOfLastRoom);
-  // Trong hàm handleSortByPrice, đảm bảo rằng giá trị được truyền đúng cú pháp ('asc' hoặc 'desc')
   const handleSortByPrice = async (order) => {
     try {
       if (order === "asc" || order === "desc") {
-        console.log("ss", order);
         const sortedRooms = await getAllRoomsSortedByPrice(order);
         setRooms(sortedRooms);
       } else {
@@ -154,32 +169,25 @@ export default function Room() {
       console.error("Error sorting rooms by price:", error);
     }
   };
-  // type room
   const handleTypeChange = async (e) => {
     const selectedType = e.target.value;
-    console.log("Selected Type:", selectedType); // Log selected type to check its value
     let updatedSelectedTypes;
 
-    // If the selected type is already in the selected types, deselect it
     if (selectedTypes.includes(selectedType)) {
       updatedSelectedTypes = [];
     } else {
-      // Otherwise, select the clicked type and deselect the others
       updatedSelectedTypes = [selectedType];
     }
 
-    console.log("Updated Selected Types:", updatedSelectedTypes); // Log updated selected types
     setSelectedTypes(updatedSelectedTypes);
 
     try {
       const response = await getRoomsByType(updatedSelectedTypes);
-      console.log("Response:", response); // Log response to see what data is returned
       setRooms(response);
     } catch (error) {
       console.error("Error filtering rooms:", error);
     }
   };
-  // Xử lý sự kiện khi chọn hoặc hủy chọn một mức đánh giá
   const handleRatingChange = async (rating) => {
     try {
       console.log(rating);
@@ -188,7 +196,7 @@ export default function Room() {
       } else {
         const response = await getReviewByRoomId(rating);
         setRooms(response);
-        setSelectedRating(rating); // Cập nhật mức đánh giá đã chọn
+        setSelectedRating(rating);
       }
     } catch (error) {
       console.error("Error filtering reviews:", error);
@@ -196,23 +204,31 @@ export default function Room() {
   };
 
   // Xử lý sự kiện khi nhấn nút "Đặt ngay"
-  const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
   const handleBooking = (roomId) => {
     if (!loggedInUser) {
-      alert("Vui lòng đăng nhập để đặt phòng");
+      showNotification("warning", "Hãy đăng nhập để thực hiện chức năng này!");
       return;
     }
-    //  const
-    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`);
+
+    const roomIds = [roomId]; // Initialize roomIds as an array with the current roomId
+    navigation("/payment", {
+      state: {
+        roomIds: roomIds, // Pass the array of roomIds to the payment page
+        accountId: loggedInUser.id,
+      },
+    });
   };
+
   const link_detail = (roomId) => {
     navigation(`/room_detail?roomId=${roomId}`);
   };
-  // Render UI
   return (
     <>
       <Breadcrumb currently="Phòng" classNameImg="service_banner_two" />
+      {notification && (
+        <Notification type={notification.type} message={notification.message} />
+      )}
 
       <section className="hotel_booking_area">
         <div className="hotel_booking_area position">
@@ -414,14 +430,9 @@ export default function Room() {
             </div>
             <div className="col-md-10">
               <div className="row g-4" id="roomList">
-                {/* Hiển thị danh sách phòng */}
-                {/* {rooms.map(room => ( */}
                 {currentRooms.map((room) => (
                   <div key={room.id} className="col-lg-4 col-md-6 wow fadeInUp">
-                    {/* Hiển thị thông tin của mỗi phòng */}
-                    {/* Ví dụ: */}
                     <div className="room-item shadow rounded overflow-hidden">
-                      {/* <img className="img-fluid" src={room.img} alt={`Room ${room.id}`} style={{ width: "500px", height: "300px" }} /> */}
                       <div
                         style={{ position: "relative", width: "fit-content" }}
                       >
@@ -433,7 +444,7 @@ export default function Room() {
                           alt={`Room ${room.id}`}
                           style={{ height: "240px" }}
                           onClick={(e) => {
-                            e.preventDefault(); // Prevent the default link action
+                            e.preventDefault();
                             link_detail(room.id);
                           }}
                         />
@@ -456,7 +467,7 @@ export default function Room() {
                       <div
                         className="position-relative"
                         onClick={(e) => {
-                          e.preventDefault(); // Prevent the default link action
+                          e.preventDefault();
                           link_detail(room.id);
                         }}
                       >
@@ -466,7 +477,8 @@ export default function Room() {
                             thousandSeparator={true}
                             suffix={"VND/ Ngày"}
                             decimalScale={2}
-                            className="text-white "
+                            displayType={"text"}
+                            className="text-white customInput"
                             style={{
                               backgroundColor: "transparent",
                               border: "none",
@@ -484,16 +496,15 @@ export default function Room() {
                         >
                           {room.type}
                         </h5>
-                        <div className="d-flex mb-3">
-                          {/* <small className="border-end me-3 pe-3"><i className="fa fa-bed text-dark me-2"></i>{room.amenities} </small> */}
-                          {/* <small className="border-end me-3 pe-3"><i className="fa fa-bath text-dark me-2"></i>{room.amenities}</small>
-                                                        <small><i className="fa fa-wifi text-dark me-2"></i>{room.amenities}</small> */}
-                        </div>
-                        {/* <p className="text-body mb-3">{room.description}</p> */}
+                        <div className="d-flex mb-3"></div>
                         <div className="d-flex justify-content-between">
                           <Link
                             className="btn btn-sm btn-dark text-white button_hover rounded py-2 px-4 "
                             to="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleAddRoom(room.id);
+                            }}
                           >
                             Thêm phòng
                           </Link>
@@ -502,22 +513,12 @@ export default function Room() {
                             className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4 "
                             to="#"
                             onClick={(e) => {
-                              e.preventDefault(); // Prevent the default link action
+                              e.preventDefault();
                               handleBooking(room.id);
                             }}
                           >
                             Đặt ngay
                           </Link>
-                          {/* <button className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4 " onClick={() => handleBooking(room.id)}
-                                                            >Đặt ngay</button> */}
-                          {/* <Link
-                                                            className="btn btn-sm btn-primary text-white button_hover rounded py-2 px-4"
-                                                            to="#"
-                                                            onClick={(e) => {
-                                                                e.preventDefault(); // Prevent the default link action
-                                                                handleBooking(room.id);
-                                                            }}
-                                                        ></Link> */}
                         </div>
                       </div>
                     </div>

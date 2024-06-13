@@ -125,7 +125,7 @@ const { where } = require("sequelize");
 class BookingController {
   get(req, res) {
     db.booking
-      .findAll()
+      .get_all_booking()
       .then((value) => {
         console.log(value);
         res.json(value);
@@ -183,7 +183,6 @@ class BookingController {
     };
 
     try {
-      // Tạo booking mới
       const newBooking = await db.booking.create(bookingData);
 
       // Thêm các room vào booking
@@ -205,6 +204,7 @@ class BookingController {
           },
           {
             model: db.room,
+            attributes: ["id", "type", "price"],
             through: { attributes: [] },
           },
         ],

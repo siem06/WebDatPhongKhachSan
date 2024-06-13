@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import Button from "../components/Button/Button.js";
 import {
   getByIdUserAll,
-  getLikeRoom,
   getRoomsById,
   removeRoomLike,
   removeRoomLikeAll,
 } from "../service/api.js";
+import CurrencyFormat from "react-currency-format";
+import { Link } from "react-router-dom";
 export default function LikeRoom() {
   const [rooms, setRooms] = useState([]);
   const [heartStates, setHeartStates] = useState({});
@@ -14,13 +15,18 @@ export default function LikeRoom() {
   const getLike = async () => {
     try {
       const loggedInUser = JSON.parse(localStorage.getItem("user"));
-      const userId = loggedInUser.user.id;
+      const userId = loggedInUser.id;
       const response = await getByIdUserAll(userId);
-      console.log("llllllllll", response.favoriteUsers);
-      // const response = await getLikeRoom(userId);
-      setRooms(response.favoriteUsers);
+
+      const roomDetails = await Promise.all(
+        response.favoriteUsers.map(async (room) => {
+          const roomDetail = await getRoomsById(room.id);
+          return { ...room, ...roomDetail };
+        })
+      );
+      setRooms(roomDetails);
       const initialHeartStates = {};
-      response.forEach((room) => {
+      roomDetails.forEach((room) => {
         initialHeartStates[room.id] = true;
       });
       setHeartStates(initialHeartStates);
@@ -31,24 +37,24 @@ export default function LikeRoom() {
   useEffect(() => {
     getLike();
   }, []);
-
+  console.log("Initial heart states:", rooms);
   const handleRemoveFavorite = async (userId, roomId) => {
     try {
       await removeRoomLike(userId, roomId);
+      setRooms((prevRooms) => prevRooms.filter((room) => room.id !== roomId));
       setHeartStates((prevState) => ({ ...prevState, [roomId]: false }));
-      console.log("ll,", heartStates);
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
   };
+
   const handleHeartClick = async (roomId) => {
     const isFavorite = heartStates[roomId];
     const user = JSON.parse(localStorage.getItem("user"));
 
     try {
       if (isFavorite) {
-        await handleRemoveFavorite(user.user.id, roomId);
-        console.log("ll,", roomId);
+        await handleRemoveFavorite(user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
           [roomId]: false,
@@ -61,7 +67,7 @@ export default function LikeRoom() {
   const handleDeleteAll = async () => {
     const loggedInUser = JSON.parse(localStorage.getItem("user"));
     try {
-      await removeRoomLikeAll(loggedInUser.user.id);
+      await removeRoomLikeAll(loggedInUser.id);
       setHeartStates({});
       getLike();
     } catch (err) {
@@ -99,7 +105,7 @@ export default function LikeRoom() {
                 <div className="row g-0">
                   <div className="col-md-3">
                     <img
-                      src={room > 0 ? room[0].img : "hhh"}
+                      src={room.images ? room.images[0].img : "null"}
                       className="card-img rounded-2"
                       alt="Cardimage"
                       style={{ height: "160px" }}
@@ -156,16 +162,28 @@ export default function LikeRoom() {
 
                       <div className="d-sm-flex justify-content-sm-between align-items-center">
                         <div className="d-flex align-items-center">
-                          <h5 className="fw-bold mb-0 me-1">{room.price}$</h5>
-                          <span className="mb-0 me-2">/day</span>
+                          <h5 className="fw-bold mb-0 me-1">
+                            <CurrencyFormat
+                              value={room.price}
+                              thousandSeparator={true}
+                              suffix={"VND/ Ngày"}
+                              decimalScale={2}
+                              className="text-black customInput"
+                              displayType={"text"}
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                              }}
+                            />
+                          </h5>
                         </div>
                         <div className=" mt-sm-0">
-                          <a
-                            href="hotel-detail.html"
+                          <Link
+                            to={`/room_detail?roomId=${room.id}`}
                             className="btn btn-sm btn-dark w-100 mb-0"
                           >
                             View hotel
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>

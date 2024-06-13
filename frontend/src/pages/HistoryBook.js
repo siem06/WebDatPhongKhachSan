@@ -5,9 +5,57 @@ import "../assets/css/profile.css";
 import Button from "../components/Button/Button";
 import TableMui from "../components/Table/TableMui";
 import { getBookingById, getByIdUserAll } from "../service/api";
+import moment from "moment";
+import dayjs from "dayjs";
 
 export default function HistoryBook() {
   const navigation = useNavigate();
+  const columns = [
+    {
+      accessorKey: "id",
+      key: "id",
+      header: "Mã",
+    },
+    {
+      accessorKey: "totalRoom",
+      header: "Số phòng",
+    },
+    {
+      accessorKey: "checkinDate",
+      header: "Ngày checkin",
+      Cell: ({ cell, row }) => (
+        <div>{dayjs(row.original.checkinDate).format("DD-MM-YYYY")}</div>
+      ),
+    },
+    {
+      accessorKey: "checkoutDate",
+      header: "Ngày checkout",
+      Cell: ({ cell, row }) => (
+        <div>{dayjs(row.original.checkoutDate).format("DD-MM-YYYY")}</div>
+      ),
+    },
+
+    {
+      accessorKey: "methodPay",
+      header: "Thanh toán",
+      Cell: ({ cell, row }) => <div>{row.original.methodPay}</div>,
+    },
+    {
+      accessorKey: "statusBooking",
+      header: "Trạng thái",
+      Cell: ({ cell, row }) => (
+        <div
+          style={{
+            backgroundColor: row.original.statusBooking === 1 ? "green" : "red",
+            color: "white",
+            borderRadius: "5px",
+          }}
+        >
+          {row.original.statusBooking === 1 ? "Thành công" : "Thất bại"}
+        </div>
+      ),
+    },
+  ];
 
   useEffect(() => {
     const tabs = document.querySelectorAll(".tab-item");
@@ -38,16 +86,16 @@ export default function HistoryBook() {
       };
     });
   }, []);
+
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   const [modalShow, setModalShow] = useState(false);
   const [selectedCellValue, setSelectedCellValue] = useState([]);
   const [data, setData] = useState([]);
+
   useEffect(() => {
     const dataBooking = async () => {
       try {
-        // const bookingData = await getBookingById(loggedInUser.user.id);
-        const bookingData = await getByIdUserAll(loggedInUser.user.id);
-        console.log("22", bookingData.bookings);
+        const bookingData = await getByIdUserAll(loggedInUser.id);
         setData(bookingData.bookings);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -56,6 +104,20 @@ export default function HistoryBook() {
 
     dataBooking();
   }, []);
+
+  const currentDate = moment();
+
+  const upcomingBookings = data.filter(
+    (booking) =>
+      moment(booking.checkinDate).isAfter(currentDate) ||
+      (moment(booking.checkinDate).isSameOrBefore(currentDate) &&
+        moment(booking.checkoutDate).isSameOrAfter(currentDate))
+  );
+
+  const completedBookings = data.filter((booking) =>
+    moment(booking.checkoutDate).isBefore(currentDate)
+  );
+
   return (
     <div>
       {/* <!-- Tab items --> */}
@@ -85,6 +147,7 @@ export default function HistoryBook() {
           </div>
           <div className="table-scroll ">
             <TableMui
+              columns={columns}
               data={data}
               setModalShow={setModalShow}
               setSelectedCellValue={setSelectedCellValue}
@@ -93,36 +156,9 @@ export default function HistoryBook() {
         </div>
         <div className="tab-pane">
           <div className="table-scroll ">
-            {/* <Table responsive="sm" striped bordered hover>
-              <thead className="fixed-header">
-                <tr>
-                  <th>#</th>
-                  <th>Mã đặt phòng</th>
-                  <th>Số phòng</th>
-                  <th>Thời gian</th>
-                  <th>Tổng tiền</th>
-                  <th>Trạng thái</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookRoom
-                  .filter((room) => room.status === "Thành công")
-                  .map((room, index) => (
-                    <tr>
-                      <td>{index + 1}</td>
-                      <td>{room.id}</td>
-                      <td>{room.numberRoom}</td>
-                      <td>{room.date}</td>
-                      <td>{room.total}</td>
-                      <td>{room.status}</td>
-                      <td>{room.action}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </Table> */}
             <TableMui
-              data={data.filter((booking) => booking.statusBooking === 1)}
+              columns={columns}
+              data={upcomingBookings}
               setModalShow={setModalShow}
               setSelectedCellValue={setSelectedCellValue}
             />
@@ -131,6 +167,17 @@ export default function HistoryBook() {
         <div className="tab-pane">
           <div className="table-scroll ">
             <TableMui
+              columns={columns}
+              data={completedBookings}
+              setModalShow={setModalShow}
+              setSelectedCellValue={setSelectedCellValue}
+            />
+          </div>
+        </div>
+        <div className="tab-pane">
+          <div className="table-scroll ">
+            <TableMui
+              columns={columns}
               data={data.filter((booking) => booking.statusBooking === 0)}
               setModalShow={setModalShow}
               setSelectedCellValue={setSelectedCellValue}
@@ -146,38 +193,6 @@ export default function HistoryBook() {
           data={selectedCellValue}
           onHide={() => setModalShow(false)}
         />
-        {/* <div className="tab-pane">
-          <div className="table-scroll ">
-            {/* <Table responsive="sm" striped bordered hover>
-              <thead className="fixed-header">
-                <tr>
-                  <th>#</th>
-                  <th>Mã đặt phòng</th>
-                  <th>Số phòng</th>
-                  <th>Thời gian</th>
-                  <th>Tổng tiền</th>
-                  <th>Trạng thái</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookRoom
-                  .filter((room) => room.status === "Hết hạn")
-                  .map((room, index) => (
-                    <tr>
-                      <td>{index + 1}</td>
-                      <td>{room.id}</td>
-                      <td>{room.numberRoom}</td>
-                      <td>{room.date}</td>
-                      <td>{room.total}</td>
-                      <td>{room.status}</td>
-                      <td>{room.action}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </Table> 
-          </div>
-        </div> */}
       </div>
     </div>
   );

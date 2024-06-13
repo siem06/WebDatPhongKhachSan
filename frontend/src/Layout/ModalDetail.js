@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import { Button, Modal } from "react-bootstrap";
 import CurrencyFormat from "react-currency-format";
 import { useNavigate } from "react-router-dom";
 import Input from "../components/Input/Input";
-import { getAllImage, getRoomsById } from "../service/api";
+import {
+  getAllImage,
+  getRoomsById,
+  updateProfile,
+  getUserById,
+  getByIdUserAll,
+} from "../service/api";
 
 export default function ModalDetail(props) {
   const {
@@ -14,8 +19,8 @@ export default function ModalDetail(props) {
     changePass,
     btnclose,
     btnsave,
-    forgotPass,
     data,
+    userDetails,
   } = props;
 
   const getTypeRoomLabel = (typeRoom) => {
@@ -32,24 +37,23 @@ export default function ModalDetail(props) {
         return "Không xác định";
     }
   };
-  const navigation = useNavigate();
 
+  const navigate = useNavigate();
   const [roomDetails, setRoomDetails] = useState({});
   const [roomImages, setRoomImages] = useState([]);
+  const [permissions, setPermissions] = useState({});
+  const [newData, setEditableData] = useState(data);
+
   useEffect(() => {
-    console.log("dd", data);
     const fetchRoomData = async () => {
       try {
         if (data !== undefined) {
-          console.log("ddssssssss", data.idRoom);
           const roomData = await getRoomsById(data.idRoom);
           const imagesData = await getAllImage(data.idRoom);
           const imagesObj = {};
           imagesObj[data.idRoom] = imagesData[0];
           setRoomDetails(roomData);
           setRoomImages(imagesObj);
-        } else {
-          return;
         }
       } catch (error) {
         console.error("Failed to fetch room data", error);
@@ -58,9 +62,72 @@ export default function ModalDetail(props) {
 
     fetchRoomData();
   }, [data]);
-  const link_detail = (roomId) => {
-    navigation(`/room_detail?roomId=${roomId}`);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        if (data.id !== undefined) {
+          const userData = await getByIdUserAll(data.id);
+          setEditableData(userData);
+          console.log("User data:", userData);
+          // Set permissions based on roles
+          const userRoles = userData.roles; // Assume 'roles' is an array in userData
+          const initialPermissions = {};
+          userRoles.forEach((role) => {
+            initialPermissions[role.name] = true; // Lưu tên vai trò làm key và giá trị là true
+          });
+          setPermissions(initialPermissions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+      }
+    };
+
+    fetchUserData();
+  }, [data]);
+
+  const handlePermissionChange = (event) => {
+    const { name, checked } = event.target;
+    setPermissions({
+      ...permissions,
+      [name]: checked,
+    });
   };
+  console.log("Permission", permissions);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setEditableData({
+      ...newData,
+      [name]: value,
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      // Gộp quyền hạn vào trong newData
+      const roles = Object.keys(permissions).map((key) => ({
+        name: key,
+        active: permissions[key],
+      }));
+
+      const updatedData = {
+        ...newData,
+        role: roles,
+      };
+
+      // Gọi hàm cập nhật thông tin và quyền hạn
+      await updateProfile(data.id, updatedData);
+      console.log("Data saved successfully");
+      props.onHide();
+    } catch (error) {
+      console.error("Failed to save data", error);
+    }
+  };
+
+  const link_detail = (roomId) => {
+    navigate(`/room_detail?roomId=${roomId}`);
+  };
+
   return (
     <Modal
       {...props}
@@ -69,12 +136,11 @@ export default function ModalDetail(props) {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter text-center text-black">
+        <Modal.Title
+          id="contained-modal-title-vcenter"
+          className="text-center text-black"
+        >
           {header}
-          <p>
-            Chúng tôi đã gửi thông tin vé chi tiết về mail bạn. Vui lòng kiểm
-            tra.
-          </p>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -85,19 +151,19 @@ export default function ModalDetail(props) {
               <div className="d-flex w-full flex-col ">
                 <div className="relative d-flex flex-col justify-between p-4 sm:flex-row row">
                   <div className="d-flex">
-                    <div className="text-black mb-2 col-5 ">Họ và tên: </div>
+                    <div className="text-black mb-2 col-5">Họ và tên: </div>
                     <span className="text-black font-weight-bold">
-                      {data.useName}
+                      {data.username}
                     </span>
                   </div>
                   <div className="d-flex">
-                    <div className="text-black mb-2 col-5 ">Số điện thoại:</div>
+                    <div className="text-black mb-2 col-5">Số điện thoại:</div>
                     <span className="text-black font-weight-bold">
                       {data.phone}
                     </span>
                   </div>
                   <div className="d-flex">
-                    <div className="text-black mb-2 col-5 ">Email: </div>
+                    <div className="text-black mb-2 col-5">Email: </div>
                     <span className="text-black font-weight-bold">
                       {data.email}
                     </span>
@@ -105,9 +171,7 @@ export default function ModalDetail(props) {
                 </div>
                 <div className="relative d-flex flex-col justify-between p-4 sm:flex-row row">
                   <div className="d-flex">
-                    <div className="text-black mb-2 col-5 ">
-                      Tổng giá phòng:
-                    </div>
+                    <div className="text-black mb-2 col-5">Tổng giá phòng:</div>
                     <span className="text-black font-weight-bold">
                       <CurrencyFormat
                         value={data.totalPrice}
@@ -115,7 +179,7 @@ export default function ModalDetail(props) {
                         suffix={"VND"}
                         decimalScale={2}
                         displayType="text"
-                        className="text-black "
+                        className="text-black"
                         style={{
                           backgroundColor: "transparent",
                           border: "none",
@@ -137,7 +201,7 @@ export default function ModalDetail(props) {
                   </div>
                 </div>
               </div>
-              <div className="d-flex justify-content-center ">
+              <div className="d-flex justify-content-center">
                 <button
                   className="w-20 m-auto btn btn-danger text-white"
                   onClick={() => console.log("Cancel")}
@@ -196,7 +260,7 @@ export default function ModalDetail(props) {
                                 height: "100px",
                               }}
                               onClick={(e) => {
-                                e.preventDefault(); // Prevent the default link action
+                                e.preventDefault();
                                 link_detail(data.idRoom);
                               }}
                             />
@@ -228,7 +292,10 @@ export default function ModalDetail(props) {
           {changePass && (
             <div>
               <div className="flex-col relative justify-between">
-                <div className="relative flex flex-col">
+                <div
+                  className="relative
+flex flex-col"
+                >
                   <div className="container">
                     <div className="row justify-content-center">
                       <div className="p-4 border rounded bg-white">
@@ -237,19 +304,111 @@ export default function ModalDetail(props) {
                           placeholder="Mật khẩu cũ"
                           type="text"
                         />
-
                         <Input
                           title="Mật khẩu mới"
                           placeholder="Mật khẩu mới"
                           type="text"
                         />
-
                         <Input
                           title="Nhập lại mật khẩu"
                           placeholder="Nhập lại mật khẩu"
                           type="text"
                         />
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {userDetails && (
+            <div>
+              <div className="d-flex w-full flex-col">
+                <div className="relative d-flex flex-col justify-between p-4 sm:flex-row row">
+                  <div className="d-flex">
+                    <div className="text-black mb-2 col-5">Họ và tên: </div>
+                    <input
+                      type="text"
+                      name="username"
+                      placeholder={data.username}
+                      value={newData.username}
+                      onChange={handleInputChange}
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="d-flex">
+                    <div className="text-black mb-2 col-5">Email: </div>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder={data.email}
+                      value={newData.email}
+                      onChange={handleInputChange}
+                      className="form-control"
+                    />
+                  </div>
+                </div>
+                <div className="relative d-flex flex-col justify-between p-4 sm:flex-row row">
+                  <div className="d-flex">
+                    <div className="text-black mb-2 col-5">Số điện thoại:</div>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder={data.phone}
+                      value={newData.phone}
+                      onChange={handleInputChange}
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="d-flex">
+                    <div className="text-black mb-2 col-5">Trạng thái: </div>
+                    <select
+                      name="status"
+                      value={newData.status}
+                      onChange={handleInputChange}
+                      className="form-control"
+                    >
+                      <option value={1}>Đã xác thực</option>
+                      <option value={0}>Chưa xác thực</option>
+                      <option value={5}>Khóa tài khảon</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-col relative justify-between mt-2">
+                <div className="relative flex flex-col">
+                  <div className="container">
+                    <div className="row justify-content-center">
+                      <div className="d-flex">
+                        <div className="text-black mb-2 col-5 m-3">
+                          Quyền hạn:
+                        </div>
+                      </div>
+                      {Object.keys(permissions).length > 0 &&
+                        Object.keys(permissions).map((key) => (
+                          <div key={key} className="d-flex">
+                            <label>
+                              <input
+                                type="checkbox"
+                                name="user"
+                                checked={permissions["user"]}
+                                onChange={handlePermissionChange}
+                                disabled={!permissions[key]} // Disable checkbox if permission is not true
+                              />
+                              User
+                            </label>
+                            <label>
+                              <input
+                                type="checkbox"
+                                name="admin"
+                                checked={permissions["admin"]}
+                                onChange={handlePermissionChange}
+                                disabled={!permissions[key]} // Disable checkbox if permission is not true
+                              />
+                              Admin
+                            </label>
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -265,7 +424,7 @@ export default function ModalDetail(props) {
           </Button>
         )}
         {btnsave && (
-          <Button style={{ backgroundColor: "#5143d9" }} onClick={props.onHide}>
+          <Button style={{ backgroundColor: "#5143d9" }} onClick={handleSave}>
             Lưu
           </Button>
         )}

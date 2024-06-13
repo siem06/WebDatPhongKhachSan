@@ -1,73 +1,86 @@
-// const contactModel = require("../config/db/models/Contact");
-// class ContactController {
-//   get(req, res) {
-//     let result = contactModel.get_all();
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   find(req, res) {
-//     let result = contactModel.find(req.params.id);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   create(req, res) {
-//     const data = {
-//       name: req.body.name,
-//       email: req.body.email,
-//       topic: req.body.topic,
-//       content: req.body.content,
-//     };
-//     let result = contactModel.create(data);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   update(req, res) {
-//     const data = {
-//       idAccount: req.body.idAccount,
-//       name: req.body.name,
-//       email: req.body.email,
-//       topic: req.body.topic,
-//       content: req.body.content,
-//     };
-//     let result = contactModel.update(req.params.id, data);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   delete(req, res) {
-//     let result = contactModel.delete(req.params.id);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-// }
+const db = require("../models");
 
-// module.exports = new ContactController();
+class ContactController {
+  async get(req, res) {
+    try {
+      const contacts = await db.contact.findAll();
+      console.log(contacts);
+      res.json(contacts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch contacts" });
+    }
+  }
+
+  async find(req, res) {
+    try {
+      const contact = await db.contact.findByPk(req.params.id);
+      if (contact) {
+        console.log(contact);
+        res.json(contact);
+      } else {
+        res.status(404).json({ error: "Contact not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch contact" });
+    }
+  }
+
+  async create(req, res) {
+    try {
+      const { name, email, topic, content } = req.body;
+      const newContact = await db.contact.create({
+        name,
+        email,
+        topic,
+        content,
+      });
+      console.log(newContact);
+      res.json(newContact);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to create contact" });
+    }
+  }
+
+  async update(req, res) {
+    try {
+      const { idAccount, name, email, topic, content } = req.body;
+      const contact = await db.contact.findByPk(req.params.id);
+      if (contact) {
+        contact.idAccount = idAccount;
+        contact.name = name;
+        contact.email = email;
+        contact.topic = topic;
+        contact.content = content;
+        await contact.save();
+        console.log(contact);
+        res.json(contact);
+      } else {
+        res.status(404).json({ error: "Contact not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to update contact" });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const contact = await db.contact.findByPk(req.params.id);
+      if (contact) {
+        await contact.destroy();
+        console.log(contact);
+        res.json({ message: "Contact deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Contact not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to delete contact" });
+    }
+  }
+}
+
+module.exports = new ContactController();

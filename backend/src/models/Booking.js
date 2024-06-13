@@ -17,9 +17,8 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
     statusBooking: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       allowNull: false,
-      defaultValue: "pending", // Giá trị mặc định cho trạng thái là 'pending'
     },
     note: {
       type: Sequelize.TEXT,

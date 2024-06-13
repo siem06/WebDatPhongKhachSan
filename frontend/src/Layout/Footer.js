@@ -30,7 +30,7 @@ export default function Footer() {
             <div className="col-lg-3  col-md-6 col-sm-6">
               <div className="single-footer-widget">
                 <h6 className="footer_title">LUXURIOUS HOTEL</h6>
-                <p>
+                <p className="text-white">
                   Có hồ bơi ngoài trời, trung tâm thể dục, khu vườn và sân hiên
                   ở TP. Hồ Chí Minh. Chỗ nghỉ này có các tiện nghi như nhà hàng
                   và quầy bar. Chỗ nghỉ cung cấp lễ tân 24/24, dịch vụ đưa đón
@@ -40,26 +40,18 @@ export default function Footer() {
             </div>
             <div className="col-lg-3 col-md-6 col-sm-6">
               <div className="single-footer-widget">
-                <h6 className="footer_title">Thành viên nhóm</h6>
+                <h6 className="footer_title ">Thành viên nhóm</h6>
                 <div className="row">
                   <div className="footer_col">
                     <ul className="list_style">
-                      <li>
-                        <a href="#">Phan Thị Hồng Siêm </a>
-                      </li>
-                      <li>
-                        <a href="#">Châu Quế Bình</a>
-                      </li>
+                      <li className="text-white mt-1">Phan Thị Hồng Siêm</li>
+                      <li className="text-white mt-1">Châu Quế Bình</li>
                     </ul>
                   </div>
                   <div className="col-4">
                     <ul className="list_style">
-                      <li>
-                        <a href="#">20130386</a>
-                      </li>
-                      <li>
-                        <a href="#">20130204</a>
-                      </li>
+                      <li className="text-white mt-1">20130386</li>
+                      <li className="text-white mt-1">20130204</li>
                     </ul>
                   </div>
                 </div>
@@ -68,7 +60,9 @@ export default function Footer() {
             <div className="col-lg-3 col-md-6 col-sm-6">
               <div className="single-footer-widget">
                 <h6 className="footer_title">Bản tin</h6>
-                <p>Hãy gửi mail dưới đây để nhận thông tin mới </p>
+                <p className="text-white ">
+                  Hãy gửi mail dưới đây để nhận thông tin mới
+                </p>
                 <div id="mc_embed_signup">
                   <form
                     target="_blank"
@@ -100,11 +94,9 @@ export default function Footer() {
           </div>
           <div className="border_line"></div>
           <div className="row footer-bottom d-flex justify-content-between align-items-center">
-            <p className="col-lg-8 col-sm-12 footer-text m-0">
+            <p className="col-lg-8 col-sm-12 footer-text m-0 text-white">
               Được phát triển bởi &copy;
-              <script>
-                document.write(new Date().getFullYear());
-              </script> NHÓM{" "}
+              <script>document.write(new Date().getFullYear());</script> NHÓM
               <i className="fa fa-heart-o" aria-hidden="true"></i>
             </p>
           </div>

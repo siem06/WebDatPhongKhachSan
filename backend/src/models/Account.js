@@ -56,6 +56,7 @@ module.exports = (sequelize, Sequelize) => {
           { model: db.booking, as: "bookings" },
           { model: db.room, as: "favoriteUsers" },
           { model: db.role, as: "roles" },
+          { model: db.room, as: "roomCarts" },
         ],
       });
       return user;
@@ -66,8 +67,6 @@ module.exports = (sequelize, Sequelize) => {
   };
 
   User.findByEmail = async function (email) {
-    const db = require("../models");
-
     try {
       const user = await User.findOne({ where: { email, status: 1 } });
       return user;
@@ -137,5 +136,6 @@ module.exports = (sequelize, Sequelize) => {
       throw error;
     }
   };
+
   return User;
 };

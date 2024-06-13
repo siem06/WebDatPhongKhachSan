@@ -159,12 +159,16 @@ export default function Menu({ setLoggedIn, classname }) {
               </h6>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="./pages/profile.html">
+              <NavLink
+                className="nav-link text-white"
+                onClick={() => handleSetActive("/detailProfile")}
+                to="/detailProfile"
+              >
                 <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
                   <i className="material-icons opacity-10">person</i>
                 </div>
                 <span className="nav-link-text ms-1">Profile</span>
-              </a>
+              </NavLink>
             </li>
             <li className="nav-item ">
               <NavLink className="nav-link text-white" onClick={handleLogout}>
