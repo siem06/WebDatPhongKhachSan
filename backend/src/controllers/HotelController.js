@@ -1,70 +1,79 @@
-// const hotelModel = require("../config/db/models/Hotel");
-// class HotelController {
-//   get(req, res) {
-//     let result = hotelModel.get_all();
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   find(req, res) {
-//     let result = hotelModel.find(req.params.id);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   create(req, res) {
-//     const data = {
-//       logo: req.body.logo,
-//       slogan: req.body.slogan,
-//       information: req.body.information,
-//     };
-//     let result = hotelModel.create(data);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   update(req, res) {
-//     const data = {
-//       logo: req.body.logo,
-//       slogan: req.body.slogan,
-//       information: req.body.information,
-//     };
-//     let result = hotelModel.update(req.params.id, data);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   delete(req, res) {
-//     let result = hotelModel.delete(req.params.id);
-//     result
-//       .then(function (value) {
-//         console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-// }
+// controllers/HotelController.js
+const db = require("../models");
+class HotelController {
+  async get(req, res) {
+    try {
+      const hotels = await db.hotel.findAll();
+      console.log(hotels);
+      res.json(hotels);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch hotels" });
+    }
+  }
 
-// module.exports = new ContactController();
+  async find(req, res) {
+    try {
+      const hotel = await db.hotel.findByPk(req.params.id);
+      if (hotel) {
+        console.log(hotel);
+        res.json(hotel);
+      } else {
+        res.status(404).json({ error: "Hotel not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch hotel" });
+    }
+  }
+
+  async create(req, res) {
+    try {
+      const { logo, slogan, information } = req.body;
+      const newHotel = await db.hotel.create({ logo, slogan, information });
+      console.log(newHotel);
+      res.json(newHotel);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to create hotel" });
+    }
+  }
+
+  async update(req, res) {
+    try {
+      const { logo, slogan, information } = req.body;
+      const hotel = await db.hotel.findByPk(req.params.id);
+      if (hotel) {
+        hotel.logo = logo;
+        hotel.slogan = slogan;
+        hotel.information = information;
+        await hotel.save();
+        console.log(hotel);
+        res.json(hotel);
+      } else {
+        res.status(404).json({ error: "Hotel not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to update hotel" });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const hotel = await db.hotel.findByPk(req.params.id);
+      if (hotel) {
+        await hotel.destroy();
+        console.log(hotel);
+        res.json({ message: "Hotel deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Hotel not found" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to delete hotel" });
+    }
+  }
+}
+
+module.exports = new HotelController();

@@ -32,7 +32,7 @@ export default function Profile({ setLoggedIn }) {
     if (!loggedInUser) {
       navigation("/login");
     } else {
-      setUser(loggedInUser.user);
+      setUser(loggedInUser);
     }
   }, []);
 

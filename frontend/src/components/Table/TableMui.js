@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Stack,
@@ -7,6 +8,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import {
   MRT_GlobalFilterTextField,
@@ -16,87 +22,43 @@ import {
   flexRender,
   useMaterialReactTable,
 } from "material-react-table";
-import React from "react";
 import CurrencyFormat from "react-currency-format";
+import dayjs from "dayjs";
+import Edit from "@mui/icons-material/Edit";
+import Delete from "@mui/icons-material/Delete";
 
-const columns = [
-  {
-    accessorKey: "bookingId",
-    key: "bookingId",
-    header: "Mã",
-  },
-  {
-    accessorKey: "totalRoom",
-    header: "Số phòng",
-  },
-  {
-    accessorKey: "checkoutDate",
-    header: "Ngày checkin",
-  },
-  {
-    accessorKey: "checkinDate",
-    header: "Ngày checkout",
-  },
-  {
-    accessorKey: "roomPrice",
-    header: "Số tiền",
-    Cell: ({ cell, row }) => (
-      <CurrencyFormat
-        value={row.original.roomPrice}
-        thousandSeparator={true}
-        suffix={"VND"}
-        decimalScale={2}
-        displayType="text"
-        className="text-black "
-        style={{
-          backgroundColor: "transparent",
-          border: "none",
-        }}
-      />
-    ),
-  },
-  {
-    accessorKey: "methodPay",
-    header: "Thanh toán",
-    Cell: ({ cell, row }) => <div>{row.original.methodPay}</div>,
-  },
-  {
-    accessorKey: "statusBooking",
-    header: "Trạng thái",
-    Cell: ({ cell, row }) => (
-      <div
-        style={{
-          backgroundColor: row.original.statusBooking === 1 ? "green" : "red",
-          color: "white",
-          borderRadius: "5px",
-        }}
-      >
-        {row.original.statusBooking === 1 ? "Thành công" : "Thất bại"}
-      </div>
-    ),
-  },
-];
+const TableMui = ({ columns, data, setModalShow, setSelectedCellValue }) => {
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
-const TableMui = ({ data, setModalShow, setSelectedCellValue }) => {
   const table = useMaterialReactTable({
     columns,
-    data, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
-    //MRT display columns can still work, optionally override cell renders with `displayColumnDefOptions`
+    data,
     enableRowSelection: true,
     initialState: {
       pagination: { pageSize: 5, pageIndex: 0 },
       showGlobalFilter: true,
     },
-    //customize the MRT components
     muiPaginationProps: {
       rowsPerPageOptions: [5, 10, 15],
       variant: "outlined",
     },
     paginationDisplayMode: "pages",
   });
-  const handleCellClick = (cellValue) => {
-    setSelectedCellValue(cellValue.original);
+
+  const handleCellClick = (row) => {
+    setSelectedCellValue(row.original);
     setModalShow(true);
+  };
+
+  const handleEditClick = (row) => {
+    setSelectedRow(row);
+    setEditModalOpen(true);
+  };
+
+  const handleEditModalClose = () => {
+    setEditModalOpen(false);
+    setSelectedRow(null);
   };
 
   return (
@@ -126,6 +88,12 @@ const TableMui = ({ data, setModalShow, setSelectedCellValue }) => {
                         )}
                   </TableCell>
                 ))}
+                {/* Add column header for actions */}
+                {data.some((row) => row.email) && (
+                  <TableCell align="center" variant="head">
+                    Hành động
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableHead>
@@ -145,6 +113,15 @@ const TableMui = ({ data, setModalShow, setSelectedCellValue }) => {
                     />
                   </TableCell>
                 ))}
+                {/* Render action button if row has action */}
+                {row.original.email && (
+                  <TableCell align="center" className="d-flex">
+                    <Button
+                      onClick={() => handleEditClick(row.original)}
+                      startIcon={<Edit />}
+                    ></Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
@@ -160,6 +137,27 @@ const TableMui = ({ data, setModalShow, setSelectedCellValue }) => {
         <MRT_TablePagination table={table} />
       </Box>
       <MRT_ToolbarAlertBanner stackAlertBanner table={table} />
+
+      {/* Edit Modal */}
+      {/* <Dialog open={editModalOpen} onClose={handleEditModalClose}> */}
+      {/* <DialogTitle>Chỉnh sửa thông tin</DialogTitle> */}
+      {/* <DialogContent> */}
+      {/* Replace with your edit form or component */}
+      {/* <Box p={2}> */}
+      {/* <div>ID: {selectedRow?.id}</div> */}
+      {/* <div>Email: {selectedRow?.email}</div> */}
+      {/* <div> */}
+      {/* Trạng thái:{" "} */}
+      {/* {selectedRow?.status === 1 ? "Đã xác thực" : "Chưa xác thực"} */}
+      {/* </div> */}
+      {/* Add more fields as needed */}
+      {/* </Box> */}
+      {/* </DialogContent> */}
+      {/* <DialogActions> */}
+      {/* <Button onClick={handleEditModalClose}>Đóng</Button> */}
+      {/* Add Save or Update button for editing */}
+      {/* </DialogActions> */}
+      {/* </Dialog> */}
     </Stack>
   );
 };

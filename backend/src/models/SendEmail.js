@@ -1,4 +1,6 @@
 const nodemailer = require("nodemailer");
+const { html } = require("../utils/email");
+const db = require("./index");
 
 // Cấu hình transporter cho Nodemailer
 const transporter = nodemailer.createTransport({
@@ -32,15 +34,25 @@ function sendConfirmationEmail(recipientEmail, token) {
 }
 
 // Hàm gửi email xác nhận đặt phòng
-function sendEmailConfi(recipientEmail, book) {
+async function sendEmailConfi(recipientEmail, book) {
+  const user = await db.user.findByPk(book.userId);
+  const booking = await db.booking.getBooking(book.id);
+  const data = booking.dataValues.rooms;
+  console.log("gg", booking.dataValues.rooms);
+  console.log("gg22", user.dataValues);
+
+  const userInformation = user.dataValues;
+  // Nếu không tìm thấy người dùng, có thể xử lý theo yêu cầu
+
   const emailOption = {
     from: "hongsiem2002@gmail.com",
     to: recipientEmail,
     subject: "Xác nhận đặt phòng",
-    html: `<p>Thông tin đặt phòng của bạn:</p>
-           <p>Mã đặt phòng: ${book.id}</p>
-           <p>Tổng giá: ${book.totalPrice}</p>
-           <p>Ngày đặt: ${book.createdAt}</p>`,
+    html: html(book, data, userInformation),
+    // html: `<p>Thông tin đặt phòng của bạn:</p>
+    // <p>Mã đặt phòng: ${book.id}</p>
+    // <p>Tổng giá: ${book.totalPrice}</p>
+    // <p>Ngày đặt: ${book.createdAt}</p>`,
   };
 
   return new Promise((resolve, reject) => {

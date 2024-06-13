@@ -20,11 +20,14 @@ export default function ManagerGeneral() {
   const [aricleBlog, setArticleBlog] = useState(null);
   const [service, setService] = useState(null);
   const [aboutus, setAboutus] = useState({ status: 1, information: "" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [selectedRow, setSelectedRow] = useState(null);
   const handleEdit = (rowData) => {
+    setSelectedRow(rowData);
     setIsModalOpen(true);
     console.log("Data của hàng được chọn:", rowData);
   };
+
   const handleDelete = async (rowData) => {
     try {
       await deleteBlog(rowData.id);
@@ -108,7 +111,7 @@ export default function ManagerGeneral() {
       key: "status",
       name: "Trạng thái",
       cell: (row) => (
-        <span style={{ color: row.status === "1" ? "#2ea817" : "red" }}>
+        <span style={{ color: row.status === 1 ? "#2ea817" : "red" }}>
           {row.status === "1" ? "Đang hiển thị" : "Đang ẩn"}
         </span>
       ),
@@ -191,7 +194,7 @@ export default function ManagerGeneral() {
                       columns={columns}
                       data={cateBlog}
                       type="1"
-                      model={isModalOpen}
+                      model={selectedRow}
                     />
                   )}
                 </div>

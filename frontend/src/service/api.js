@@ -16,11 +16,11 @@ export const login = async (email, password) => {
     throw error;
   }
 };
-export const register = async (email, useName, password, repassword) => {
+export const register = async (email, username, password, repassword) => {
   try {
     const response = await instance.post("/accounts/register", {
       email,
-      useName,
+      username,
       password,
       repassword,
     });
@@ -137,6 +137,7 @@ export const updateProfile = async (id, newData) => {
     throw error;
   }
 };
+
 export const deleteUser = async (idUser) => {
   try {
     const response = await instance.delete(`/accounts/${idUser}`);
@@ -180,15 +181,17 @@ export const removeRoomLike = async (userId, roomId) => {
     throw error;
   }
 };
-export const removeRoomLikeAll = async () => {
+export const removeRoomLikeAll = async (userId) => {
   try {
-    await instance.delete(`/roomfavorite/deleteAll`);
+    await instance.delete(`/roomfavorite/deleteAll`, {
+      data: { userId },
+    });
     console.log("success");
-    // return response.data;
   } catch (error) {
     throw error;
   }
 };
+
 // end like rooom
 // begin call api About-us
 export const getAboutus = async () => {
@@ -373,7 +376,7 @@ export const getReviewByRoomId = async (rating) => {
     throw error;
   }
 };
-//
+// api booking
 export const getAllBooking = async () => {
   try {
     const response = await instance.get("/booking");
@@ -382,7 +385,7 @@ export const getAllBooking = async () => {
     throw error;
   }
 };
-// api booking
+
 export const postBooking = async (bookingData) => {
   try {
     const response = await instance.post("/booking", bookingData);
@@ -463,6 +466,31 @@ export const sendEmail = async (email, data) => {
       data,
     });
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const addCart = async (roomId, userId) => {
+  try {
+    const response = await instance.post("/cart", {
+      roomId,
+      userId,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const removeCart = async (id) => {
+  try {
+    await instance.delete(`/cart/${id}`);
+  } catch (error) {
+    throw error;
+  }
+};
+export const removeAllCart = async (id) => {
+  try {
+    await instance.delete(`/cart/all/${id}`);
   } catch (error) {
     throw error;
   }

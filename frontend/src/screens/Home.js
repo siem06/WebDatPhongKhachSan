@@ -152,7 +152,7 @@ export default function Home() {
     try {
       if (isFavorite) {
         console.log("Favorite1", isFavorite);
-        const s = await handleRemoveFavorite(user.user.id, roomId); // Bỏ thích nếu đã thích trước đó
+        const s = await handleRemoveFavorite(user.id, roomId); // Bỏ thích nếu đã thích trước đó
         console.log(s);
         console.log(user.user.id, roomId);
 
@@ -163,7 +163,7 @@ export default function Home() {
           [roomId]: false,
         }));
       } else {
-        await handleAddFavorite(user.user.id, roomId); // Thêm vào danh sách yêu thích nếu chưa thích trước đó
+        await handleAddFavorite(user.id, roomId); // Thêm vào danh sách yêu thích nếu chưa thích trước đó
         console.log("Favorite111", isFavorite);
 
         setHeartStates((prevState) => ({

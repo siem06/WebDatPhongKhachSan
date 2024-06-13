@@ -1,6 +1,22 @@
-// const Model = require("../models/model");
-// module.exports = new (class ContactModel extends Model {
-//   constructor() {
-//     super("contact");
-//   }
-// })();
+// models/Contact.js
+module.exports = (sequelize, Sequelize) => {
+  const Contact = sequelize.define("contacts", {
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    topic: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    content: {
+      type: Sequelize.TEXT,
+      allowNull: false,
+    },
+  });
+  return Contact;
+};

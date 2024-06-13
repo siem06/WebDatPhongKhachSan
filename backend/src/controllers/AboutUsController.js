@@ -1,119 +1,105 @@
-// const db = require("../models"); // Import các mô hình Sequelize
+const db = require("../models");
+class AboutUsController {
+  async create(req, res) {
+    try {
+      const { information, status } = req.body;
+      const aboutus = await db.about.create({ information, status });
+      res.status(201).json(aboutus);
+    } catch (error) {
+      res.status(500).json({
+        message:
+          error.message || "Some error occurred while creating the About Us.",
+      });
+    }
+  }
+  async getAboutStatus(req, res) {
+    try {
+      const id = req.params.id;
+      const aboutus = await db.about.findOne({ where: { status: 1 } });
 
-// const Aboutus = ; // Lấy mô hình Aboutus từ các mô hình đã được định nghĩa
+      if (!aboutus) {
+        return res
+          .status(404)
+          .json({ message: `About Us not found with status=1.` });
+      }
 
-// // Controller để tạo một bản ghi mới về About Us
-// exports.create = (req, res) => {
-//   // Lấy thông tin từ yêu cầu
-//   const { information, status } = req.body;
+      res.json(aboutus);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: `Error retrieving About Us with id=${id}.` });
+    }
+  }
+  async find(req, res) {
+    try {
+      const id = req.params.id;
+      const aboutus = await db.about.findByPk(id);
+      if (!aboutus) {
+        return res
+          .status(404)
+          .json({ message: `About Us not found with id=${id}.` });
+      }
+      res.json(aboutus);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: `Error retrieving About Us with id=${id}.` });
+    }
+  }
 
-//   // Tạo một bản ghi mới với thông tin từ yêu cầu
-//   const aboutus = {
-//     information: information,
-//     status: status,
-//   };
+  async update(req, res) {
+    try {
+      const id = req.params.id;
+      const { information, status } = req.body;
+      const [numUpdated, updatedAboutus] = await db.about.update(
+        { information, status },
+        { where: { id } }
+      );
+      if (numUpdated === 1) {
+        res.json({
+          message: "About Us was updated successfully.",
+          updatedAboutus,
+        });
+      } else {
+        res.status(404).json({
+          message: `Cannot update About Us with id=${id}. Maybe About Us was not found or req.body is empty!`,
+        });
+      }
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: `Error updating About Us with id=${id}.` });
+    }
+  }
 
-//   // Lưu bản ghi mới vào cơ sở dữ liệu
-//   Aboutus.create(aboutus)
-//     .then((data) => {
-//       res.send(data); // Trả về dữ liệu đã được tạo
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message:
-//           err.message || "Some error occurred while creating the About Us.",
-//       });
-//     });
-// };
+  async delete(req, res) {
+    try {
+      const id = req.params.id;
+      const numDeleted = await db.about.destroy({ where: { id } });
+      if (numDeleted === 1) {
+        res.json({ message: "About Us was deleted successfully!" });
+      } else {
+        res.status(404).json({
+          message: `Cannot delete About Us with id=${id}. Maybe About Us was not found!`,
+        });
+      }
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: `Could not delete About Us with id=${id}.` });
+    }
+  }
 
-// // Controller để lấy thông tin về About Us
-// exports.findOne = (req, res) => {
-//   // Lấy id từ yêu cầu
-//   const id = req.params.id;
-
-//   // Tìm bản ghi với id tương ứng trong cơ sở dữ liệu
-//   Aboutus.findByPk(id)
-//     .then((data) => {
-//       res.send(data); // Trả về thông tin của bản ghi đã tìm thấy
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message: "Error retrieving About Us with id=" + id,
-//       });
-//     });
-// };
-
-// // Controller để cập nhật thông tin về About Us
-// exports.update = (req, res) => {
-//   // Lấy id từ yêu cầu
-//   const id = req.params.id;
-
-//   // Lấy thông tin mới từ yêu cầu
-//   const { information, status } = req.body;
-
-//   // Cập nhật bản ghi với thông tin mới
-//   Aboutus.update(
-//     { information: information, status: status },
-//     {
-//       where: { id: id },
-//     }
-//   )
-//     .then((num) => {
-//       if (num == 1) {
-//         res.send({
-//           message: "About Us was updated successfully.",
-//         });
-//       } else {
-//         res.send({
-//           message: `Cannot update About Us with id=${id}. Maybe About Us was not found or req.body is empty!`,
-//         });
-//       }
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message: "Error updating About Us with id=" + id,
-//       });
-//     });
-// };
-
-// // Controller để xóa thông tin về About Us
-// exports.delete = (req, res) => {
-//   // Lấy id từ yêu cầu
-//   const id = req.params.id;
-
-//   // Xóa bản ghi với id tương ứng
-//   Aboutus.destroy({
-//     where: { id: id },
-//   })
-//     .then((num) => {
-//       if (num == 1) {
-//         res.send({
-//           message: "About Us was deleted successfully!",
-//         });
-//       } else {
-//         res.send({
-//           message: `Cannot delete About Us with id=${id}. Maybe About Us was not found!`,
-//         });
-//       }
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message: "Could not delete About Us with id=" + id,
-//       });
-//     });
-// };
-
-// // Controller để lấy tất cả thông tin về About Us
-// exports.findAll = (req, res) => {
-//   // Tìm tất cả các bản ghi trong cơ sở dữ liệu
-//   Aboutus.findAll()
-//     .then((data) => {
-//       res.send(data); // Trả về danh sách tất cả các bản ghi
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message:
-//           err.message || "Some error occurred while retrieving About Us.",
-//       });
-//     });
-// };
+  async get(req, res) {
+    try {
+      const aboutuses = await db.about.findAll();
+      res.json(aboutuses);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Some error occurred while retrieving About Us." });
+    }
+  }
+}
+module.exports = new AboutUsController();

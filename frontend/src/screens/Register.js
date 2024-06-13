@@ -5,7 +5,7 @@ import { register, verify } from "../service/api";
 
 const Register = () => {
   const [email, setEmail] = useState("");
-  const [useName, setName] = useState("");
+  const [username, setName] = useState("");
   const [password, setPassword] = useState("");
   const [repassword, setRePassword] = useState("");
   const [otp, setOTP] = useState("");
@@ -38,13 +38,15 @@ const Register = () => {
     console.log(step);
     try {
       if (step === 1) {
-        const response = await register(email, useName, password, repassword);
-        if (response.error) {
-          setError(response.error);
-        } else {
-          setStep(2);
-          setError(null);
+        if (password.length < 6) {
+          setError("Mật khẩu phải có ít nhất 6 ký tự.");
+          return;
         }
+        // const response =
+        await register(email, username, password, repassword);
+
+        setStep(2);
+        setError(null);
       } else if (step === 2) {
         const response = await verify(otp, email);
         if (response.error) {
@@ -72,7 +74,7 @@ const Register = () => {
                 <Form.Control
                   type="text"
                   placeholder="Nhập tên"
-                  value={useName}
+                  value={username}
                   onChange={handleName}
                   required
                 />
@@ -122,7 +124,7 @@ const Register = () => {
               <Button
                 // variant="primary"
                 type="submit"
-                className="w-100 btnRegister"
+                className="w-100 btnRegister mt-2"
               >
                 {step === 1 ? "Tiếp theo" : "Đăng ký"}
               </Button>

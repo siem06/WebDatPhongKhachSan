@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import CurrencyFormat from "react-currency-format";
 import { useNavigate } from "react-router-dom";
@@ -6,42 +7,49 @@ import imgs from "../assets/image";
 import Button from "../components/Button/Button";
 import Input from "../components/Input/Input";
 import Notification from "../components/Notification";
-import { changePassword, updateProfile, uploadAvatar } from "../service/api";
+import {
+  changePassword,
+  getByIdUserAll,
+  updateProfile,
+  uploadAvatar,
+} from "../service/api";
 
 export default function ProfileInfo() {
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigation = useNavigate();
-  const [img, setImg] = useState(null);
   const [userData, setUserData] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [resultMessage, setResultMessage] = useState(null);
-  const [username, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [birthday, setBirthday] = useState("");
+
+  const [formData, setFormData] = useState({
+    username: user?.username,
+    email: user?.email,
+    phone: user?.phone,
+    birthday: user?.birthday,
+    avatar: user?.avatar,
+  });
+
   const [notification, setNotification] = useState("");
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [reNewPass, setReNewPass] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(user?.username);
   const [classSuccess, setClassSuccess] = useState("text-success");
-  const [avatar, setAvatar] = useState(imgs.author);
-  const [loggedInUser, setLoggedInUser] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
+
   useEffect(() => {
-    if (!loggedInUser) {
+    if (!user) {
       console.log("Thông tin người dùng chưa đăng nhập");
       navigation("/login");
-    } else {
-      // Lưu dữ liệu người dùng vào state
-      setUserData(loggedInUser);
-      setAvatar(loggedInUser.user.avatar || imgs.author);
-      setUserName(loggedInUser.user.username || "");
-      setEmail(loggedInUser.user.email || "");
-      setPhone(loggedInUser.user.phone || "");
-      setBirthday(loggedInUser.user.birthday || "");
     }
-  }, [navigation]);
+    getByIdUser();
+  }, []);
+
+  const getByIdUser = async () => {
+    try {
+      const result = await getByIdUserAll(user.id);
+      sessionStorage.setItem("user", JSON.stringify(result));
+    } catch (e) {}
+  };
 
   const handleOldPass = (event) => {
     setOldPass(event.target.value);
@@ -54,36 +62,14 @@ export default function ProfileInfo() {
   const handleReNewPass = (event) => {
     setReNewPass(event.target.value);
   };
-  const handleUseName = (event) => {
-    setUserName(event.target.value);
-  };
-  const handlePhone = (event) => {
-    setPhone(event.target.value);
-  };
 
-  const handleBirthday = (event) => {
-    setBirthday(event.target.value);
-  };
   const saveBtn = async (event) => {
     event.preventDefault();
     try {
-      // Tạo đối tượng newData từ các giá trị state tương ứng
-      const newData = {
-        useName: username,
-        email: email,
-        phone: phone,
-        birthday: birthday,
-      };
-      await updateProfile(userData.user.id, newData);
-      const updatedUserData = {
-        ...userData,
-        user: { ...userData.user, ...newData },
-      };
-      setUserData(updatedUserData);
-      setLoggedInUser(
-        localStorage.setItem("user", JSON.stringify(updatedUserData))
-      );
+      const response = await updateProfile(user.id, formData);
+      setFormData(response.user);
       showNotification("success", "Thông đã đã chỉnh sửa thành công!");
+      sessionStorage.setItem("user", JSON.stringify(response.user));
 
       // alert("Thông tin đã chỉnh sửa thành công!");
     } catch (error) {
@@ -115,47 +101,33 @@ export default function ProfileInfo() {
   const handleImgChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result);
-      };
-      reader.readAsDataURL(file);
-      await handleUpload(file);
-      showNotification("success", "Cập nhật ảnh đại điện thành công!");
+      try {
+        const result = await uploadAvatar({ avatar: file });
+        console.log("bdhdhhddh", result.user);
+        setFormData(result.user);
+        showNotification("success", "Cập nhật ảnh đại điện thành công!");
+
+        sessionStorage.setItem("user", JSON.stringify(result.user));
+      } catch (error) {
+        console.error(error.message);
+        setResultMessage({ type: "error", message: error.message });
+      } finally {
+        setSelectedFile(null);
+      }
     }
   };
 
-  const handleUpload = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append("avatar", file);
-
-      const result = await uploadAvatar(formData);
-
-      const updatedUserData = {
-        ...userData,
-        user: { ...userData.user, avatar: result.user.avatar },
-      };
-      localStorage.setItem("user", JSON.stringify(updatedUserData));
-      setUserData(updatedUserData);
-      setAvatar(result.user.avatar || imgs.author);
-      setResultMessage({ type: "success", message: result });
-    } catch (error) {
-      console.error(error.message);
-      setResultMessage({ type: "error", message: error.message });
-    } finally {
-      setSelectedFile(null);
-    }
-  };
   const showNotification = (type, message) => {
     setNotification({ type, message });
   };
+  const getFormattedDateTime = () => {
+    return moment().format("YYYY-MM-DDTHH:mm");
+  };
 
-  if (!userData) {
-    return null;
-  }
-
+  // Format the dateExpiration to YYYY-MM-DDTHH:MM if it exists
+  const formatBirthday = formData.birthday
+    ? moment(formData.birthday).format("YYYY-MM-DDTHH:mm")
+    : getFormattedDateTime();
   return (
     <div className="rounded bg-white mb-5">
       <div className="row">
@@ -178,7 +150,7 @@ export default function ProfileInfo() {
                     <img
                       id="uploadfile-1-preview"
                       className="avatar-img border-white rounded-circle custom-img"
-                      src={avatar}
+                      src={formData?.avatar ? formData?.avatar : imgs.author}
                       alt="avatar"
                     />
                   </span>
@@ -208,9 +180,11 @@ export default function ProfileInfo() {
                   Họ và tên <span className="text-danger"></span>
                 </label>
                 <Input
-                  placeholder={userData.user.username}
-                  value={username}
-                  onChange={handleUseName}
+                  // placeholder={userData.user.username}
+                  value={formData.username}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
                   className=" rounded-2 form-input"
                   styleInput={{ padding: "10px" }}
                 />
@@ -219,15 +193,16 @@ export default function ProfileInfo() {
                 <label className="form-label">
                   Ngày sinh <span className="text-danger">*</span>
                 </label>
-                <CurrencyFormat
-                  placeholder={userData.user.birthday}
-                  value={birthday}
-                  onChange={handleBirthday}
+                <input
+                  placeholder={formData?.birthday}
+                  value={formatBirthday}
+                  onChange={(e) =>
+                    setFormData({ ...formData, birthday: e.target.value })
+                  }
                   style={{
                     backgroundColor: "transparent",
                   }}
-                  format="##/##/####"
-                  mask={["d", "d", "m", "m", "y", "y", "y", "y"]}
+                  type="datetime-local"
                 />
               </div>
             </div>
@@ -237,22 +212,25 @@ export default function ProfileInfo() {
                   Số điện thoại <span className="text-danger"></span>
                 </label>
                 <CurrencyFormat
-                  placeholder={userData.user.phone}
-                  value={phone}
-                  onChange={handlePhone}
+                  placeholder={formData.phone}
+                  value={formData.phone || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   style={{
                     backgroundColor: "transparent",
                   }}
-                  format="+84 ###-###-###"
                   mask=""
                 />
               </div>
               <div className="col-md-12">
                 <Input
-                  title="Email"
-                  placeholder={userData.user.email}
+                  placeholder={formData.email}
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   type="text"
-                  value={email}
                   disabled
                 />
               </div>

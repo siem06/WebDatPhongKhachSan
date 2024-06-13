@@ -23,9 +23,10 @@ const Login = ({ setLoggedIn }) => {
       const user = await login(email.trim(), password);
       localStorage.setItem("user", JSON.stringify(user));
 
-      console.log("role", user);
+      console.log(user?.roles.includes(1));
+      console.log(user?.roles.includes(2));
       setLoggedIn(true);
-      if (user.user.roles[0].id === 2) {
+      if (user?.roles[0].id === 2) {
         navigation("/dashboard");
       } else {
         navigation("/");

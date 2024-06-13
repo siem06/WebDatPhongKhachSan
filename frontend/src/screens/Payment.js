@@ -27,41 +27,26 @@ import Notification from "../components/Notification";
 import Paypal from "../components/Paypal";
 import {
   createBookingDetails,
+  getAllBooking,
   getAllImage,
   getPayment,
   getRoomsById,
   postBooking,
+  removeAllCart,
   sendEmail,
 } from "../service/api";
+
+import moment from "moment";
+
 export default function Payment() {
   const [currentTab, setCurrentTab] = useState(1);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const roomId = searchParams.get("roomId");
-  const accountId = searchParams.get("accountId");
+  const { roomIds, accountId } = location.state;
   const [roomDetails, setRoomDetails] = useState([]);
-  const [roomImages, setRoomImages] = useState([]);
-  // const [email, setEmail] = useState("");
-  // const [useName, setName] = useState("");
-  // const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
   const [notification, setNotification] = useState(null);
 
-  // const getTypeRoomLabel = (typeRoom) => {
-  //   switch (typeRoom) {
-  //     case 1:
-  //       return "Phòng Tiêu chuẩn";
-  //     case 2:
-  //       return "Phòng Cao cấp";
-  //     case 3:
-  //       return "Phòng Đặc biệt";
-  //     case 4:
-  //       return "Phòng Tổng thống";
-  //     default:
-  //       return "Không xác định";
-  //   }
-  // };
   const handleNote = (event) => {
     setNote(event.target.value);
   };
@@ -81,37 +66,36 @@ export default function Payment() {
   const isActiveTab = (tab) => {
     return tab === currentTab;
   };
+
   const [roomCount, setRoomCount] = useState(1);
 
-  const increaseRoomCount = () => {
-    setRoomCount(roomCount + 1);
-  };
-
-  const decreaseRoomCount = () => {
-    if (roomCount > 1) {
-      setRoomCount(roomCount - 1);
-    }
-  };
   const [checkInDate, setCheckInDate] = useState(dayjs());
-  const [checkOutDate, setCheckOutDate] = useState(dayjs());
+  const [checkOutDate, setCheckOutDate] = useState(dayjs().add(1, "day"));
+
+  const defaultCheckOutDate = dayjs().add(1, "day");
+
   const [daysDiff, setDaysDiff] = useState(0);
   const handleDateChange = (newValue) => {
     const startDate = dayjs(checkInDate).startOf("day");
     const endDate = dayjs(newValue).startOf("day");
     const diff = endDate.diff(startDate, "day");
     setDaysDiff(diff);
-    setCheckOutDate(newValue);
+    setCheckOutDate(newValue); // Cập nhật state checkOutDate khi ngày trả phòng thay đổi
   };
-  console.log("roomId", roomId);
 
-  const totalPrice =
-    roomDetails && roomDetails.price
-      ? roomDetails.price * daysDiff
-      : "Loading...";
+  // const totalPrice =
+  //   roomDetails && roomDetails.price
+  //     ? roomDetails.price * daysDiff
+  //     : "Loading...";
+  const totalPrice = roomDetails.reduce(
+    (total, room) => total + room.price * daysDiff * roomCount,
+    0
+  );
+
   const saveBookingToDatabase = async () => {
     const bookingData = {
-      userId: loggedInUser.user.id,
-      totalPrice: roomDetails.price * daysDiff,
+      userId: loggedInUser.id,
+      totalPrice: totalPrice,
       totalRoom: roomCount,
       totalDate: daysDiff,
       checkinDate: checkInDate,
@@ -122,34 +106,100 @@ export default function Payment() {
     };
 
     try {
-      // Thêm booking vào cơ sở dữ liệu
       const response = await postBooking(bookingData);
-      console.log("%%", response);
-
-      // Kiểm tra xem booking đã được thêm vào thành công hay không
-      // if (response && response.id) {
-      //   // Nếu booking đã được thêm vào, thêm booking details
-      const data = {
-        bookingId: response.id,
-        roomId: roomId,
-      };
-      await createBookingDetails(data);
+      const detailsPromises = roomIds.map(async (roomId) => {
+        const data = {
+          bookingId: response.id,
+          roomId: roomId,
+        };
+        await createBookingDetails(data);
+      });
+      await Promise.all(detailsPromises);
       localStorage.setItem("booking", JSON.stringify(response));
+      console.log("delo", response);
       return bookingData;
-      // } else {
-      // Xử lý khi có lỗi khi thêm booking vào cơ sở dữ liệu
-      // console.error("Có lỗi khi thêm booking vào cơ sở dữ liệu");
-      // return null;
-      // }
     } catch (error) {
-      // Xử lý lỗi khi thêm booking hoặc booking details
       console.error("Có lỗi xảy ra khi đặt phòng:", error);
       return null;
+    }
+  };
+  // Hàm kiểm tra xem ngày nhận phòng và ngày trả phòng của các phòng trong cùng một đơn đặt phòng có trùng nhau hay không
+
+  const checkConflict = async () => {
+    try {
+      const existingBookings = await getAllBooking();
+      console.log("existingBookings", existingBookings);
+
+      const newCheckin = dayjs(checkInDate).startOf("day");
+      const newCheckout = dayjs(checkOutDate).startOf("day");
+      console.log("newCheckin", newCheckin.format(), newCheckout.format());
+
+      for (let i = 0; i < existingBookings.length; i++) {
+        const existingBooking = existingBookings[i];
+        const existingCheckin = dayjs(existingBooking.checkinDate).startOf(
+          "day"
+        );
+        const existingCheckout = dayjs(existingBooking.checkoutDate).startOf(
+          "day"
+        );
+        console.log(
+          "existingCheckin",
+          existingCheckin.format(),
+          existingCheckout.format()
+        );
+
+        // Kiểm tra xem có sự trùng lặp ngày đặt phòng
+        if (
+          newCheckin.isBefore(existingCheckout) &&
+          newCheckout.isAfter(existingCheckin)
+        ) {
+          // Kiểm tra xem có sự trùng lặp phòng
+          for (let j = 0; j < roomIds.length; j++) {
+            const newRoomId = roomIds[j];
+
+            for (let k = 0; k < existingBooking.rooms.length; k++) {
+              const existingRoom = existingBooking.rooms[k];
+
+              if (newRoomId === existingRoom.id) {
+                console.log("Phòng bị trùng lặp:", newRoomId);
+                return true; // Đã tìm thấy xung đột, không cần kiểm tra tiếp
+              }
+            }
+          }
+        }
+      }
+
+      // Không tìm thấy xung đột
+      return false;
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra xung đột phòng:", error);
+      throw error;
     }
   };
 
   const handleButtonClick = async () => {
     if (currentTab === 1) {
+      if (checkOutDate === null) {
+        showNotification("error", "Vui lòng chọn ngày trả phòng!");
+        return;
+      }
+      const isConflict = await checkConflict();
+      console.log(
+        "Check-in date:",
+        checkInDate.format(),
+        "Check-out date:",
+        checkOutDate.format(),
+        "Room IDs:",
+        roomIds
+      );
+      if (isConflict) {
+        showNotification(
+          "error",
+          "Ngày nhận phòng hoặc ngày trả phòng của bạn trùng với một đơn đặt phòng khác. Vui lòng chọn thời gian khác."
+        );
+        return;
+      }
+      console.log("tra", moment(checkInDate), moment(checkInDate));
       setCurrentTab(2);
       showNotification("warning", "Hãy thanh toán để hoàn tất đặt phòng!");
     } else if (currentTab === 2) {
@@ -158,75 +208,58 @@ export default function Payment() {
   };
 
   const book = JSON.parse(localStorage.getItem("booking"));
-  console.log("hihi", book);
 
-  // const [bookingSuccess, setBookingSuccess] = useState(false);
-  // const handleStepChange = (step) => {
-  //   setCurrentTab(step);
-  //   setBookingSuccess(false);
-  // };
-
-  // const handleNextStep = () => {
-  //   if (currentTab < 3) {
-  //     setCurrentTab(currentTab + 1);
-  //     if (currentTab + 1 === 3) {
-  //       setBookingSuccess(true);
-  //     }
-  //   }
-  // };
   const [sdkReady, setSdkReady] = useState(false);
-  const addPaypalScript = async () => {
-    const { data } = await getPayment();
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = `https://www.paypal.com/sdk/js?client-id=${data}`;
-    script.async = true;
-    script.onload = () => {
-      setSdkReady(true);
-    };
-    document.body.appendChild(script);
-  };
+
   useEffect(() => {
     const fetchRoomData = async () => {
       try {
-        const roomData = await getRoomsById(roomId);
-        const imagesData = await getAllImage(roomId);
-        const imagesObj = {};
-        imagesObj[roomId] = imagesData[0];
-        setRoomDetails(roomData);
-        setRoomImages(imagesObj);
+        const detailsPromises = roomIds.map(async (roomId) => {
+          const roomData = await getRoomsById(roomId);
+          const imagesData = await getAllImage(roomId);
+          return { ...roomData, images: imagesData[0] };
+        });
+
+        const details = await Promise.all(detailsPromises);
+        console.log("11de", details);
+        setRoomDetails(details);
+        setRoomCount(details.length);
       } catch (error) {
         console.error("Failed to fetch room data", error);
       }
     };
+    const addPaypalScript = async () => {
+      const { data } = await getPayment();
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = `https://www.paypal.com/sdk/js?client-id=${data}`;
+      script.async = true;
+      script.onload = () => {
+        setSdkReady(true);
+      };
+      document.body.appendChild(script);
+    };
+
     if (!window.paypal) {
       addPaypalScript();
     } else {
       setSdkReady(true);
     }
     fetchRoomData();
-  }, [roomId]);
-  console.log("de", roomDetails.images);
+  }, [checkInDate, checkOutDate, roomIds]);
+  console.log("vv", roomDetails);
   const [orderId, setOrderId] = useState(false);
   const createOrder = (data, actions) => {
-    const book = JSON.parse(localStorage.getItem("booking"));
-    const vndPrice = roomDetails.price * daysDiff;
-    const exchangeRate = 25000;
-    const usdPrice = (vndPrice / exchangeRate).toFixed(2);
+    const usdPrice = (totalPrice / 25000).toFixed(2);
     return actions.order
       .create({
         purchase_units: [
           {
-            description: `booking hotel ${roomId}`,
-            amount: {
-              currency_code: "USD",
-              value: usdPrice.toString(),
-            },
+            description: `booking hotel ${roomIds.join(", ")}`,
+            amount: { currency_code: "USD", value: usdPrice.toString() },
           },
         ],
-        application_context: {
-          shipping_preference: "NO_SHIPPING",
-        },
+        application_context: { shipping_preference: "NO_SHIPPING" },
       })
       .then((orderID) => {
         setOrderId(orderID);
@@ -242,18 +275,18 @@ export default function Payment() {
       };
 
       console.log("Booking details:", book);
-      // await createPayment(book.id, 1, book.totalPrice);
-      // await updateBooking(book.id, datanew);\
+
       await saveBookingToDatabase();
 
       const details = await actions.order.capture();
       const { payer } = details;
 
-      // Assuming `otp` and `email` are available in the current scope
-      await sendEmail(loggedInUser.user.email, book);
+      await sendEmail(loggedInUser.email, book);
 
       showNotification("success", "Bạn đã đặt phòng thành công!");
+
       setCurrentTab(3);
+      removeAllCart(loggedInUser.id);
     } catch (error) {
       console.error("Error during approval process:", error);
       showNotification(
@@ -269,6 +302,7 @@ export default function Payment() {
   const onError = () => {
     showNotification("error", "Đặt phòng thất bại!");
   };
+
   return (
     <>
       <Breadcrumb currently="Thanh toán" classNameImg="service_banner_two" />
@@ -364,7 +398,7 @@ export default function Payment() {
                         className="lh-1 text-16 text-light-1 text-dark"
                         required
                         type="text"
-                        value={loggedInUser.user.useName}
+                        value={loggedInUser.username}
                         readOnly={true}
                         // onChange={handleName}
                         disabled
@@ -380,7 +414,7 @@ export default function Payment() {
                         className="lh-1 text-16 text-light-1 text-dark"
                         required
                         type="text"
-                        value={loggedInUser.user.email}
+                        value={loggedInUser.email}
                         disabled
                         readOnly={true}
                         // onChange={handleEmail}
@@ -396,10 +430,9 @@ export default function Payment() {
                         className="lh-1 text-16 text-light-1 text-dark"
                         required
                         type="text"
-                        value={loggedInUser.user.phone}
+                        value={loggedInUser.phone}
                         readOnly={true}
                         disabled
-                        // onChange={handlePhone}
                       />
                     </div>
                   </div>
@@ -448,120 +481,94 @@ export default function Payment() {
                     <div className="text-18 fw-500 mb-30 text-dark text-uppercase font-weight-bold">
                       Chi tiết đặt phòng của bạn
                     </div>
-                    <div className="row x-gap-15 y-gap-20">
-                      <div className="col-auto">
-                        {roomDetails &&
-                        roomDetails.images &&
-                        roomDetails.images.length > 0 ? (
+                    {roomDetails.map((item, index) => (
+                      <div className="row x-gap-15 y-gap-20 mt-1">
+                        <div className="col-auto">
                           <img
-                            alt={`Room ${roomId}`}
+                            alt={`Room ${item.id}`}
                             loading="lazy"
                             decoding="async"
                             data-nimg="1"
                             className="size-140 rounded-4 object-cover"
-                            src={roomDetails.images[0].img}
+                            src={item.images.img}
                             style={{
                               color: "transparent",
                               width: "220px",
                               height: "140px",
                             }}
                           />
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                      <div className="col">
-                        <div className="d-flex x-gap-5 ">
-                          {[...Array(5)].map((_, index) => (
-                            <i
-                              key={index}
-                              className="fa fa-star text-warning text-10"
-                            ></i>
-                          ))}
                         </div>
-                        <div className=" y-gap-20 justify-between mt-3">
-                          <div className=" col-auto lh-17 fw-500 font-weight-bold text-dark ">
-                            {roomDetails.type}
-                          </div>
-                          <div className=" col-auto text-14 lh-15 font-weight-bold text-dark  ">
-                            <CurrencyFormat
-                              value={roomDetails.price}
-                              thousandSeparator={true}
-                              suffix={"VND/ Ngày"}
-                              decimalScale={2}
-                              className="text-black customInput"
-                              style={{
-                                border: "none",
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div className=" y-gap-20 justify-between mt-2">
-                          <div className="col-auto">
-                            <div className="d-flex items-center">
-                              <div className="size-30 flex-center bg-blue-1 rounded-4">
-                                <div className="text-12 fw-600 text-dark">
-                                  4.8
-                                </div>
-                              </div>
-                              <div className="fa fa-star text-warning text-10"></div>
+                        <div className="col">
+                          {/* <div className="d-flex x-gap-5 ">
+       {[...Array(5)].map((_, index) => (
+         <i
+           key={index}
+           className="fa fa-star text-warning text-10"
+         ></i>
+       ))}
+     </div> */}
+                          <div className=" y-gap-20 justify-between mt-3">
+                            <div className=" col-auto lh-17 fw-500 font-weight-bold text-dark ">
+                              {item.type}
                             </div>
-                          </div>
-                          <div className="col-auto">
-                            <div className="text-14 text-dark">
-                              3,014 đánh giá
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="y-gap-20 justify-between mt-3 ">
-                          <div className=" col-auto fw-500  text-dark">
-                            Số lượng phòng:
-                          </div>
-                          <div className=" col-auto d-flex align-items-center mb-4">
-                            <button
-                              className="btn btn-sm button_hover  btn-primary rounded px-3 me-2"
-                              onClick={decreaseRoomCount}
-                              disabled={roomCount === 1}
-                            >
-                              -
-                            </button>
-                            <div className="form-outline">
-                              <input
-                                className="form-input lh-1 text-light-1 "
-                                value={roomCount}
+                            <div className=" col-auto text-14 lh-15 font-weight-bold text-dark  ">
+                              <CurrencyFormat
+                                value={item.price}
+                                thousandSeparator={true}
+                                suffix={"VND/ Ngày"}
+                                decimalScale={2}
+                                displayType={"text"}
+                                className="text-black customInput"
                                 style={{
-                                  width: "50px",
-                                  justifyContent: "center",
+                                  border: "none",
                                 }}
                               />
                             </div>
-                            <button
-                              className="btn btn-sm button_hover  btn-primary rounded px-3 ms-2"
-                              onClick={increaseRoomCount}
-                            >
-                              +
-                            </button>
+                          </div>
+                          <div className=" y-gap-20 justify-between mt-2">
+                            <div className="col-auto">
+                              <div className="d-flex items-center">
+                                <div className="size-30 flex-center bg-blue-1 rounded-4">
+                                  <div className="text-12 fw-600 text-dark">
+                                    4.8
+                                  </div>
+                                </div>
+                                <div className="fa fa-star text-warning text-10"></div>
+                              </div>
+                            </div>
+                            <div className="col-auto">
+                              <div className="text-14 text-dark">
+                                3,014 đánh giá
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="y-gap-20 justify-between mt-3 ">
+                            <div className=" col-auto fw-500  text-dark">
+                              Số lượng phòng:
+                            </div>
+                            <div className=" col-auto d-flex align-items-center mb-4">
+                              {roomDetails.length}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
+
                     <div className="border-top-light  mb-20"></div>
                     <div className="  justify-between  date-custom">
                       <div className="col-auto">
                         <div className="text-15 text-dark">Nhận phòng</div>
-                        {/* <div className="fw-500 font-weight-bold text-dark">Chủ nhật, 26/5/2022</div> */}
-                        {/* <div className="text-15 text-light-1 text-dark">15:00 – 23:00</div> */}
                         <Box style={{ padding: "5px" }}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
-                              // label="Chọn ngày nhận phòng"
                               value={checkInDate}
                               onChange={(newValue) => setCheckInDate(newValue)}
-                              minDate={dayjs().startOf("day")} // Chỉ cho phép chọn từ ngày hiện tại
+                              minDate={dayjs().startOf("day")}
                               renderInput={(params) => (
                                 <TextField {...params} />
                               )}
+                              showTimeInput={true}
                             />
                           </LocalizationProvider>
                         </Box>
@@ -571,28 +578,68 @@ export default function Payment() {
                       </div>
                       <div className="col-auto text-right text-md-left mt-3 mt-md-0">
                         <div className="text-15 text-dark">Trả phòng</div>
-                        {/* <div className="fw-500 font-weight-bold text-dark">Thứ 2, 27/5/2024</div> */}
-                        {/* <div className="text-15 text-light-1 text-dark">01:00 – 11:00</div> */}
                         <Box style={{ padding: "5px" }}>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
-                              // label="Chọn ngày trả phòng"
                               value={checkOutDate}
-                              // onChange={(newValue) => setCheckInDate(newValue)}
-                              // renderInput={(params) => <TextField {...params} />}
+                              required
                               onChange={(newValue) => {
                                 setCheckOutDate(newValue);
                                 handleDateChange(newValue);
                               }}
-                              minDate={dayjs(checkInDate).add(1, "day")} // Chỉ cho phép chọn từ ngày sau ngày nhận phòng
+                              minDate={dayjs(checkInDate).add(1, "day")}
                               renderInput={(params) => (
                                 <TextField {...params} />
                               )}
+                              showTimeInput={true}
                             />
                           </LocalizationProvider>
                         </Box>
                       </div>
                     </div>
+                    {/* <div className="  justify-between  date-custom">
+                      <div className="col-auto">
+                        <div className="text-15 text-dark">Nhận phòng</div>
+                        <TextField
+                          type="datetime-local"
+                          value={checkInDate.format("YYYY-MM-DDTHH:mm")}
+                          onChange={(e) => {
+                            const selectedDate = dayjs(e.target.value);
+                            setCheckInDate(selectedDate);
+                          }}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          inputProps={{
+                            min: dayjs().format("YYYY-MM-DDTHH:mm"),
+                          }}
+                        />
+                      </div>
+                      <div className="col-auto d-none d-md-block">
+                        <div className="h-full w-1 bg-border"></div>
+                      </div>
+                      <div className="col-auto text-right text-md-left mt-3 mt-md-0">
+                        <div className="text-15 text-dark">Trả phòng</div>
+                        <TextField
+                          type="datetime-local"
+                          value={checkOutDate.format("YYYY-MM-DDTHH:mm")}
+                          onChange={(e) => {
+                            const selectedDate = dayjs(e.target.value);
+                            setCheckOutDate(selectedDate);
+                            handleDateChange(selectedDate);
+                          }}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          inputProps={{
+                            min: checkInDate
+                              .add(1, "day")
+                              .format("YYYY-MM-DDTHH:mm"),
+                          }}
+                        />
+                      </div>
+                    </div> */}
+
                     <div className="border-top-light mt-30 mb-20"></div>
                     <div className="row y-gap-20 justify-between items-center">
                       <div className="col-auto text-15 text-dark">
@@ -616,10 +663,11 @@ export default function Payment() {
                         </div>
                         <div className="fw-500 font-weight-bold text-dark">
                           <CurrencyFormat
-                            value={roomDetails.price * daysDiff}
+                            value={totalPrice}
                             thousandSeparator={true}
                             suffix={"VND"}
                             decimalScale={2}
+                            displayType={"text"}
                             className="text-black customInput"
                             style={{
                               border: "none",
@@ -736,9 +784,10 @@ export default function Payment() {
                         <div className="col-auto">
                           <div className="text-18 lh-13 fw-500">
                             <CurrencyFormat
-                              value="888"
+                              value={totalPrice}
                               thousandSeparator={true}
                               suffix={"VND"}
+                              displayType={"text"}
                               decimalScale={2}
                               className="text-black customInput"
                               style={{
@@ -759,10 +808,11 @@ export default function Payment() {
                       <div className="col-auto">
                         <div className="text-15 text-danger font-weight-bold fs-4">
                           <CurrencyFormat
-                            value={roomDetails.price * daysDiff}
+                            value={totalPrice}
                             thousandSeparator={true}
                             suffix={"VND"}
                             decimalScale={2}
+                            displayType={"text"}
                             className="text-black customInput"
                             style={{
                               border: "none",
@@ -816,7 +866,7 @@ export default function Payment() {
                     </div>
                     <div className="text-15 text-light-1  mx-auto mt-2">
                       Chi tiết đơn đặt phòng đã được gửi đến mail:
-                      {loggedInUser.user.email}
+                      {loggedInUser.email}
                     </div>
                   </div>
                   <div className="border-type-1 rounded-8 px-50 py-35 mt-2">
@@ -834,7 +884,7 @@ export default function Payment() {
                           Ngày
                         </div>
                         <div className="col-auto text-15 lh-12 fw-500 blue-1 ">
-                          {book.bookingDate}
+                          {book.createdAt}
                         </div>
                       </div>
                       <div className="row  y-gap-5 justify-between">
@@ -843,10 +893,11 @@ export default function Payment() {
                         </div>
                         <div className="col-auto text-15 lh-12 fw-500 blue-1">
                           <CurrencyFormat
-                            value={roomDetails.price * daysDiff}
+                            value={totalPrice}
                             thousandSeparator={true}
-                            suffix={"VND/ Ngày"}
+                            suffix={"VND"}
                             decimalScale={2}
+                            displayType={"text"}
                             className="text-black customInput"
                             style={{
                               border: "none",
@@ -875,7 +926,7 @@ export default function Payment() {
                             Tên
                           </div>
                           <div className="text-15 lh-16 fw-500 blue-1">
-                            {loggedInUser.user.useName}
+                            {loggedInUser.username}
                           </div>
                         </div>
                       </div>
@@ -886,7 +937,7 @@ export default function Payment() {
                             Email
                           </div>
                           <div className="text-15 lh-16 fw-500 blue-1">
-                            {loggedInUser.user.email}
+                            {loggedInUser.email}
                           </div>
                         </div>
                       </div>
@@ -896,21 +947,11 @@ export default function Payment() {
                             Số điện thoại
                           </div>
                           <div className="text-15 lh-16 fw-500 blue-1">
-                            {loggedInUser.user.phone}
+                            {loggedInUser.phone}
                           </div>
                         </div>
                       </div>
 
-                      <div className="col-12">
-                        <div className="d-flex justify-between ">
-                          <div className="text-15 lh-16 font-weight-bold text-dark">
-                            Mã bưu điện
-                          </div>
-                          <div className="text-15 lh-16 fw-500 blue-1">
-                            7100
-                          </div>
-                        </div>
-                      </div>
                       <div className="col-12">
                         <div className="d-flex justify-between ">
                           <div className="text-15 lh-16 font-weight-bold text-dark">
@@ -942,7 +983,6 @@ export default function Payment() {
               {currentTab === 3 ? (
                 <button
                   className="button h-60 px-24 blue-1 bg-light-1 text-white d-none"
-                  disabled={currentTab === 1 || currentTab === 3}
                   onClick={goToPreviousTab}
                 >
                   Quay lại
@@ -950,7 +990,6 @@ export default function Payment() {
               ) : (
                 <button
                   className="button h-60 px-24 blue-1 bg-light-1 text-white"
-                  disabled={currentTab === 1 || currentTab === 3}
                   onClick={goToPreviousTab}
                 >
                   Quay lại
@@ -961,7 +1000,13 @@ export default function Payment() {
               {currentTab === 3 ? (
                 <button
                   className="button h-60 px-24 blue-1 bg-light-1 text-white d-none"
-                  disabled={currentTab === 3}
+                  onClick={handleButtonClick}
+                >
+                  Tiếp theo
+                </button>
+              ) : currentTab === 1 ? (
+                <button
+                  className="button h-60 px-24 blue-1 bg-light-1 text-white"
                   onClick={handleButtonClick}
                 >
                   Tiếp theo
@@ -969,7 +1014,6 @@ export default function Payment() {
               ) : (
                 <button
                   className="button h-60 px-24 blue-1 bg-light-1 text-white"
-                  disabled={currentTab === 3}
                   onClick={handleButtonClick}
                 >
                   Tiếp theo

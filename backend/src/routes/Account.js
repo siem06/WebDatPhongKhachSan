@@ -20,9 +20,11 @@ accountRouter.post("/resetPassword", accountController.resetPassword);
 accountRouter.put("/changepassword", accountController.changePassword);
 
 accountRouter.put("/:id/edit", accountController.update);
+accountRouter.put("/updateStatus", accountController.updateStatus);
+
 accountRouter.delete("/:id", accountController.delete);
 accountRouter.get("/getAll/:id", accountController.findUser);
-accountRouter.get("/:id", authUser(), accountController.findById);
+accountRouter.get("/:id", accountController.findById);
 
 accountRouter.get("otp");
 
