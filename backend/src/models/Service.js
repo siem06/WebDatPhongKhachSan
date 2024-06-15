@@ -3,6 +3,9 @@ module.exports = (sequelize, Sequelize) => {
     typeService: {
       type: Sequelize.STRING,
     },
+    utilities: {
+      type: Sequelize.INTEGER,
+    },
     content: {
       type: Sequelize.TEXT,
     },

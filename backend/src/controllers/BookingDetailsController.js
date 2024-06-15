@@ -81,6 +81,7 @@ class BookingDetailsController {
       res.status(500).send("Error deleting booking detail");
     }
   }
+ 
 }
 
 module.exports = new BookingDetailsController();

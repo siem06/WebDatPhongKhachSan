@@ -151,3 +151,19 @@
 /* .date-custom {
     flex-direction: row ;
 } */
+.data-sticky-container {
+    position: relative;
+  }
+  
+  .sticky-element {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 100px; /* Khoảng cách từ trên cùng của trang */
+    z-index: 900; /* Đảm bảo rằng nó nằm trên các phần tử khác */
+  }
+  .carousel-img {
+    width: 100%;
+    height: 400px; /* Đặt chiều cao cố định */
+    object-fit: cover; /* Đảm bảo hình ảnh bao phủ toàn bộ khu vực và giữ tỷ lệ */
+  }
+  

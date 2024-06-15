@@ -385,6 +385,15 @@ export const getAllBooking = async () => {
     throw error;
   }
 };
+// api booking
+export const getBookingIdUser = async (id) => {
+  try {
+    const response = await instance.get(`/booking/getBookingA/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const postBooking = async (bookingData) => {
   try {
@@ -491,6 +500,36 @@ export const removeCart = async (id) => {
 export const removeAllCart = async (id) => {
   try {
     await instance.delete(`/cart/all/${id}`);
+  } catch (error) {
+    throw error;
+  }
+};
+// review
+export const createReview = async (roomId, userId, rating, comment, note) => {
+  try {
+    console.log("Sending data to API:", { roomId, userId, rating, comment, note });
+    const response = await instance.post("/review", {
+      roomId, userId, rating, comment, note
+    });
+    console.log("test review", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error calling API:", error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+export const getReviews = async (roomId) => {
+  try {
+    const response = await instance.get(`/review/${roomId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getRatingStats = async () => {
+  try {
+    const response = await instance.get(`/review/ratings/stats`);
+    return response.data;
   } catch (error) {
     throw error;
   }

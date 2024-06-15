@@ -23,9 +23,10 @@ module.exports = (sequelize, Sequelize) => {
     note: {
       type: Sequelize.TEXT,
     },
+  
     totalRoom: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull:false,
     },
     totalDate: {
       type: Sequelize.INTEGER,

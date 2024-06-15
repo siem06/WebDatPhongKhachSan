@@ -372,7 +372,10 @@ class RoomController {
       const { order } = req.params;
       const sortOrder = order.toLowerCase() === "desc" ? "DESC" : "ASC";
 
-      const rooms = await room.findAll({ order: [["price", sortOrder]] });
+      const rooms = await room.findAll({
+        order: [["price", sortOrder]],
+        include: [{ model: db.image, as: "images", attributes: ["id", "roomId", "img"], }]
+      });
       res.json(rooms);
     } catch (error) {
       console.error("Error sorting rooms by price:", error);
@@ -382,7 +385,10 @@ class RoomController {
   async getRoomsByType(req, res) {
     try {
       const { type } = req.params;
-      const rooms = await room.findAll({ where: { type: type } });
+      const rooms = await room.findAll({
+         where: { type: type },
+         include: [{ model: db.image, as: "images", attributes: ["id", "roomId", "img"], }]
+      });
       res.json(rooms);
     } catch (error) {
       console.error("Error fetching rooms by type:", error);
@@ -393,8 +399,17 @@ class RoomController {
     try {
       const { rating } = req.params;
       const reviews = await room.findAll({
-        where: { rating: rating },
-        include: [{ model: db.review, as: "reviews" }],
+
+        include: [
+          {
+            model: db.review, as: "reviews", where: { rating: rating }, required: true,
+          },
+          {
+            model: db.image,
+            as: "images",
+            required: false,
+          },
+        ],
       });
       res.json(reviews);
     } catch (error) {

@@ -12,7 +12,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import Button from "../components/Button/Button";
 import Input from "../components/Input/Input";
 import InputGroup from "../components/InputGroup";
-
+import Search from "../components/Search";
 import {
   addCart,
   addRoomLike,
@@ -28,23 +28,29 @@ import Notification from "../components/Notification";
 export default function Room() {
   const navigation = useNavigate();
 
-  // const getTypeRoomLabel = (typeRoom) => {
-  //   switch (typeRoom) {
-  //     case 1:
-  //       return "Phòng Tiêu chuẩn";
-  //     case 2:
-  //       return "Phòng Cao cấp";
-  //     case 3:
-  //       return "Phòng Đặc biệt";
-  //     case 4:
-  //       return "Phòng Tổng thống";
-  //     default:
-  //       return "Không xác định";
-  //   }
-  // };
+  const getTypeRoomLabel = (type) => {
+    switch (type) {
+      case 1:
+        return "Phòng đơn Tiêu chuẩn";
+      case 2:
+        return "Phòng đơn Cao cấp";
+      case 3:
+        return "Phòng đơn Đặc biệt";
+      case 4:
+        return "Phòng Tổng thống";
+      case 5:
+        return "Phòng đôi Tiêu chuẩn";
+      case 6:
+        return "Phòng đôi Cao cấp";
+      case 7:
+        return "Phòng đôi Đặc biệt";
+      default:
+        return "Không xác định";
+    }
+  };
   const [rooms, setRooms] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const roomsPerPage = 6; // Số lượng phòng trên mỗi trang
+  const roomsPerPage = 15; // Số lượng phòng trên mỗi trang
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedRating, setSelectedRating] = useState([]);
   const [heartStates, setHeartStates] = useState({});
@@ -223,6 +229,9 @@ export default function Room() {
   const link_detail = (roomId) => {
     navigation(`/room_detail?roomId=${roomId}`);
   };
+  const handleSearchResults = (rooms) => {
+    setRooms(rooms);
+  }; 
   return (
     <>
       <Breadcrumb currently="Phòng" classNameImg="service_banner_two" />
@@ -242,67 +251,7 @@ export default function Room() {
               </div>
               <div className="col-md-9">
                 <div className="boking_table">
-                  <div className="row">
-                    <div className="col-md-4">
-                      <div className="book_tabel_item">
-                        <div className="form-group">
-                          <Input
-                            placeholder="Arrive"
-                            icon="fa fa-calendar"
-                            type="date"
-                            title={"Ngày nhận phòng"}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <Input
-                            placeholder="Departure Date"
-                            icon="fa fa-calendar"
-                            type="date"
-                            title={"Ngày trả phòng"}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="book_tabel_item">
-                        <div className="form-group">
-                          <InputGroup
-                            title="Loại phòng"
-                            label="Người lớn"
-                            options={[
-                              { value: 1, label: "Người lớn" },
-                              { value: 2, label: "Trẻ em" },
-                              { value: 3, label: "Trẻ sơ sinh" },
-                            ]}
-                          />
-                        </div>
-                        <div className="form-group form-option">
-                          <InputGroup
-                            title="Loại phòng"
-                            label="Trẻ em"
-                            options={[
-                              { value: 1, label: "Trẻ em" },
-                              { value: 2, label: "Em bé" },
-                              { value: 3, label: "Trẻ sơ sinh" },
-                            ]}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="book_tabel_item">
-                        <InputGroup
-                          label="Số phòng"
-                          options={[
-                            { value: 1, label: "Phòng 01" },
-                            { value: 2, label: "Phòng 02" },
-                            { value: 3, label: "Phòng 03" },
-                          ]}
-                        />
-                        <Button title="Đặt ngay" />
-                      </div>
-                    </div>
-                  </div>
+                <Search onSearchResults={handleSearchResults} />
                 </div>
               </div>
             </div>
@@ -494,7 +443,7 @@ export default function Room() {
                             link_detail(room.id);
                           }}
                         >
-                          {room.type}
+                          {getTypeRoomLabel(room.type)}
                         </h5>
                         <div className="d-flex mb-3"></div>
                         <div className="d-flex justify-content-between">

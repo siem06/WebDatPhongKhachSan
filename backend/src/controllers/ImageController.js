@@ -5,7 +5,7 @@ class ImageController {
     try {
       const images = await db.image.findAll({
         where: {
-          id: req.params.id,
+          roomId: req.params.id,
         },
       });
       console.log(images);

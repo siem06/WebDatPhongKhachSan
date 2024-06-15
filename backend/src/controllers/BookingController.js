@@ -222,13 +222,37 @@ class BookingController {
     console.log("id: " + userId);
 
     db.booking
-      .findAll({ where: { userId: userId } })
+      .findAll({ where: { userId: userId },
+        include: [
+          {
+            model: db.room,
+          },
+        ],
+       })
       .then((value) => {
         res.json(value);
       })
       .catch((error) => {
         console.log(error);
       });
+  }
+  async createAandC(req, res) {
+    try {
+      const { adults, children } = req.body;
+      // Kiểm tra xem các giá trị có được truyền đúng không
+      if (adults === undefined || children === undefined) {
+        return res.status(400).json({ error: "Adults and children are required." });
+      }
+      const newAandC = await db.booking.create({
+        adults,
+        children,
+      });
+
+      res.status(201).json(newAandC);
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      res.status(500).json({ error: "Server error" });
+    }
   }
 }
 

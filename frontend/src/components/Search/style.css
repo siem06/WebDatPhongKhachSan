@@ -1,0 +1,21 @@
+.input-field {
+    border: 1px solid #2b3146;
+    background: transparent;
+    border-radius: 0px;
+    font-size: 13px;
+    line-height: 38px;
+    padding: 0px 20px;
+    color: #777777;
+    z-index: 0;
+}
+.form-guest-selector {
+    min-width: 200px; /* Adjust this value as needed */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .guest-selector-dropdown {
+    min-width: 300px; /* Adjust this value as needed */
+  }
+  

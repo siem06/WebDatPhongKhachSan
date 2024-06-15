@@ -86,7 +86,7 @@ const Image = require("./Image.js");
 module.exports = (sequelize, Sequelize) => {
   const Room = sequelize.define("rooms", {
     type: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       collate: "utf8_general_ci",
     },
     price: {
@@ -140,6 +140,10 @@ module.exports = (sequelize, Sequelize) => {
       throw error;
     }
   };
+
+
+
+  
   Room.getSortedByPriceAsc = async function () {
     try {
       const roomsSortedByPriceAsc = await Room.findAll({
@@ -168,7 +172,7 @@ module.exports = (sequelize, Sequelize) => {
   Room.getRoomByType = async function (typeRoom) {
     try {
       const roomsByType = await Room.findAll({
-        where: { type: typeRoom },
+        where: { type: type},
       });
       return roomsByType;
     } catch (error) {
