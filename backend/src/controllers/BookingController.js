@@ -254,6 +254,46 @@ class BookingController {
       res.status(500).json({ error: "Server error" });
     }
   }
+  async update(req, res) {
+    const { id } = req.params;
+    const { userId, totalPrice, checkinDate, checkoutDate, statusBooking, note, totalRoom, totalDate, methodPay } = req.body;
+    try {
+      const booking = await db.booking.findByPk(id);
+      if (!booking) {
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+      await booking.update({
+        userId,
+        totalPrice,
+        checkinDate,
+        checkoutDate,
+        statusBooking,
+        note,
+        totalRoom,
+        totalDate,
+        methodPay,
+      }, {
+        where: { id: id } // Chỉ rõ điều kiện cho phương thức update
+      });
+      res.json(booking); // Trả về booking đã được cập nhật
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  async delete(req, res) {
+    const { id } = req.params;
+    try {
+      const booking = await db.booking.findByPk(id);
+      if (!booking) {
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+      await booking.destroy(); // Xóa booking khỏi cơ sở dữ liệu
+      res.json({ message: 'Booking deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
 }
 
 module.exports = new BookingController();

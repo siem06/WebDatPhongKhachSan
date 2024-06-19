@@ -22,7 +22,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
-    "chart.js": "^4.4.2",
+    "chart.js": "^4.4.3",
     "dayjs": "^1.11.11",
     "eonasdan-bootstrap-datetimepicker": "^4.17.49",
     "formik": "^2.4.5",

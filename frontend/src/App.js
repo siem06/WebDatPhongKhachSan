@@ -29,6 +29,7 @@ import "react-quill/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import AccountDetail from "./admin/pages/AccountDetail";
+import ManageComment from "./admin/pages/ManageComment";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
@@ -82,6 +83,7 @@ function App() {
             <Route path="/manageaccount" element={<ManageAccount />} />
             <Route path="/managegeneral" element={<ManagerGeneral />} />
             <Route path="/supportCustomer" element={<Support />} />
+            <Route path="/managecomment" element={<ManageComment />} />
           </Routes>
           <FooterAdmin />
         </>

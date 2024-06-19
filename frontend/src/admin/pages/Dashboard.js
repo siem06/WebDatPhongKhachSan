@@ -1,214 +1,152 @@
 import Header from "../layout/Header";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import { useNavigate } from "react-router-dom";
-
+import { getAll, getAllBooking, getAllRooms } from "../../service/api";
+import CurrencyFormat from "react-currency-format";
 export default function Dashboard() {
   const chartBarsRef = useRef(null);
   const chartLineRef = useRef(null);
   const navigate = useNavigate();
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalRooms, setTotalRooms] = useState(0);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
-
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalBooking, setTotalBooking] = useState(0);
+  const chartTasksRef = useRef(null);
+  
   useEffect(() => {
-    if (!loggedInUser || loggedInUser.user.role !== 1) {
-      navigate("/login");
-      return;
-    }
+    // if (!loggedInUser || loggedInUser.role !== 1) {
+    //   navigate("/login");
+    //   return;
+    // }
     // Hủy biểu đồ cũ trước khi tạo biểu đồ mới
-    if (chartBarsRef.current) {
-      chartBarsRef.current.getContext("2d");
-      const existingChartBars = Chart.getChart(chartBarsRef.current);
-      if (existingChartBars) {
-        existingChartBars.destroy();
-      }
+    fetchTotalRevenue();
+    fetchTotalRooms();
+    fetchTotalUsers();
+    fetchTotalBooking();
+  }, [loggedInUser, navigate]);
+  const fetchTotalRevenue = async () => {
+    try {
+      const data = await getAllBooking();
+      console.log("test price", data);
+      // Calculate total revenue from fetched data
+      let revenue = 0;
+      data.forEach((booking) => {
+        revenue += parseFloat(booking.totalPrice); 
+        console.log("test price", revenue);
+      });
+      setTotalRevenue(revenue);
+    } catch (error) {
+      console.error("Error fetching total revenue:", error);
     }
-
-    if (chartLineRef.current) {
-      chartLineRef.current.getContext("2d");
-      const existingChartLine = Chart.getChart(chartLineRef.current);
-      if (existingChartLine) {
-        existingChartLine.destroy();
-      }
+  };
+  const fetchTotalRooms = async () => {
+    try {
+      const roomsData = await getAllRooms();
+      setTotalRooms(roomsData.length); // Set total rooms count
+    } catch (error) {
+      console.error("Error fetching total rooms:", error);
     }
-    // Tạo biểu đồ mới
+  };
+  const fetchTotalUsers = async () => {
+    try {
+      const usersData = await getAll();
+      setTotalUsers(usersData.length); // Set total users count
+    } catch (error) {
+      console.error("Error fetching total users:", error);
+    }
+  };
+  const fetchTotalBooking = async () => {
+    try {
+      const bookingData = await getAllBooking();
+      setTotalBooking(bookingData.length); // Set total users count
+    } catch (error) {
+      console.error("Error fetching total users:", error);
+    }
+  };
+  useEffect(() => {
+    // Create charts once data is fetched
+    if (totalRevenue !== 0) {
+      createBarChart();
+    }
+    if (totalUsers !== 0) {
+      createLineChart();
+    }
+    if (totalBooking !== 0) {
+      createTasksChart();
+    }
+  }, [totalRevenue, totalUsers, totalBooking]);
+  const createBarChart = () => {
     if (chartBarsRef.current) {
-      const ctxBars = chartBarsRef.current.getContext("2d");
-      new Chart(ctxBars, {
+      // Destroy existing chart if it exists
+      if (chartBarsRef.current.chart) {
+        chartBarsRef.current.chart.destroy();
+      }
+      const ctx = chartBarsRef.current.getContext("2d");
+      chartBarsRef.current.chart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: ["M", "T", "W", "T", "F", "S", "S"],
+          labels: ["January", "February", "March", "April", "May", "June", "July"],
           datasets: [
             {
-              label: "Sales",
-              tension: 0.4,
-              borderWidth: 0,
-              borderRadius: 4,
-              borderSkipped: false,
-              backgroundColor: "rgba(255, 255, 255, .8)",
-              data: [50, 20, 10, 22, 50, 10, 40],
-              maxBarThickness: 6,
+              label: "Danh thu",
+              data: [2000, 3000, 5000, 4000, 6000, 3500, 7000],
+              backgroundColor: "#5E72E4",
             },
           ],
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          interaction: {
-            intersect: false,
-            mode: "index",
-          },
-          scales: {
-            y: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5],
-                color: "rgba(255, 255, 255, .2)",
-              },
-              ticks: {
-                suggestedMin: 0,
-                suggestedMax: 500,
-                beginAtZero: true,
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: "normal",
-                  lineHeight: 2,
-                },
-                color: "#fff",
-              },
-            },
-            x: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5],
-                color: "rgba(255, 255, 255, .2)",
-              },
-              ticks: {
-                display: true,
-                color: "#f8f9fa",
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: "normal",
-                  lineHeight: 2,
-                },
-              },
-            },
-          },
-        },
       });
     }
+  };
 
+  const createLineChart = () => {
     if (chartLineRef.current) {
-      const ctxLine = chartLineRef.current.getContext("2d");
-      new Chart(ctxLine, {
+      // Destroy existing chart if it exists
+      if (chartLineRef.current.chart) {
+        chartLineRef.current.chart.destroy();
+      }
+      const ctx = chartLineRef.current.getContext("2d");
+      chartLineRef.current.chart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: [
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ],
+          labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
           datasets: [
             {
-              label: "Mobile apps",
-              tension: 0,
-              borderWidth: 0,
-              pointRadius: 5,
-              pointBackgroundColor: "rgba(255, 255, 255, .8)",
-              pointBorderColor: "transparent",
-              borderColor: "rgba(255, 255, 255, .8)",
-              borderColor: "rgba(255, 255, 255, .8)",
-              borderWidth: 4,
-              backgroundColor: "transparent",
-              fill: true,
-              data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
-              maxBarThickness: 6,
+              label: "Số lượng người dùng",
+              data: [10, 15, 20, 18, 25],
+              borderColor: "#2DCE89",
+              fill: false,
             },
           ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          interaction: {
-            intersect: false,
-            mode: "index",
-          },
-          scales: {
-            y: {
-              grid: {
-                drawBorder: false,
-                display: true,
-                drawOnChartArea: true,
-                drawTicks: false,
-                borderDash: [5, 5],
-                color: "rgba(255, 255, 255, .2)",
-              },
-              ticks: {
-                display: true,
-                color: "#f8f9fa",
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: "normal",
-                  lineHeight: 2,
-                },
-              },
-            },
-            x: {
-              grid: {
-                drawBorder: false,
-                display: false,
-                drawOnChartArea: false,
-                drawTicks: false,
-                borderDash: [5, 5],
-              },
-              ticks: {
-                display: true,
-                color: "#f8f9fa",
-                padding: 10,
-                font: {
-                  size: 14,
-                  weight: 300,
-                  family: "Roboto",
-                  style: "normal",
-                  lineHeight: 2,
-                },
-              },
-            },
-          },
         },
       });
     }
-  }, [loggedInUser, navigate]);
+  };
+
+
+  const createTasksChart = () => {
+    if (chartTasksRef.current) {
+      // Destroy existing chart if it exists
+      if (chartTasksRef.current.chart) {
+        chartTasksRef.current.chart.destroy();
+      }
+      const ctx = chartTasksRef.current.getContext("2d");
+      chartTasksRef.current.chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5"],
+          datasets: [
+            {
+              label: "Số lượng đặt phòng",
+              data: [5, 7, 3, 10, 6],
+              backgroundColor: "#172B4D",
+            },
+          ],
+        },
+      });
+    }
+  };
   return (
     <>
       <main className="main-content position-relative  border-radius-lg ">
@@ -224,17 +162,54 @@ export default function Dashboard() {
                   </div>
                   <div className="text-end pt-1">
                     <p className="text-sm mb-0 text-capitalize">Doanh thu</p>
-                    <h4 className="mb-0">1 tỉ VNĐ</h4>
+                    <h4 className="mb-0">
+                    <CurrencyFormat
+                        value={totalRevenue}
+                        thousandSeparator={true}
+                        suffix={" VNĐ"}
+                        decimalScale={2}
+                        displayType={"text"}
+                        className="text-dark customInput"
+                        style={{
+                          backgroundColor: "transparent",
+                          border: "none",
+                        }}
+                      />
+                    </h4>
                   </div>
                 </div>
                 <hr className="dark horizontal my-0" />
                 <div className="card-footer p-3">
-                  <p className="mb-0">
+                  {/* <p className="mb-0">
                     <span className="text-success text-sm font-weight-bolder">
                       +55%
                     </span>
                     than lask week
-                  </p>
+                  </p> */}
+                </div>
+              </div>
+            </div>
+            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div className="card">
+                <div className="card-header p-3 pt-2">
+                  <div className="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                    <i className="material-icons opacity-10">weekend</i>
+                  </div>
+                  <div className="text-end pt-1">
+                    <p className="text-sm mb-0 text-capitalize">Tổng số lượng đặt phòng</p>
+                    <h4 className="mb-0">
+                   {totalBooking}
+                    </h4>
+                  </div>
+                </div>
+                <hr className="dark horizontal my-0" />
+                <div className="card-footer p-3">
+                  {/* <p className="mb-0">
+                    <span className="text-success text-sm font-weight-bolder">
+                      +55%
+                    </span>
+                    than lask week
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -246,46 +221,23 @@ export default function Dashboard() {
                   </div>
                   <div className="text-end pt-1">
                     <p className="text-sm mb-0 text-capitalize">
-                      Người dùng admin
+                      Người dùng 
                     </p>
-                    <h4 className="mb-0">2,300</h4>
+                    <h4 className="mb-0">{totalUsers}</h4>
                   </div>
                 </div>
-                {/* <hr className="dark horizontal my-0"> */}
+                <hr className="dark horizontal my-0"/>
                 <div className="card-footer p-3">
-                  <p className="mb-0">
+                  {/* <p className="mb-0">
                     <span className="text-success text-sm font-weight-bolder">
                       +3%
                     </span>
                     than lask month
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
-            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-              <div className="card">
-                <div className="card-header p-3 pt-2">
-                  <div className="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
-                    <i className="material-icons opacity-10">person</i>
-                  </div>
-                  <div className="text-end pt-1">
-                    <p className="text-sm mb-0 text-capitalize">
-                      Khách hàng mới
-                    </p>
-                    <h4 className="mb-0">3,462</h4>
-                  </div>
-                </div>
-                {/* <hr className="dark horizontal my-0"> */}
-                <div className="card-footer p-3">
-                  <p className="mb-0">
-                    <span className="text-danger text-sm font-weight-bolder">
-                      -2%
-                    </span>
-                    than yesterday
-                  </p>
-                </div>
-              </div>
-            </div>
+            
             <div className="col-xl-3 col-sm-6">
               <div className="card">
                 <div className="card-header p-3 pt-2">
@@ -294,17 +246,17 @@ export default function Dashboard() {
                   </div>
                   <div className="text-end pt-1">
                     <p className="text-sm mb-0 text-capitalize">Phòng</p>
-                    <h4 className="mb-0">$103,430</h4>
+                    <h4 className="mb-0">{totalRooms}</h4>
                   </div>
                 </div>
-                {/* <hr className="dark horizontal my-0"> */}
+                <hr className="dark horizontal my-0"/>
                 <div className="card-footer p-3">
-                  <p className="mb-0">
+                  {/* <p className="mb-0">
                     <span className="text-success text-sm font-weight-bolder">
                       +5%
                     </span>
                     than yesterday
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
@@ -316,6 +268,7 @@ export default function Dashboard() {
                   <div className="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
                     <div className="chart">
                       <canvas
+                      ref={chartBarsRef}
                         id="chart-bars"
                         className="chart-canvas"
                         height="170"
@@ -324,14 +277,14 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <h6 className="mb-0 ">Website Views</h6>
-                  <p className="text-sm ">Last Campaign Performance</p>
+                  <h6 className="mb-0 ">Bán hàng hàng ngày</h6>
+                  {/* <p className="text-sm ">Last Campaign Performance</p> */}
                   {/* <hr className="dark horizontal"> */}
                   <div className="d-flex ">
                     <i className="material-icons text-sm my-auto me-1">
                       schedule
                     </i>
-                    <p className="mb-0 text-sm"> campaign sent 2 days ago </p>
+                    {/* <p className="mb-0 text-sm"> campaign sent 2 days ago </p> */}
                   </div>
                 </div>
               </div>
@@ -342,7 +295,7 @@ export default function Dashboard() {
                   <div className="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
                     <div className="chart">
                       <canvas
-                        ref={chartBarsRef}
+                        ref={chartLineRef}
                         id="chart-line"
                         className="chart-canvas"
                         height="170"
@@ -351,17 +304,17 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <h6 className="mb-0 "> Daily Sales </h6>
+                  <h6 className="mb-0 "> Đăng ký hàng ngày </h6>
                   <p className="text-sm ">
-                    (<span className="font-weight-bolder">+15%</span>) increase
-                    in today sales.
+                    {/* (<span className="font-weight-bolder">+15%</span>) increase */}
+                    {/* in today sales. */}
                   </p>
                   {/* <hr className="dark horizontal"> */}
                   <div className="d-flex ">
                     <i className="material-icons text-sm my-auto me-1">
                       schedule
                     </i>
-                    <p className="mb-0 text-sm"> updated 4 min ago </p>
+                    {/* <p className="mb-0 text-sm"> updated 4 min ago </p> */}
                   </div>
                 </div>
               </div>
@@ -372,7 +325,7 @@ export default function Dashboard() {
                   <div className="bg-gradient-dark shadow-dark border-radius-lg py-3 pe-1">
                     <div className="chart">
                       <canvas
-                        ref={chartBarsRef}
+                        ref={chartTasksRef}
                         id="chart-line-tasks"
                         className="chart-canvas"
                         height="170"
@@ -381,14 +334,14 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="card-body">
-                  <h6 className="mb-0 ">Completed Tasks</h6>
-                  <p className="text-sm ">Last Campaign Performance</p>
+                  <h6 className="mb-0 ">Đặt phòng hàng ngày</h6>
+                  {/* <p className="text-sm ">Last Campaign Performance</p> */}
                   {/* <hr className="dark horizontal"> */}
                   <div className="d-flex ">
                     <i className="material-icons text-sm my-auto me-1">
                       schedule
                     </i>
-                    <p className="mb-0 text-sm">just updated</p>
+                    {/* <p className="mb-0 text-sm">just updated</p> */}
                   </div>
                 </div>
               </div>

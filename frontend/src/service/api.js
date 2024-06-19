@@ -328,6 +328,15 @@ export const getRoomsById = async (id) => {
     throw error;
   }
 };
+export const getUpdatedRooms = async (id,  updatedData) => {
+  try {
+    const response = await instance.put(`/room/${id}`, updatedData);
+    console.log("test api", response)
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 // Api image room
 export const getAllImage = async (id) => {
   try {
@@ -505,11 +514,11 @@ export const removeAllCart = async (id) => {
   }
 };
 // review
-export const createReview = async (roomId, userId, rating, comment, note) => {
+export const createReview = async (roomId, userId, rating, comment, note, reply) => {
   try {
-    console.log("Sending data to API:", { roomId, userId, rating, comment, note });
+    console.log("Sending data to API:", { roomId, userId, rating, comment, note, reply });
     const response = await instance.post("/review", {
-      roomId, userId, rating, comment, note
+      roomId, userId, rating, comment, note, reply
     });
     console.log("test review", response);
     return response.data;
@@ -526,9 +535,48 @@ export const getReviews = async (roomId) => {
     throw error;
   }
 };
+export const getAllReviews = async () => {
+  try {
+    const response = await instance.get(`/review`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getdeleteReviews = async (id) => {
+  try {
+     await instance.delete(`/review/${id}`);  
+  } catch (error) {
+    throw error;
+  }
+};
 export const getRatingStats = async () => {
   try {
     const response = await instance.get(`/review/ratings/stats`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const updateReview = async (id, updatedData) => {
+  try {
+    const response = await instance.put(`/review/${id}`, updatedData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const deleteBooking = async (id) => {
+  try {
+    const response = await instance.delete(`/booking/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getupdatedBooking = async (id, bookingData) => {
+  try {
+    const response = await instance.put(`/booking/${id}`, bookingData);
     return response.data;
   } catch (error) {
     throw error;

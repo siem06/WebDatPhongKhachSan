@@ -9,7 +9,7 @@ bookingRouter.get("/getBooking/:id", bookingController.getBooking);
 
 bookingRouter.post("/", bookingController.create);
 // bookingRouter.post("/search", bookingController.createAandC);
-// bookingRouter.put("/:id", bookingController.update);
-// bookingRouter.delete("/:id", bookingController.delete);
+bookingRouter.put("/:id", bookingController.update);
+bookingRouter.delete("/:id", bookingController.delete);
 
 module.exports = bookingRouter;

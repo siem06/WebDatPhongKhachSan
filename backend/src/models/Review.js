@@ -23,6 +23,9 @@ module.exports = (sequelize, Sequelize) => {
     note: {
       type: Sequelize.STRING,
     },
+    reply: {
+      type: Sequelize.STRING,
+    },
   });
 
   return Review;

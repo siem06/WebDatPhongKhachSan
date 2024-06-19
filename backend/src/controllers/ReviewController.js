@@ -104,10 +104,10 @@ class ReviewController {
 
   async create(req, res) {
     try {
-      const { roomId, userId, rating, comment, note } = req.body;
-      console.log("log", roomId, userId, rating, comment, note);
+      const { roomId, userId, rating, comment, note, reply } = req.body;
+      console.log("log", roomId, userId, rating, comment, note, reply);
       console.log("Request body:", req.body); // Log request body for debugging
-      const newReview = await review.create({ roomId, userId, rating, comment, note });
+      const newReview = await review.create({ roomId, userId, rating, comment, note ,reply});
       res.status(201).json(newReview);
     } catch (error) {
       console.error("Error creating review:", error.message);
@@ -118,11 +118,20 @@ class ReviewController {
 
   async update(req, res) {
     try {
-      const { idAccount, idRoom, rating, comment, note } = req.body;
+      const { idAccount, idRoom, rating, comment, note,reply } = req.body;
+      
+      // Log request parameters for debugging
+      console.log('Request params:', req.params);
+      console.log('Request body:', req.body);
+      
       const [updated] = await review.update(
-        { idAccount, idRoom, rating, comment, note },
+        { idAccount, idRoom, rating, comment, note,reply },
         { where: { id: req.params.id } }
       );
+  
+      // Log update result
+      console.log('Update result:', updated);
+  
       if (updated) {
         const updatedReview = await review.findByPk(req.params.id);
         res.json(updatedReview);
@@ -134,6 +143,7 @@ class ReviewController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+  
 
   async delete(req, res) {
     try {

@@ -324,7 +324,21 @@ class RoomController {
         note: req.body.note,
       };
       await room.update(data, { where: { id: roomId } });
-      res.json({ message: "Room updated successfully" });
+      // Lấy lại thông tin Room sau khi cập nhật (bao gồm cả images và services)
+    const updatedRoom = await room.findByPk(roomId, {
+      include: [
+        {
+          model: db.image,
+          as: 'images',
+          attributes: ['id', 'roomId', 'img'],
+        },
+        {
+          model: db.service,
+          as: 'services',
+        },
+      ],
+    });
+      res.json({ message: "Room updated successfully",room:updatedRoom });
     } catch (error) {
       console.error("Error updating room:", error);
       res.status(500).json({ error: "Internal server error" });
