@@ -1,22 +1,22 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
-import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
-import "owl.carousel/dist/assets/owl.carousel.min.css";
-import "./style.css";
-import React, { useState } from "react";
 import { Box, TextField } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 import dayjs from "dayjs";
-import { getAllBooking, getAllRooms } from "../../service/api";
+import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
+import "owl.carousel/dist/assets/owl.carousel.min.css";
+import React, { useState } from "react";
+import { getAllRooms, getBookingByStatus } from "../../service/api";
+import "./style.css";
 
 export default function Search({ onSearchResults }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(1);
- 
+
   const [availableRooms, setAvailableRooms] = useState([]);
   const [checkInDate, setCheckInDate] = useState(dayjs());
   const [checkOutDate, setCheckOutDate] = useState(dayjs().add(1, "day"));
@@ -27,7 +27,7 @@ export default function Search({ onSearchResults }) {
   const searchAvailableRooms = async (checkInDate, checkOutDate) => {
     try {
       const allRooms = await getAllRooms(); // Lấy danh sách tất cả các phòng
-      const existingBookings = await getAllBooking(); // Lấy danh sách các đặt phòng hiện tại
+      const existingBookings = await getBookingByStatus(); // Lấy danh sách các đặt phòng hiện tại
       const newCheckin = dayjs(checkInDate).startOf("day"); // Ngày check-in được chọn
       const newCheckout = dayjs(checkOutDate).startOf("day"); // Ngày check-out được chọn
 
@@ -189,7 +189,6 @@ export default function Search({ onSearchResults }) {
                       </div>
                     </li>
                     <li className="dropdown-divider"></li>
-                    
                   </ul>
                 </div>
               </div>

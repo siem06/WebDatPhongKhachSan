@@ -1,123 +1,3 @@
-// const bookingModel = require("../config/db/models/Booking");
-// class BookingController {
-//   get(req, res) {
-//     let result = bookingModel.get_all_booking();
-//     result
-//       .then(function (value) {
-//         // console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   find(req, res) {
-//     let result = bookingModel.find(req.params.id);
-//     result
-//       .then(function (value) {
-//         // console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   create(req, res) {
-//     const data = {
-//       idAccount: req.body.idAccount,
-//       idRoom: req.body.idRoom,
-//       totalPrice: req.body.totalPrice,
-//       checkinDate: req.body.checkinDate,
-//       checkoutDate: req.body.checkoutDate,
-//       statusBooking: req.body.statusBooking,
-//       note: req.body.note,
-//     };
-//     let result = bookingModel.create(data);
-//     result
-//       .then(function (value) {
-//         // console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   update(req, res) {
-//     const data = {
-//       idAccount: req.body.idAccount,
-//       idRoom: req.body.idRoom,
-//       totalPrice: req.body.totalPrice,
-//       checkinDate: req.body.checkinDate,
-//       checkoutDate: req.body.checkoutDate,
-//       statusBooking: req.body.statusBooking,
-//       note: req.body.note,
-//     };
-//     Object.keys(data).forEach((key) => {
-//       if (data[key] === undefined || data[key] === null) {
-//         delete data[key];
-//       }
-//     });
-//     let result = bookingModel.update(req.params.id, data);
-//     result
-//       .then(function (value) {
-//         // console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   delete(req, res) {
-//     let result = bookingModel.delete(req.params.id);
-//     result
-//       .then(function (value) {
-//         // console.log(value);
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-//   createBooking(req, res) {
-//     const data = {
-//       idAccount: req.body.idAccount,
-//       // idRoom: req.body.idRoom,
-//       totalPrice: req.body.totalPrice,
-//       totalRoom: req.body.totalRoom,
-//       totalDate: req.body.totalDate,
-//       checkinDate: req.body.checkinDate,
-//       checkoutDate: req.body.checkoutDate,
-//       statusBooking: 1,
-//       note: req.body.note,
-//       bookingDate: new Date(),
-//       methodPay: req.body.methodPay,
-//     };
-
-//     bookingModel
-//       .createBooking(data)
-//       .then(function (newBooking) {
-//         res.json(newBooking);
-//       })
-//       .catch(function (error) {
-//         console.error("Error creating booking:", error);
-//         res.status(500).json({ error: "Error creating booking" });
-//       });
-//   }
-//   getBookingByIdA(req, res) {
-//     const userId = req.params.id;
-//     console.log("id: " + userId);
-
-//     let result = bookingModel.getBookingByIdA(userId);
-//     result
-//       .then(function (value) {
-//         res.json(value);
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       });
-//   }
-// }
-const bcrypt = require("bcrypt");
 const { sendConfirmationEmail } = require("../models/SendEmail");
 const db = require("../models");
 const { where } = require("sequelize");
@@ -126,6 +6,17 @@ class BookingController {
   get(req, res) {
     db.booking
       .get_all_booking()
+      .then((value) => {
+        console.log(value);
+        res.json(value);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  getBookingByStatus(req, res) {
+    db.booking
+      .getBookingStatus()
       .then((value) => {
         console.log(value);
         res.json(value);
@@ -211,7 +102,6 @@ class BookingController {
       });
 
       res.json(bookingWithUser);
-      // res.json(newBooking);
     } catch (error) {
       console.error("Error creating booking:", error);
       res.status(500).json({ error: "Error creating booking" });
@@ -222,13 +112,14 @@ class BookingController {
     console.log("id: " + userId);
 
     db.booking
-      .findAll({ where: { userId: userId },
+      .findAll({
+        where: { userId: userId },
         include: [
           {
             model: db.room,
           },
         ],
-       })
+      })
       .then((value) => {
         res.json(value);
       })
@@ -239,9 +130,10 @@ class BookingController {
   async createAandC(req, res) {
     try {
       const { adults, children } = req.body;
-      // Kiểm tra xem các giá trị có được truyền đúng không
       if (adults === undefined || children === undefined) {
-        return res.status(400).json({ error: "Adults and children are required." });
+        return res
+          .status(400)
+          .json({ error: "Adults and children are required." });
       }
       const newAandC = await db.booking.create({
         adults,
@@ -256,44 +148,74 @@ class BookingController {
   }
   async update(req, res) {
     const { id } = req.params;
-    const { userId, totalPrice, checkinDate, checkoutDate, statusBooking, note, totalRoom, totalDate, methodPay } = req.body;
+    const {
+      userId,
+      totalPrice,
+      checkinDate,
+      checkoutDate,
+      statusBooking,
+      note,
+      totalRoom,
+      totalDate,
+      methodPay,
+    } = req.body;
     try {
       const booking = await db.booking.findByPk(id);
       if (!booking) {
-        return res.status(404).json({ message: 'Booking not found' });
+        return res.status(404).json({ message: "Booking not found" });
       }
-      await booking.update({
-        userId,
-        totalPrice,
-        checkinDate,
-        checkoutDate,
-        statusBooking,
-        note,
-        totalRoom,
-        totalDate,
-        methodPay,
-      }, {
-        where: { id: id } // Chỉ rõ điều kiện cho phương thức update
-      });
-      res.json(booking); // Trả về booking đã được cập nhật
+      await booking.update(
+        {
+          userId,
+          totalPrice,
+          checkinDate,
+          checkoutDate,
+          statusBooking,
+          note,
+          totalRoom,
+          totalDate,
+          methodPay,
+        },
+        {
+          where: { id: id },
+        }
+      );
+      res.json(booking);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  };
+  }
+  async updateStatus(req, res) {
+    try {
+      const updateStatus = await db.booking.update(
+        { statusBooking: 5 },
+        {
+          where: { id: req.params.id },
+        }
+      );
+      if (updateStatus) {
+        res.json({ message: "Booking detail updated successfully" });
+      } else {
+        res.status(404).send("Booking detail not found");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error updating booking detail");
+    }
+  }
   async delete(req, res) {
     const { id } = req.params;
     try {
       const booking = await db.booking.findByPk(id);
       if (!booking) {
-        return res.status(404).json({ message: 'Booking not found' });
+        return res.status(404).json({ message: "Booking not found" });
       }
       await booking.destroy(); // Xóa booking khỏi cơ sở dữ liệu
-      res.json({ message: 'Booking deleted successfully' });
+      res.json({ message: "Booking deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  };
-  
+  }
 }
 
 module.exports = new BookingController();

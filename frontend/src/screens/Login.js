@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import ModalDetail from "../Layout/ModalDetail";
-import { getByIdUserAll, login } from "../service/api";
+import { useAuth } from "../hooks/useAuth";
+import { login } from "../service/api";
 const Login = ({ setLoggedIn }) => {
+  const { updateUser } = useAuth();
   const [modalShow, setModalShow] = React.useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +24,8 @@ const Login = ({ setLoggedIn }) => {
     try {
       const user = await login(email.trim(), password);
       localStorage.setItem("user", JSON.stringify(user));
-
+      updateUser(user);
+      console.log("user:", user);
       console.log(user?.roles.includes(1));
       console.log(user?.roles.includes(2));
       setLoggedIn(true);
@@ -32,7 +35,7 @@ const Login = ({ setLoggedIn }) => {
         navigation("/");
       }
     } catch (error) {
-      console.log("Error");
+      console.log("Error", error);
       setError(error.response.data.message);
     }
   };

@@ -23,10 +23,10 @@ module.exports = (sequelize, Sequelize) => {
     note: {
       type: Sequelize.TEXT,
     },
-  
+
     totalRoom: {
       type: Sequelize.INTEGER,
-      allowNull:false,
+      allowNull: false,
     },
     totalDate: {
       type: Sequelize.INTEGER,
@@ -62,6 +62,28 @@ module.exports = (sequelize, Sequelize) => {
 
     try {
       const bookings = await Booking.findAll({
+        include: [
+          {
+            model: db.room,
+          },
+          {
+            model: db.user,
+          },
+        ],
+      });
+      return bookings;
+    } catch (error) {
+      throw error;
+    }
+  };
+  Booking.getBookingStatus = async function getBookingStatus() {
+    const db = require("../models");
+
+    try {
+      const bookings = await Booking.findAll({
+        where: {
+          statusBooking: 1,
+        },
         include: [
           {
             model: db.room,

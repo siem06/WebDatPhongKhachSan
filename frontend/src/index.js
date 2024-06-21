@@ -5,14 +5,17 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
 import ScrollToTop from "./components/ScrollToTop";
+import { AuthProvider } from "./hooks/useAuth";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Router>
-      <ScrollToTop />
-      <App />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <ScrollToTop />
+        <App />
+      </Router>
+    </AuthProvider>
   </React.StrictMode>
 );
 

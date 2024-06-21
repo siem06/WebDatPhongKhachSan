@@ -84,7 +84,7 @@
     overflow-y: scroll;
     position: fixed;
     top: 0;
-    /* right: 0; */
+    left: 0;
     height: 100%;
     background-color: #ccc; /* Màu nền của sidebar */
     padding: 20px; /* Khoảng cách nội dung bên trong sidebar */

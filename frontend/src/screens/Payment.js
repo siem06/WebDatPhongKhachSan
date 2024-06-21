@@ -221,7 +221,6 @@ export default function Payment() {
         });
 
         const details = await Promise.all(detailsPromises);
-        console.log("11de", details);
         setRoomDetails(details);
         setRoomCount(details.length);
       } catch (error) {

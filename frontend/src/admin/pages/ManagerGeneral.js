@@ -112,7 +112,7 @@ export default function ManagerGeneral() {
       name: "Trạng thái",
       cell: (row) => (
         <span style={{ color: row.status === 1 ? "#2ea817" : "red" }}>
-          {row.status === "1" ? "Đang hiển thị" : "Đang ẩn"}
+          {row.status === 1 ? "Đang hiển thị" : "Đang ẩn"}
         </span>
       ),
       sortable: true,

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import Edit from "@mui/icons-material/Edit";
 import {
   Box,
+  Button,
   Stack,
   Table,
   TableBody,
@@ -8,11 +9,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@mui/material";
 import {
   MRT_GlobalFilterTextField,
@@ -22,15 +18,20 @@ import {
   flexRender,
   useMaterialReactTable,
 } from "material-react-table";
-import CurrencyFormat from "react-currency-format";
-import dayjs from "dayjs";
-import Edit from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/Delete";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const TableMui = ({ columns, data, setModalShow, setSelectedCellValue }) => {
+const TableMui = ({
+  columns,
+  data,
+  onRowClick,
+  onEditClick,
+  setModalShow,
+  setSelectedCellValue,
+}) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
-
+  const navigation = useNavigate();
   const table = useMaterialReactTable({
     columns,
     data,
@@ -46,19 +47,20 @@ const TableMui = ({ columns, data, setModalShow, setSelectedCellValue }) => {
     paginationDisplayMode: "pages",
   });
 
-  const handleCellClick = (row) => {
-    setSelectedCellValue(row.original);
-    setModalShow(true);
-  };
-
   const handleEditClick = (row) => {
     setSelectedRow(row);
     setEditModalOpen(true);
+    if (onEditClick) onEditClick(row);
   };
 
   const handleEditModalClose = () => {
     setEditModalOpen(false);
     setSelectedRow(null);
+  };
+
+  const handleCellClick = (row) => {
+    if (onRowClick) onRowClick(row);
+    console.log("Cell clicked", row.original);
   };
 
   return (
@@ -137,27 +139,6 @@ const TableMui = ({ columns, data, setModalShow, setSelectedCellValue }) => {
         <MRT_TablePagination table={table} />
       </Box>
       <MRT_ToolbarAlertBanner stackAlertBanner table={table} />
-
-      {/* Edit Modal */}
-      {/* <Dialog open={editModalOpen} onClose={handleEditModalClose}> */}
-      {/* <DialogTitle>Chỉnh sửa thông tin</DialogTitle> */}
-      {/* <DialogContent> */}
-      {/* Replace with your edit form or component */}
-      {/* <Box p={2}> */}
-      {/* <div>ID: {selectedRow?.id}</div> */}
-      {/* <div>Email: {selectedRow?.email}</div> */}
-      {/* <div> */}
-      {/* Trạng thái:{" "} */}
-      {/* {selectedRow?.status === 1 ? "Đã xác thực" : "Chưa xác thực"} */}
-      {/* </div> */}
-      {/* Add more fields as needed */}
-      {/* </Box> */}
-      {/* </DialogContent> */}
-      {/* <DialogActions> */}
-      {/* <Button onClick={handleEditModalClose}>Đóng</Button> */}
-      {/* Add Save or Update button for editing */}
-      {/* </DialogActions> */}
-      {/* </Dialog> */}
     </Stack>
   );
 };

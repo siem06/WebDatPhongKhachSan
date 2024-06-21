@@ -30,6 +30,9 @@ import "react-toastify/dist/ReactToastify.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import AccountDetail from "./admin/pages/AccountDetail";
 import ManageComment from "./admin/pages/ManageComment";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import Page404 from "./screens/Page404";
+import DetailBooking from "./pages/DetailBooking";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
@@ -38,57 +41,228 @@ function App() {
     if (loggedInUser) return setLoggedIn(true);
   }, []);
 
+  const Layout = ({ children }) => (
+    <>
+      {loggedInUser ? (
+        <Header loggedIn={loggedIn} user={loggedInUser} />
+      ) : (
+        <Header loggedIn={loggedIn} />
+      )}
+      {children}
+      <Footer />
+    </>
+  );
+  const LayoutAdmin = ({ children }) => (
+    <>
+      {loggedInUser ? (
+        <Menu setLoggedIn={setLoggedIn} />
+      ) : (
+        <Header loggedIn={loggedIn} />
+      )}
+      {children}
+      <FooterAdmin />
+    </>
+  );
   return (
-    <div>
-      {(!loggedInUser || loggedInUser?.roles.includes(1)) && (
-        <>
-          {loggedInUser ? (
-            <Header loggedIn={loggedIn} user={loggedInUser} />
-          ) : (
-            <Header loggedIn={loggedIn} />
-          )}
-          <Routes>
-            <Route path="/" exact element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/room" element={<Room />} />
-            <Route path="/room_detail" element={<RoomDetail />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route
-              path="/login"
-              element={<Login setLoggedIn={setLoggedIn} />}
-            />
-            <Route path="/register" element={<Register />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/service" element={<Service />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route
-              path="/profile"
-              element={<Profile setLoggedIn={setLoggedIn} />}
-            />
-            <Route path="/forgot" element={<ForgotPassword />} />
-            <Route path="/cart" element={<SelectedRoom />} />
-          </Routes>
-          <Footer />
-        </>
-      )}
-
-      {loggedInUser && loggedInUser?.roles.includes(2) && (
-        <>
-          <Menu setLoggedIn={setLoggedIn} />
-          <Routes>
-            <Route path="/detailProfile" element={<AccountDetail />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/manageroom" element={<ManageRoom />} />
-            <Route path="/booking" element={<BookingRoom />} />
-            <Route path="/manageaccount" element={<ManageAccount />} />
-            <Route path="/managegeneral" element={<ManagerGeneral />} />
-            <Route path="/supportCustomer" element={<Support />} />
-            <Route path="/managecomment" element={<ManageComment />} />
-          </Routes>
-          <FooterAdmin />
-        </>
-      )}
-    </div>
+    <Routes>
+      <Route
+        path="/"
+        exact
+        element={
+          <Layout>
+            <Home />
+          </Layout>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <Layout>
+            <About />
+          </Layout>
+        }
+      />
+      <Route
+        path="/room"
+        element={
+          <Layout>
+            <Room />
+          </Layout>
+        }
+      />
+      <Route
+        path="/room_detail"
+        element={
+          <Layout>
+            <RoomDetail />
+          </Layout>
+        }
+      />
+      <Route
+        path="/payment"
+        element={
+          <ProtectedRoute isAllowed={loggedInUser} redirectTo="/login">
+            <Layout>
+              <Payment />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <Layout>
+            <Login setLoggedIn={setLoggedIn} />
+          </Layout>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <Layout>
+            <Register />
+          </Layout>
+        }
+      />
+      <Route
+        path="/blog"
+        element={
+          <Layout>
+            <Blog />
+          </Layout>
+        }
+      />
+      <Route
+        path="/service"
+        element={
+          <Layout>
+            <Service />
+          </Layout>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <Layout>
+            <Contact />
+          </Layout>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute isAllowed={loggedInUser} redirectTo="/login">
+            <Layout>
+              <Profile setLoggedIn={setLoggedIn} />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/forgot"
+        element={
+          <Layout>
+            <ForgotPassword />
+          </Layout>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <Layout>
+            <SelectedRoom />
+          </Layout>
+        }
+      />
+      <Route
+        path="/bookingDetail"
+        element={
+          <Layout>
+            <DetailBooking />
+          </Layout>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <Layout>
+            <Page404 />
+          </Layout>
+        }
+      />
+      <Route
+        element={
+          <ProtectedRoute
+            isAllowed={loggedInUser && loggedInUser?.roles.includes(2)}
+          />
+        }
+      >
+        <Route
+          path="/detailProfile"
+          element={
+            <LayoutAdmin>
+              <AccountDetail />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <LayoutAdmin>
+              <Dashboard />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/manageroom"
+          element={
+            <LayoutAdmin>
+              <ManageRoom />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/booking"
+          element={
+            <LayoutAdmin>
+              <BookingRoom />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/manageaccount"
+          element={
+            <LayoutAdmin>
+              <ManageAccount />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/managegeneral"
+          element={
+            <LayoutAdmin>
+              <ManagerGeneral />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/supportCustomer"
+          element={
+            <LayoutAdmin>
+              <Support />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/managecomment"
+          element={
+            <LayoutAdmin>
+              <ManageComment />
+            </LayoutAdmin>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
 
