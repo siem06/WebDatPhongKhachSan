@@ -3,15 +3,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
 import * as CurrencyFormat from "react-currency-format";
+import { Link, useNavigate } from "react-router-dom";
 import "../assets/css/responsive.css";
-import "../assets/css/style.css.map";
 import "../assets/css/style.css";
+import "../assets/css/style.css.map";
 import Breadcrumb from "../components/Breadcrumb";
-import Button from "../components/Button/Button";
-import Input from "../components/Input/Input";
-import InputGroup from "../components/InputGroup";
+import Notification from "../components/Notification";
 import Search from "../components/Search";
 import {
   addCart,
@@ -23,7 +21,6 @@ import {
   getRoomsByType,
   removeRoomLike,
 } from "../service/api";
-import Notification from "../components/Notification";
 
 export default function Room() {
   const navigation = useNavigate();
@@ -61,8 +58,7 @@ export default function Room() {
   };
   const handleAddRoom = async (roomId) => {
     if (!loggedInUser) {
-      showNotification("warning", "Hãy đăng nhập để thực hiện chức năng này!");
-
+      navigation("/login");
       return;
     }
     try {
@@ -97,12 +93,11 @@ export default function Room() {
     const isFavorite = heartStates[roomId];
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
-      alert("Bạn cần đăng nhập để thích phòng.");
+      navigation("/login");
       return;
     }
     try {
       if (isFavorite) {
-        console.log("Favorite1", isFavorite);
         await handleRemoveFavorite(user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
@@ -213,11 +208,11 @@ export default function Room() {
 
   const handleBooking = (roomId) => {
     if (!loggedInUser) {
-      showNotification("warning", "Hãy đăng nhập để thực hiện chức năng này!");
+      navigation("/login");
       return;
     }
 
-    const roomIds = [roomId]; // Initialize roomIds as an array with the current roomId
+    const roomIds = [roomId];
     navigation("/payment", {
       state: {
         roomIds: roomIds, // Pass the array of roomIds to the payment page
@@ -231,7 +226,7 @@ export default function Room() {
   };
   const handleSearchResults = (rooms) => {
     setRooms(rooms);
-  }; 
+  };
   return (
     <>
       <Breadcrumb currently="Phòng" classNameImg="service_banner_two" />
@@ -251,7 +246,7 @@ export default function Room() {
               </div>
               <div className="col-md-9">
                 <div className="boking_table">
-                <Search onSearchResults={handleSearchResults} />
+                  <Search onSearchResults={handleSearchResults} />
                 </div>
               </div>
             </div>

@@ -1,7 +1,8 @@
 import Avatar from "@mui/material/Avatar";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/profile.css";
+import { useAuth } from "../hooks/useAuth";
 import HistoryBook from "../pages/HistoryBook";
 import LikeRoom from "../pages/LikeRoom";
 import ProfileInfo from "../pages/ProfileInfo";
@@ -10,7 +11,7 @@ import { stringAvatar } from "../utils/UserLogo";
 
 export default function Profile({ setLoggedIn }) {
   const [selectedOption, setSelectedOption] = useState("profile");
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const navigation = useNavigate();
 
   const handleOptionChange = (option) => {
@@ -27,14 +28,8 @@ export default function Profile({ setLoggedIn }) {
       console.error("Lỗi khi đăng xuất:", error);
     }
   };
-  useEffect(() => {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
-    if (!loggedInUser) {
-      navigation("/login");
-    } else {
-      setUser(loggedInUser);
-    }
-  }, []);
+
+  const { user } = useAuth();
 
   const renderOption = () => {
     switch (selectedOption) {
@@ -60,7 +55,7 @@ export default function Profile({ setLoggedIn }) {
               <div className="avatar avatar-xl mb-2">
                 {user && <Avatar {...stringAvatar(user.email)} />}
               </div>
-              <h6 className="mb-0">{user == null ? "Name" : user.useName}</h6>
+              <h6 className="mb-0">{user == null ? "Name" : user.username}</h6>
               <a href="#" className="text-reset text-primary-hover small">
                 {user == null ? "" : user.email}
               </a>

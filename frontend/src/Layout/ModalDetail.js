@@ -7,9 +7,13 @@ import {
   getAllImage,
   getRoomsById,
   updateProfile,
-  getUserById,
   getByIdUserAll,
+  updateRoles,
+  updateBookingStatus,
+  getBookingById,
+  updateBooking,
 } from "../service/api";
+import Notification from "../components/Notification";
 
 export default function ModalDetail(props) {
   const {
@@ -23,37 +27,43 @@ export default function ModalDetail(props) {
     userDetails,
   } = props;
 
-  const getTypeRoomLabel = (typeRoom) => {
-    switch (typeRoom) {
+  const getTypeRoomLabel = (type) => {
+    switch (type) {
       case 1:
-        return "Phòng Tiêu chuẩn";
+        return "Phòng đơn Tiêu chuẩn";
       case 2:
-        return "Phòng Cao cấp";
+        return "Phòng đơn Cao cấp";
       case 3:
-        return "Phòng Đặc biệt";
+        return "Phòng đơn Đặc biệt";
       case 4:
         return "Phòng Tổng thống";
+      case 5:
+        return "Phòng đôi Tiêu chuẩn";
+      case 6:
+        return "Phòng đôi Cao cấp";
+      case 7:
+        return "Phòng đôi Đặc biệt";
       default:
         return "Không xác định";
     }
   };
-
   const navigate = useNavigate();
   const [roomDetails, setRoomDetails] = useState({});
-  const [roomImages, setRoomImages] = useState([]);
   const [permissions, setPermissions] = useState({});
   const [newData, setEditableData] = useState(data);
+  const [notification, setNotification] = useState("");
+  const [reloadData, setReloadData] = useState(false);
 
+  const [selectedRoles, setSelectedRoles] = useState([]);
   useEffect(() => {
+    console.log("Selected roles", data);
     const fetchRoomData = async () => {
       try {
         if (data !== undefined) {
-          const roomData = await getRoomsById(data.idRoom);
-          const imagesData = await getAllImage(data.idRoom);
-          const imagesObj = {};
-          imagesObj[data.idRoom] = imagesData[0];
+          const getBooking = await getBookingById(data.id);
+          const roomIds = getBooking?.rooms.map((room) => room.id);
+          const roomData = await getRoomsById(roomIds);
           setRoomDetails(roomData);
-          setRoomImages(imagesObj);
         }
       } catch (error) {
         console.error("Failed to fetch room data", error);
@@ -62,19 +72,17 @@ export default function ModalDetail(props) {
 
     fetchRoomData();
   }, [data]);
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         if (data.id !== undefined) {
           const userData = await getByIdUserAll(data.id);
           setEditableData(userData);
-          console.log("User data:", userData);
-          // Set permissions based on roles
-          const userRoles = userData.roles; // Assume 'roles' is an array in userData
+          setSelectedRoles(userData.roles);
+          const userRoles = userData.roles;
           const initialPermissions = {};
           userRoles.forEach((role) => {
-            initialPermissions[role.name] = true; // Lưu tên vai trò làm key và giá trị là true
+            initialPermissions[role.name] = true;
           });
           setPermissions(initialPermissions);
         }
@@ -86,14 +94,6 @@ export default function ModalDetail(props) {
     fetchUserData();
   }, [data]);
 
-  const handlePermissionChange = (event) => {
-    const { name, checked } = event.target;
-    setPermissions({
-      ...permissions,
-      [name]: checked,
-    });
-  };
-  console.log("Permission", permissions);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setEditableData({
@@ -101,10 +101,8 @@ export default function ModalDetail(props) {
       [name]: value,
     });
   };
-
   const handleSave = async () => {
     try {
-      // Gộp quyền hạn vào trong newData
       const roles = Object.keys(permissions).map((key) => ({
         name: key,
         active: permissions[key],
@@ -115,12 +113,32 @@ export default function ModalDetail(props) {
         role: roles,
       };
 
-      // Gọi hàm cập nhật thông tin và quyền hạn
       await updateProfile(data.id, updatedData);
-      console.log("Data saved successfully");
+      const newRoles = selectedRoles.map((role) => {
+        if (role === 1) {
+          return "user";
+        } else {
+          return "admin";
+        }
+      });
+
+      await updateRoles(newData.id, newRoles);
       props.onHide();
     } catch (error) {
       console.error("Failed to save data", error);
+    }
+  };
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+  };
+  const handelCancel = async () => {
+    try {
+      const newBooking = await updateBooking(data.id, { statusBooking: 5 });
+      console.log("new booking", newBooking);
+      setReloadData((prev) => !prev);
+      showNotification("success", "Đơn đặt phòng bạn đã hủy thành công!");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -128,6 +146,17 @@ export default function ModalDetail(props) {
     navigate(`/room_detail?roomId=${roomId}`);
   };
 
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+
+    setSelectedRoles((prevSelectedRoles) => {
+      if (checked) {
+        return [...prevSelectedRoles, Number(value)];
+      } else {
+        return prevSelectedRoles.filter((roleId) => roleId !== Number(value));
+      }
+    });
+  };
   return (
     <Modal
       {...props}
@@ -146,26 +175,33 @@ export default function ModalDetail(props) {
       <Modal.Body>
         <div>
           <h5 className="text-center title-header text-black">{title}</h5>
+
           {bookDetail && (
             <div>
+              {notification && (
+                <Notification
+                  type={notification.type}
+                  message={notification.message}
+                />
+              )}
               <div className="d-flex w-full flex-col ">
                 <div className="relative d-flex flex-col justify-between p-4 sm:flex-row row">
                   <div className="d-flex">
                     <div className="text-black mb-2 col-5">Họ và tên: </div>
                     <span className="text-black font-weight-bold">
-                      {data.username}
+                      {newData.username}
                     </span>
                   </div>
                   <div className="d-flex">
                     <div className="text-black mb-2 col-5">Số điện thoại:</div>
                     <span className="text-black font-weight-bold">
-                      {data.phone}
+                      {newData.phone}
                     </span>
                   </div>
                   <div className="d-flex">
                     <div className="text-black mb-2 col-5">Email: </div>
                     <span className="text-black font-weight-bold">
-                      {data.email}
+                      {newData.email}
                     </span>
                   </div>
                 </div>
@@ -202,12 +238,22 @@ export default function ModalDetail(props) {
                 </div>
               </div>
               <div className="d-flex justify-content-center">
-                <button
-                  className="w-20 m-auto btn btn-danger text-white"
-                  onClick={() => console.log("Cancel")}
-                >
-                  Hủy Phòng
-                </button>
+                {data.statusBooking === 5 ? (
+                  <button
+                    className="w-20 m-auto btn btn-danger text-white"
+                    onClick={handelCancel}
+                    disabled
+                  >
+                    Hủy Phòng
+                  </button>
+                ) : (
+                  <button
+                    className="w-20 m-auto btn btn-danger text-white"
+                    onClick={handelCancel}
+                  >
+                    Hủy Phòng
+                  </button>
+                )}
               </div>
               <div className="flex-col relative justify-between mt-2">
                 <div className="relative flex flex-col">
@@ -220,7 +266,15 @@ export default function ModalDetail(props) {
                               Mã phòng:
                             </div>
                             <span className="text-black font-weight-bold">
-                              #MP{data.bookingId}
+                              #MP{data.id}
+                            </span>
+                          </div>
+                          <div className="d-flex">
+                            <div className="text-black mb-2 col-7">
+                              Số ngày:
+                            </div>
+                            <span className="text-black font-weight-bold">
+                              {data.totalDate}
                             </span>
                           </div>
                           <div className="d-flex">
@@ -244,14 +298,14 @@ export default function ModalDetail(props) {
                               Loại phòng:
                             </div>
                             <img
-                              alt={`Room ${data.idRoom}`}
+                              alt={`Room ${roomDetails?.id}`}
                               loading="lazy"
                               decoding="async"
                               data-nimg="1"
                               className="size-140 rounded-4 object-cover"
                               src={
-                                roomImages && roomImages[data.idRoom]
-                                  ? roomImages[data.idRoom].img
+                                roomDetails?.images
+                                  ? roomDetails?.images[0].img
                                   : ""
                               }
                               style={{
@@ -261,14 +315,14 @@ export default function ModalDetail(props) {
                               }}
                               onClick={(e) => {
                                 e.preventDefault();
-                                link_detail(data.idRoom);
+                                link_detail(roomDetails?.id);
                               }}
                             />
                           </div>
                           <div className="d-flex">
                             <div className="text-black mb-2 col-7"></div>
                             <span className="text-black font-weight-bold">
-                              {getTypeRoomLabel(data.typeRoom)}
+                              {getTypeRoomLabel(roomDetails?.type)}
                             </span>
                           </div>
                           <div className="d-flex">
@@ -384,31 +438,29 @@ flex flex-col"
                           Quyền hạn:
                         </div>
                       </div>
-                      {Object.keys(permissions).length > 0 &&
-                        Object.keys(permissions).map((key) => (
-                          <div key={key} className="d-flex">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="user"
-                                checked={permissions["user"]}
-                                onChange={handlePermissionChange}
-                                disabled={!permissions[key]} // Disable checkbox if permission is not true
-                              />
-                              User
-                            </label>
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="admin"
-                                checked={permissions["admin"]}
-                                onChange={handlePermissionChange}
-                                disabled={!permissions[key]} // Disable checkbox if permission is not true
-                              />
-                              Admin
-                            </label>
-                          </div>
-                        ))}
+
+                      <div className="d-flex">
+                        <label>
+                          <input
+                            type="checkbox"
+                            id="1"
+                            value={1}
+                            checked={selectedRoles.includes(1)}
+                            onChange={handleCheckboxChange}
+                          />
+                          User
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            id="2"
+                            value={2}
+                            checked={selectedRoles.includes(2)}
+                            onChange={handleCheckboxChange}
+                          />
+                          Admin
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>

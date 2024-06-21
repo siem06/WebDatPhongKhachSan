@@ -3,8 +3,6 @@ import Header from "../layout/Header";
 import { getAll } from "../../service/api";
 import TableMui from "../../components/Table/TableMui";
 import ModalDetail from "../../Layout/ModalDetail";
-import { Edit } from "@mui/icons-material";
-import { Button } from "@mui/material";
 
 export default function ManagerAccount() {
   const columns = [
@@ -54,12 +52,13 @@ export default function ManagerAccount() {
       <Header pageCurrent="Quản lý tài khoản" />
       <div className="container-fluid py-4">
         <div className="row">
-          <h4 className="bg-secondary p-3">Danh sách bài đăng nổi bật</h4>
+          <h4 className="bg-secondary p-3">Danh sách tài khoản</h4>
           <TableMui
             columns={columns}
             data={data}
             setModalShow={setModalShow}
             setSelectedCellValue={setSelectedCellValue}
+            onEditClick={handleEditClick}
           />
         </div>
       </div>

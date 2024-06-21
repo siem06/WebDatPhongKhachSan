@@ -13,7 +13,6 @@ import "../assets/css/style.css.map";
 import "../assets/css/responsive.css";
 import BedroomParentIcon from "@mui/icons-material/BedroomParent";
 export default function Header({ loggedIn, user }) {
-  console.log("yy", user);
   const [active, setActive] = useState("/");
   const getActiveClass = (path) => {
     return active === path ? "active" : "";
@@ -43,7 +42,6 @@ export default function Header({ loggedIn, user }) {
     }
   };
   const handleRoomTypeSelect = async (type) => {
-    console.log("kkkk", type);
     try {
       // Gọi API để lấy danh sách phòng theo loại phòng
       const rooms = await getRoomsByType(type);

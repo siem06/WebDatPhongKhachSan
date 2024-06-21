@@ -51,7 +51,7 @@ export default function HistoryBook() {
             borderRadius: "5px",
           }}
         >
-          {row.original.statusBooking === 1 ? "Thành công" : "Thất bại"}
+          {row.original.statusBooking === 1 ? "Thành công" : "Đã hủy"}
         </div>
       ),
     },
@@ -117,7 +117,10 @@ export default function HistoryBook() {
   const completedBookings = data.filter((booking) =>
     moment(booking.checkoutDate).isBefore(currentDate)
   );
-
+  const handleRowClick = (row) => {
+    navigation(`/bookingDetail?${row.original.id}`, { state: row.original });
+    console.log("Cell clicked", row.original);
+  };
   return (
     <div>
       {/* <!-- Tab items --> */}
@@ -125,7 +128,7 @@ export default function HistoryBook() {
         <div className="tab-item active">Tất cả</div>
         <div className="tab-item">Sắp tới</div>
         <div className="tab-item">Hoàn tất</div>
-        <div className="tab-item">Thất bại</div>
+        <div className="tab-item">Đã hủy</div>
         <div className="line"></div>
       </div>
 
@@ -149,8 +152,7 @@ export default function HistoryBook() {
             <TableMui
               columns={columns}
               data={data}
-              setModalShow={setModalShow}
-              setSelectedCellValue={setSelectedCellValue}
+              onRowClick={handleRowClick}
             />
           </div>
         </div>
@@ -159,8 +161,7 @@ export default function HistoryBook() {
             <TableMui
               columns={columns}
               data={upcomingBookings}
-              setModalShow={setModalShow}
-              setSelectedCellValue={setSelectedCellValue}
+              onRowClick={handleRowClick}
             />
           </div>
         </div>
@@ -169,8 +170,7 @@ export default function HistoryBook() {
             <TableMui
               columns={columns}
               data={completedBookings}
-              setModalShow={setModalShow}
-              setSelectedCellValue={setSelectedCellValue}
+              onRowClick={handleRowClick}
             />
           </div>
         </div>
@@ -178,9 +178,7 @@ export default function HistoryBook() {
           <div className="table-scroll ">
             <TableMui
               columns={columns}
-              data={data.filter((booking) => booking.statusBooking === 0)}
-              setModalShow={setModalShow}
-              setSelectedCellValue={setSelectedCellValue}
+              data={data.filter((booking) => booking.statusBooking === 5)}
             />
           </div>
         </div>

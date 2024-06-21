@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
-import Button from "../components/Button/Button";
-import CurrencyFormat from "react-currency-format";
-import imgs from "../assets/image";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import React, { useEffect, useState } from "react";
+import CurrencyFormat from "react-currency-format";
+import { Link, useNavigate } from "react-router-dom";
+import Notification from "../components/Notification";
 import { getByIdUserAll, getRoomsById, removeCart } from "../service/api";
-import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export default function SelectedRoom() {
   const [cartItems, setCartItems] = useState([]);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
-  const navigation = useNavigate();
+  const [notification, setNotification] = useState(null);
 
+  const navigation = useNavigate();
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+  };
   useEffect(() => {
     const getRoom = async () => {
       try {
@@ -31,7 +34,11 @@ export default function SelectedRoom() {
   }, []);
   const handleBooking = () => {
     if (!loggedInUser) {
-      alert("Vui lòng đăng nhập để đặt phòng");
+      navigation("/login");
+      return;
+    }
+    if (cartItems.length === 0) {
+      showNotification("warning", "Bạn chưa chọn phòng");
       return;
     }
     const roomId = cartItems.map((item) => item.id);
@@ -56,10 +63,13 @@ export default function SelectedRoom() {
 
   return (
     <div className="container mt-7">
+      {notification && (
+        <Notification type={notification.type} message={notification.message} />
+      )}
       <div className="row justify-content-center">
         <h2 className="mb-4">Phòng đã chọn</h2>
         <div className="col-10 col-md-8 col-lg-8">
-          {cartItems !== null ? (
+          {cartItems !== null && cartItems.length !== 0 ? (
             cartItems.map((room, index) => (
               <div className="card shadow p-2 m-2" key={index}>
                 <div className="d-flex">
@@ -131,7 +141,7 @@ export default function SelectedRoom() {
               </div>
             ))
           ) : (
-            <p>Bạn chưa chọn phòng nào!</p>
+            <h5>Bạn chưa chọn phòng nào!</h5>
           )}
         </div>
         <div className="col-10 col-md-8 col-lg-4">

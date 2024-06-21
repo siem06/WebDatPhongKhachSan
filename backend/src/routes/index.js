@@ -12,8 +12,10 @@ const imageRouter = require("./Image");
 const roomfavorite = require("./RoomFavorite");
 const bookingDetailsRoute = require("./BookingDetails");
 const cartRoute = require("./Cart");
+const { setHeaders } = require("../middleware/common");
 
 function route(app) {
+  app.use(setHeaders);
   app.use("/accounts", accountRouter);
   app.use("/home", accountRouter);
   app.use("/aboutus", aboutUsRouter);

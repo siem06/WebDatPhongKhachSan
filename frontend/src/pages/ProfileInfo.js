@@ -13,21 +13,14 @@ import {
   updateProfile,
   uploadAvatar,
 } from "../service/api";
-
+import { useAuth } from "../hooks/useAuth";
 export default function ProfileInfo() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useAuth();
   const navigation = useNavigate();
-  const [userData, setUserData] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [resultMessage, setResultMessage] = useState(null);
-
-  const [formData, setFormData] = useState({
-    username: user?.username,
-    email: user?.email,
-    phone: user?.phone,
-    birthday: user?.birthday,
-    avatar: user?.avatar,
-  });
+  const { updateUser } = useAuth();
+  const [formData, setFormData] = useState(user);
 
   const [notification, setNotification] = useState("");
   const [oldPass, setOldPass] = useState("");
@@ -67,11 +60,9 @@ export default function ProfileInfo() {
     event.preventDefault();
     try {
       const response = await updateProfile(user.id, formData);
-      setFormData(response.user);
       showNotification("success", "Thông đã đã chỉnh sửa thành công!");
-      sessionStorage.setItem("user", JSON.stringify(response.user));
-
-      // alert("Thông tin đã chỉnh sửa thành công!");
+      updateUser({ ...user, ...response.user });
+      console.log(response);
     } catch (error) {
       console.log("Error", error);
       showNotification("error", "Đã có lỗi! Hãy thử lại!");
@@ -103,11 +94,8 @@ export default function ProfileInfo() {
     if (file) {
       try {
         const result = await uploadAvatar({ avatar: file });
-        console.log("bdhdhhddh", result.user);
-        setFormData(result.user);
+        updateUser({ ...user, ...result.user });
         showNotification("success", "Cập nhật ảnh đại điện thành công!");
-
-        sessionStorage.setItem("user", JSON.stringify(result.user));
       } catch (error) {
         console.error(error.message);
         setResultMessage({ type: "error", message: error.message });
@@ -121,7 +109,7 @@ export default function ProfileInfo() {
     setNotification({ type, message });
   };
   const getFormattedDateTime = () => {
-    return moment().format("YYYY-MM-DDTHH:mm");
+    return moment().format("YYYY-MM-DD");
   };
 
   // Format the dateExpiration to YYYY-MM-DDTHH:MM if it exists
@@ -150,7 +138,7 @@ export default function ProfileInfo() {
                     <img
                       id="uploadfile-1-preview"
                       className="avatar-img border-white rounded-circle custom-img"
-                      src={formData?.avatar ? formData?.avatar : imgs.author}
+                      src={user?.avatar ? user?.avatar : imgs.author}
                       alt="avatar"
                     />
                   </span>
@@ -191,7 +179,7 @@ export default function ProfileInfo() {
               </div>
               <div className="col-md-6">
                 <label className="form-label">
-                  Ngày sinh <span className="text-danger">*</span>
+                  Ngày sinh <span className="text-danger"></span>
                 </label>
                 <input
                   placeholder={formData?.birthday}
@@ -284,7 +272,7 @@ export default function ProfileInfo() {
                 onChange={handleReNewPass}
               />
             </div>
-            {error && <p className={classSuccess}>{error}</p>}
+            {/* {error && <p className={classSuccess}>{error}</p>} */}
             <div className="text-end m-2 d-flex justify-content-end">
               <div className="col-3 text-white">
                 <Button

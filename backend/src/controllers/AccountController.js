@@ -3,7 +3,6 @@ const fs = require("fs");
 const { google } = require("googleapis");
 const SCOPE = ["https://www.googleapis.com/auth/drive"];
 const { Readable } = require("stream");
-
 const bcrypt = require("bcrypt");
 const { sendConfirmationEmail } = require("../models/SendEmail");
 const db = require("../models");
@@ -43,8 +42,8 @@ class AccountController {
     db.user
       .findUser(req.params.id)
       .then((value) => {
-        console.log(value);
-        res.json(value);
+        const roleIds = value.roles.map((role) => role.id);
+        res.json({ ...value.dataValues, roles: roleIds });
       })
       .catch((error) => {
         console.log(error);
@@ -110,9 +109,7 @@ class AccountController {
         otpExpiration: Date.now() + 5 * 60 * 1000, // Hết hạn sau 5 phút
       };
 
-      console.log("OTP", req.session);
       sendConfirmationEmail(req.body.email, otp);
-      console.log("22", user);
       return res.json(user);
     } catch (error) {
       console.log(error);
@@ -215,7 +212,7 @@ class AccountController {
 
   async login(req, res) {
     const { password, email } = req.body;
-
+    console.log(password, email);
     try {
       const user = await db.user.findOne({
         where: { email },
@@ -372,7 +369,43 @@ class AccountController {
       res.status(500).json({ message: "Lỗi hệ thống!" });
     }
   }
+  async updateUserRoles(req, res) {
+    const { Op } = db.Sequelize;
+    const userId = req.params.id;
+    const { roles } = req.body;
+    console.log(roles, userId);
+    try {
+      // Tìm người dùng theo ID
+      const user = await db.user.findByPk(userId);
 
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Tìm các quyền theo mảng roles
+      const rolesToUpdate = await db.role.findAll({
+        where: {
+          name: {
+            [Op.or]: roles,
+          },
+        },
+      });
+
+      if (!rolesToUpdate.length) {
+        return res.status(400).json({ message: "Roles not found" });
+      }
+
+      // Cập nhật quyền của người dùng
+      await user.setRoles(rolesToUpdate);
+
+      res.status(200).json({ message: "User roles updated successfully" });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ message: "An error occurred", error: error.message });
+    }
+  }
   async uploadFile(req, res) {
     try {
       const authClient = await authorize();
