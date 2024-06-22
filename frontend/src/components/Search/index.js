@@ -27,7 +27,9 @@ export default function Search({ onSearchResults }) {
   const searchAvailableRooms = async (checkInDate, checkOutDate) => {
     try {
       const allRooms = await getAllRooms(); // Lấy danh sách tất cả các phòng
+      console.log("all room", allRooms);
       const existingBookings = await getBookingByStatus(); // Lấy danh sách các đặt phòng hiện tại
+      console.log("es", existingBookings);
       const newCheckin = dayjs(checkInDate).startOf("day"); // Ngày check-in được chọn
       const newCheckout = dayjs(checkOutDate).startOf("day"); // Ngày check-out được chọn
 

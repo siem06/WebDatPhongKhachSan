@@ -215,7 +215,7 @@ export default function Room() {
     const roomIds = [roomId];
     navigation("/payment", {
       state: {
-        roomIds: roomIds, // Pass the array of roomIds to the payment page
+        roomIds: roomIds,
         accountId: loggedInUser.id,
       },
     });

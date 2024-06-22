@@ -426,7 +426,7 @@ export const getAllBooking = async () => {
 };
 export const getBookingByStatus = async () => {
   try {
-    const response = await instance.get("/booking/getBookingByStatus");
+    const response = await instance.get("/booking/status");
     return response.data;
   } catch (error) {
     throw error;
@@ -494,6 +494,22 @@ export const createPayment = async (idBooking, methodPay, totalPay) => {
 export const updateBooking = async (id, data) => {
   try {
     const response = await instance.put(`/booking/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const deleteBooking = async (id) => {
+  try {
+    const response = await instance.delete(`/booking/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getupdatedBooking = async (id, bookingData) => {
+  try {
+    const response = await instance.put(`/booking/${id}`, bookingData);
     return response.data;
   } catch (error) {
     throw error;
@@ -621,22 +637,6 @@ export const getRatingStats = async () => {
 export const updateReview = async (id, updatedData) => {
   try {
     const response = await instance.put(`/review/${id}`, updatedData);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-export const deleteBooking = async (id) => {
-  try {
-    const response = await instance.delete(`/booking/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-export const getupdatedBooking = async (id, bookingData) => {
-  try {
-    const response = await instance.put(`/booking/${id}`, bookingData);
     return response.data;
   } catch (error) {
     throw error;
