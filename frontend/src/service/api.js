@@ -642,3 +642,21 @@ export const updateReview = async (id, updatedData) => {
     throw error;
   }
 };
+export const getRatingStatsRoom = async (roomId) => {
+  try {
+    const response = await instance.get(`/review/rating/stat/${roomId}`);
+    console.log("test rating", response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getRoomRatingStats = async (roomId) => {
+  try {
+    const response = await instance.get(`/room/${roomId}/rating-stats`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching room rating stats:", error);
+    throw error;
+  }
+};

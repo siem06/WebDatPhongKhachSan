@@ -24,4 +24,7 @@ roomRouter.get("/", roomController.pageNumbers);
 roomRouter.get("/sortedByPrice/:order", roomController.getRoomsSortedByPrice);
 roomRouter.get("/type/:type", roomController.getRoomsByType);
 roomRouter.get("/review/:rating", roomController.getReviewByRoomId);
+roomRouter.get("/:roomId/rating-stats", roomController.getRoomRatingStats);
 module.exports = roomRouter;
+
+

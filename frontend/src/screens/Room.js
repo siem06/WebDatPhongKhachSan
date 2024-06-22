@@ -18,6 +18,7 @@ import {
   getAllRoomsSortedByPrice,
   getLikeRoom,
   getReviewByRoomId,
+  getRoomRatingStats,
   getRoomsByType,
   removeRoomLike,
 } from "../service/api";
@@ -53,6 +54,7 @@ export default function Room() {
   const [heartStates, setHeartStates] = useState({});
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   const [notification, setNotification] = useState(null);
+  const [ratings, setRatings] = useState({});
   const showNotification = (type, message) => {
     setNotification({ type, message });
   };
@@ -227,14 +229,44 @@ export default function Room() {
   const handleSearchResults = (rooms) => {
     setRooms(rooms);
   };
+  //  review
+  useEffect(() => {
+    const fetchRatingStats = async () => {
+      try {
+        if (!rooms || rooms.length === 0) {
+          console.log("Rooms is empty or undefined.");
+          return;
+        }
+
+        const ratingStatsPromises = rooms.map((room) =>
+          getRoomRatingStats(room.id)
+        );
+
+        const ratingStatsResponses = await Promise.all(ratingStatsPromises);
+        console.log("Rating stats responses:", ratingStatsResponses);
+
+        const ratingStatsMap = {};
+        ratingStatsResponses.forEach((response, index) => {
+          const { averageRating } = response; // Ensure response structure
+          ratingStatsMap[rooms[index].id] = averageRating;
+        });
+
+        setRatings(ratingStatsMap);
+      } catch (error) {
+        console.error("Error fetching rating stats:", error);
+      }
+    };
+    console.log("ra", ratings)
+    fetchRatingStats();
+  }, [rooms]);
   return (
     <>
-      <Breadcrumb currently="Phòng" classNameImg="service_banner_two" />
+      {/* <Breadcrumb currently="Phòng" classNameImg="service_banner_two" /> */}
       {notification && (
         <Notification type={notification.type} message={notification.message} />
       )}
 
-      <section className="hotel_booking_area">
+      <section className="hotel_booking_area mt-7">
         <div className="hotel_booking_area position">
           <div className="container">
             <div className="hotel_booking_table">
@@ -288,7 +320,23 @@ export default function Room() {
                       className="form-check-label text-dark"
                       htmlFor="inlineCheckbox1"
                     >
-                      Tiêu chuẩn
+                      Đơn Tiêu chuẩn
+                    </label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="inlineCheckbox5"
+                      value="5"
+                      onChange={handleTypeChange}
+                      checked={selectedTypes.includes("5")}
+                    />
+                    <label
+                      className="form-check-label text-dark"
+                      htmlFor="inlineCheckbox4"
+                    >
+                      Đôi Tiêu chuẩn
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -304,7 +352,23 @@ export default function Room() {
                       className="form-check-label text-dark"
                       htmlFor="inlineCheckbox2"
                     >
-                      Cao cấp
+                      Đơn Cao cấp
+                    </label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="inlineCheckbox4"
+                      value="6"
+                      onChange={handleTypeChange}
+                      checked={selectedTypes.includes("6")}
+                    />
+                    <label
+                      className="form-check-label text-dark"
+                      htmlFor="inlineCheckbox4"
+                    >
+                      Đôi Cao cấp
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -320,7 +384,23 @@ export default function Room() {
                       className="form-check-label text-dark"
                       htmlFor="inlineCheckbox3"
                     >
-                      Đặc biệt
+                      Đơn Đặc biệt
+                    </label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="inlineCheckbox4"
+                      value="7"
+                      onChange={handleTypeChange}
+                      checked={selectedTypes.includes("7")}
+                    />
+                    <label
+                      className="form-check-label text-dark"
+                      htmlFor="inlineCheckbox4"
+                    >
+                      Đôi Đặc biệt
                     </label>
                   </div>
                   <div className="form-check form-check-inline">
@@ -401,9 +481,8 @@ export default function Room() {
                           data-bs-placement="bottom"
                         >
                           <i
-                            className={`fa${
-                              heartStates[room.id] ? "s" : "r"
-                            } fa-heart text-danger`}
+                            className={`fa${heartStates[room.id] ? "s" : "r"
+                              } fa-heart text-danger`}
                             style={{ fontSize: "24px" }}
                           ></i>
                         </div>
@@ -431,15 +510,37 @@ export default function Room() {
                         </small>
                       </div>
                       <div className="p-4 mt-2">
-                        <h5
-                          className="mb-0 text-uppercase text-dark"
-                          onClick={(e) => {
-                            e.preventDefault(); // Prevent the default link action
-                            link_detail(room.id);
-                          }}
-                        >
-                          {getTypeRoomLabel(room.type)}
-                        </h5>
+                        <div key={room.id} className="d-flex justify-content-end align-items-center position-relative">
+                          <h5
+                            className="mb-0 text-uppercase text-dark"
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent the default link action
+                              link_detail(room.id);
+                            }}
+                          >
+                            {getTypeRoomLabel(room.type)}
+                          </h5>
+
+
+                          <div className="room-rating">
+                            {/* <h2 className="mb-0 me-2">{ratings[room.id]}</h2> */}
+                            <ul className="list-inline mb-0 d-flex align-items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <li key={i} className="list-inline-item me-0">
+                                  {i < Math.floor(ratings[room.id] || 0) ? (
+                                    <i className="fas fa-star text-warning"></i>
+                                  ) : (
+                                    i < ratings[room.id] && ratings[room.id] % 1 !== 0 ? (
+                                      <i className="fas fa-star-half-alt text-warning"></i>
+                                    ) : (
+                                      <i className="far fa-star text-warning"></i>
+                                    )
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
                         <div className="d-flex mb-3"></div>
                         <div className="d-flex justify-content-between">
                           <Link

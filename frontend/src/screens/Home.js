@@ -9,7 +9,9 @@ import CommentItem from "../components/CommentItem";
 import FacilitieItem from "../components/FacilitiesItem";
 import Input from "../components/Input/Input";
 import InputGroup from "../components/InputGroup";
+import * as CurrencyFormat from "react-currency-format";
 import {
+  addCart,
   addRoomLike,
   getAllImage,
   getAllRooms,
@@ -18,6 +20,7 @@ import {
   getService,
   removeRoomLike,
 } from "../service/api.js";
+import Search from "../components/Search/index.js";
 export default function Home() {
   const [blogs, setBlogs] = useState(null);
   useEffect(() => {
@@ -60,9 +63,36 @@ export default function Home() {
       img: imgs.testtimonial1,
     },
   ];
+  const getTypeRoomLabel = (type) => {
+    switch (type) {
+      case 1:
+        return "Phòng đơn Tiêu chuẩn";
+      case 2:
+        return "Phòng đơn Cao cấp";
+      case 3:
+        return "Phòng đơn Đặc biệt";
+      case 4:
+        return "Phòng Tổng thống";
+      case 5:
+        return "Phòng đôi Tiêu chuẩn";
+      case 6:
+        return "Phòng đôi Cao cấp";
+      case 7:
+        return "Phòng đôi Đặc biệt";
+      default:
+        return "Không xác định";
+    }
+  };
   const [facilities, setFacilities] = useState(null);
 
   const [rooms, setRooms] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const roomsPerPage = 15; // Số lượng phòng trên mỗi trang
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedRating, setSelectedRating] = useState([]);
+  // const [heartStates, setHeartStates] = useState({});
+  // const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const [notification, setNotification] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -99,13 +129,13 @@ export default function Home() {
         console.error("Error fetching about data:", error);
       }
     }
-
+   
     getServices();
     fetchFavoriteRooms();
     fetchData();
   }, []);
   // Lấy 3 phòng đầu tiên từ danh sách phòng
-  const displayedRooms = rooms.slice(0, 3);
+  const displayedRooms = rooms.slice(0, 4);
   const navigation = useNavigate();
   // Xử lý sự kiện khi nhấn nút "Đặt ngay"
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
@@ -115,18 +145,42 @@ export default function Home() {
   // };
   const handleBooking = (roomId) => {
     if (!loggedInUser) {
-      alert("Vui lòng đăng nhập để đặt phòng");
+      navigation("/login");
       return;
     }
-    //  const
-    navigation(`/payment?roomId=${roomId}&accountId=${loggedInUser.user.id}`);
+
+    const roomIds = [roomId];
+    navigation("/payment", {
+      state: {
+        roomIds: roomIds, // Pass the array of roomIds to the payment page
+        accountId: loggedInUser.id,
+      },
+    });
   };
   const [heartStates, setHeartStates] = useState({});
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+  };
+  const handleAddRoom = async (roomId) => {
+    if (!loggedInUser) {
+      navigation("/login");
+      return;
+    }
+    try {
+      const response = await addCart(roomId, loggedInUser.id);
+      if (!response.success) {
+        showNotification("error", response.message);
+      } else {
+        showNotification("success", response.message);
+      }
+    } catch (error) {
+      console.error("Error adding favorite:", error);
+    }
+  };
+
   const handleAddFavorite = async (userId, roomId) => {
     try {
       await addRoomLike(userId, roomId);
-      console.log("Room added", heartStates[1]);
-      console.log("Room addesssd", heartStates[5]);
       setHeartStates((prevState) => ({ ...prevState, [roomId]: true }));
     } catch (error) {
       console.error("Error adding favorite:", error);
@@ -136,7 +190,6 @@ export default function Home() {
     try {
       await removeRoomLike(userId, roomId);
       setHeartStates((prevState) => ({ ...prevState, [roomId]: false }));
-      console.log("ll,", heartStates);
     } catch (error) {
       console.error("Error removing favorite:", error);
     }
@@ -145,27 +198,18 @@ export default function Home() {
     const isFavorite = heartStates[roomId];
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
-      alert("Bạn cần đăng nhập để thích phòng.");
+      navigation("/login");
       return;
     }
-
     try {
       if (isFavorite) {
-        console.log("Favorite1", isFavorite);
-        const s = await handleRemoveFavorite(user.id, roomId); // Bỏ thích nếu đã thích trước đó
-        console.log(s);
-        console.log(user.user.id, roomId);
-
-        console.log("Favorite11", isFavorite);
-
+        await handleRemoveFavorite(user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
           [roomId]: false,
         }));
       } else {
-        await handleAddFavorite(user.id, roomId); // Thêm vào danh sách yêu thích nếu chưa thích trước đó
-        console.log("Favorite111", isFavorite);
-
+        await handleAddFavorite(user.id, roomId);
         setHeartStates((prevState) => ({
           ...prevState,
           [roomId]: true,
@@ -174,6 +218,9 @@ export default function Home() {
     } catch (error) {
       console.error("Error toggling favorite:", error);
     }
+  };
+  const handleSearchResults = (rooms) => {
+    setRooms(rooms);
   };
   return (
     <div>
@@ -205,59 +252,7 @@ export default function Home() {
               </div>
               <div className="col-md-9">
                 <div className="boking_table">
-                  <div className="row">
-                    <div className="col-md-4">
-                      <div className="book_tabel_item">
-                        <div className="form-group">
-                          <Input
-                            placeholder="Arrive"
-                            icon="fa fa-calendar"
-                            type="date"
-                            title={"Ngày nhận phòng"}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <Input
-                            placeholder="Departure Date"
-                            icon="fa fa-calendar"
-                            type="date"
-                            title={"Ngày trả phòng"}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="book_tabel_item">
-                        <div className="form-group">
-                          <InputGroup
-                            title="Loại phòng"
-                            label="Tiêu chuẩn"
-                            options={[
-                              { value: 1, label: "Tiêu chuẩn" },
-                              { value: 2, label: "Cao cấp" },
-                              { value: 3, label: "Đặc biêt" },
-                              { value: 4, label: "Tổng thống" },
-                            ]}
-                          />
-                        </div>
-                        <div className="form-group form-option">
-                          <InputGroup
-                            title="Kiểu phòng"
-                            label="Phòng đơn"
-                            options={[
-                              { value: 1, label: "Phòng đơn " },
-                              { value: 2, label: "Phòng đôi" },
-                            ]}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="book_tabel_item mt-7 pt-4">
-                        <Button title="Tìm ngay" className="button_hover" />
-                      </div>
-                    </div>
-                  </div>
+                <Search onSearchResults={handleSearchResults} />
                 </div>
               </div>
             </div>
@@ -276,7 +271,7 @@ export default function Home() {
           {/* <Room data={rooms} classNamediv="col-lg-3 col-sm-6" /> */}
           <div className="row mb_30">
             {displayedRooms.map((room) => (
-              <div key={room.id} className="col-lg-4 col-md-6 wow fadeInUp">
+              <div key={room.id} className="col-lg-3 col-sm-6 wow fadeInUp">
                 {/* Hiển thị thông tin của mỗi phòng */}
                 {/* Ví dụ: */}
                 <div className="room-item shadow rounded overflow-hidden">
@@ -306,16 +301,23 @@ export default function Home() {
                   </div>
                   <div className="position-relative">
                     <small className="position-absolute start-0 top-100 translate-middle-y btn-primary text-white rounded py-1 px-3 ms-4">
-                      {room.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                      / ngày
+                    <CurrencyFormat
+                            value={room.price}
+                            thousandSeparator={true}
+                            suffix={"VND/ Ngày"}
+                            decimalScale={2}
+                            displayType={"text"}
+                            className="text-white customInput"
+                            style={{
+                              backgroundColor: "transparent",
+                              border: "none",
+                            }}
+                          />
                     </small>
                   </div>
                   <div className="p-4 mt-2">
                     <h5 className="mb-0 text-uppercase text-dark">
-                      {room.type}
+                    {getTypeRoomLabel(room.type)}
                     </h5>
                     <div className="d-flex mb-3">
                       {/* <small className="border-end me-3 pe-3"><i className="fa fa-bed text-dark me-2"></i>{room.amenities} </small> */}
@@ -327,6 +329,10 @@ export default function Home() {
                       <Link
                         className="btn btn-sm btn-dark text-white button_hover rounded py-2 px-4 "
                         to="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleAddRoom(room.id);
+                        }}
                       >
                         Thêm phòng
                       </Link>

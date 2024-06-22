@@ -431,6 +431,40 @@ class RoomController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+  async getRoomRatingStats(req, res) {
+    const { roomId } = req.params;
+
+    try {
+      // Fetch all reviews for the specified room
+      const reviews = await db.review.findAll({
+        where: { roomId },
+      });
+
+      // Calculate the total number of stars and count of reviews
+      let totalStars = 0;
+      let count = 0;
+
+      reviews.forEach(review => {
+        totalStars += review.rating;
+        count++;
+      });
+
+      // Calculate the average rating
+      const averageRating = count > 0 ? (totalStars / count).toFixed(2) : 0;
+
+      // Prepare the result object
+      const result = {
+        averageRating,
+        ratingsCount: reviews.length
+      };
+
+      // Send the result as JSON response
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Error calculating average rating:", error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
 }
 
 module.exports = new RoomController();

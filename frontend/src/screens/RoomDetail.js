@@ -238,49 +238,49 @@ export default function RoomDetail() {
     fetchRatingStats();
   }, [roomId]); // Gọi lại khi roomId thay đổi
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!loggedInUser) {
-    alert("Vui lòng đăng nhập để đánh giá");
-    return;
-  }
-
-  try {
-    // Filter bookings to get those that have a checkoutDate before the current date
-    const completedBookings = data.filter((booking) =>
-      moment(booking.checkoutDate).isBefore(currentDate)
-    );
-    console.log("mmmmmmmm",completedBookings)
-
-    // Get all rooms from completed bookings that match the roomId
-    const matchingRooms = completedBookings
-      .flatMap((booking) => booking.rooms)
-      .filter((room) => room.id === roomId);
-
-    if (!matchingRooms.length > 0) {
-      // Print out the matching rooms
-      console.log("Matching Rooms:", matchingRooms);
-      
-      // Room exists in the completed bookings
-      const newReview = await createReview(roomId, loggedInUser.id, rating, comment, note);
-      setReviews([newReview, ...reviews]); // Add new review to the beginning of the list
-      setNotification("success", "Bình luận thành công");
-      alert("Bình luận thành công");
-    } else {
-      // Room does not exist in the completed bookings
-      setNotification("warning", "Tài khoản chưa đặt phòng này");
-      alert("Tài khoản chưa đặt phòng này");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!loggedInUser) {
+      alert("Vui lòng đăng nhập để đánh giá");
+      return;
     }
 
-    // Reset form states
-    setRating('5');
-    setComment('');
+    try {
+      // Filter bookings to get those that have a checkoutDate before the current date
+      const completedBookings = data.filter((booking) =>
+        moment(booking.checkoutDate).isBefore(currentDate)
+      );
+      console.log("mmmmmmmm", completedBookings)
 
-    console.log('Review created successfully');
-  } catch (error) {
-    console.error('Error creating review:', error);
-  }
-};
+      // Get all rooms from completed bookings that match the roomId
+      const matchingRooms = completedBookings
+        .flatMap((booking) => booking.rooms)
+        .filter((room) => room.id === roomId);
+
+      if (!matchingRooms.length > 0) {
+        // Print out the matching rooms
+        console.log("Matching Rooms:", matchingRooms);
+
+        // Room exists in the completed bookings
+        const newReview = await createReview(roomId, loggedInUser.id, rating, comment, note);
+        setReviews([newReview, ...reviews]); // Add new review to the beginning of the list
+        setNotification("success", "Bình luận thành công");
+        alert("Bình luận thành công");
+      } else {
+        // Room does not exist in the completed bookings
+        setNotification("warning", "Tài khoản chưa đặt phòng này");
+        alert("Tài khoản chưa đặt phòng này");
+      }
+
+      // Reset form states
+      setRating('5');
+      setComment('');
+
+      console.log('Review created successfully');
+    } catch (error) {
+      console.error('Error creating review:', error);
+    }
+  };
 
 
 
@@ -331,15 +331,7 @@ export default function RoomDetail() {
                       roomDetails && roomDetails.type
                     ) || "Loading..."}</h2>
                     <div className="d-flex justify-content-lg-between" >
-                      <button
-                        className="btn btn-sm btn-dark text-white button_hover rounded py-2 px-4 "
-                        to="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleAddRoom(roomId);
-                        }}
 
-                      >Thêm phòng</button>
                       <i
                         onClick={() => handleHeartClick(roomId)}
                         className={`fa${heartStates[roomId] ? "s" : "r"
@@ -737,7 +729,7 @@ export default function RoomDetail() {
                         <textarea
                           className="form-control"
                           id="exampleFormControlTextarea1"
-                          placeholder="Your review"
+                          placeholder="Viết bình luận"
                           rows="3"
                           value={comment}
                           onChange={(e) => setComment(e.target.value)}
@@ -957,107 +949,63 @@ export default function RoomDetail() {
                   </div>
 
 
-                  {/* <!-- Rating --> */}
-                  {/* <ul className="list-inline mb-2">
-                    <li className="list-inline-item me-1 h6 fw-light mb-0"><i className="bi bi-arrow-right me-2"></i>4.5</li>
-                    <li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-                    <li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-                    <li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-                    <li className="list-inline-item me-0 small"><i className="fa-solid fa-star text-warning"></i></li>
-                    <li className="list-inline-item me-0 small"><i className="fa-solid fa-star-half-alt text-warning"></i></li>
+                  <ul className="list-inline mb-2">
+                    <li className="list-inline-item me-1 h6 fw-light mb-0"><i className="bi bi-arrow-right me-2"></i>{ratingStats.averageRating}</li>
+                    {Array.from({ length: Math.floor(ratingStats.averageRating) }, (_, i) => (
+                      <li key={i} className="list-inline-item me-0">
+                        <i className="fa-solid fa-star text-warning"></i>
+                      </li>
+                    ))}
+                    {ratingStats.averageRating % 1 !== 0 && (
+                      <li className="list-inline-item me-0 small">
+                        <i className="fa-solid fa-star-half-alt text-warning"></i>
+                      </li>
+                    )}
                   </ul>
 
-                  <p className="h6 fw-light mb-4"><i className="bi bi-arrow-right me-2"></i>Free breakfast available</p> */}
+                  <p className="h6 fw-light mb-4"><i className="bi bi-arrow-right me-2"></i>Bữa sáng miễn phí có sẵn</p>
                   <div className="border-top-light  mb-20"></div>
 
-                  <div className="col-auto">
-                    <div className="text-15 text-dark">Nhận phòng</div>
-                    {/* <div className="fw-500 font-weight-bold text-dark">Chủ nhật, 26/5/2022</div> */}
-                    {/* <div className="text-15 text-light-1 text-dark">15:00 – 23:00</div> */}
-                    <Box style={{ padding: "5px" }}>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          // label="Chọn ngày nhận phòng"
-                          value={checkInDate}
-                          onChange={(newValue) => setCheckInDate(newValue)}
-                          minDate={dayjs().startOf("day")} // Chỉ cho phép chọn từ ngày hiện tại
-                          renderInput={(params) => (
-                            <TextField {...params} />
-                          )}
-                        />
-                      </LocalizationProvider>
-                    </Box>
-                  </div>
+
                   <div className="col-auto d-none d-md-block">
                     <div className="h-full w-1 bg-border"></div>
                   </div>
-                  <div className="col-auto text-right text-md-left mt-3 mt-md-0">
-                    <div className="text-15 text-dark">Trả phòng</div>
-                    {/* <div className="fw-500 font-weight-bold text-dark">Thứ 2, 27/5/2024</div> */}
-                    {/* <div className="text-15 text-light-1 text-dark">01:00 – 11:00</div> */}
-                    <Box style={{ padding: "5px" }}>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          // label="Chọn ngày trả phòng"
-                          value={checkOutDate}
-                          // onChange={(newValue) => setCheckInDate(newValue)}
-                          // renderInput={(params) => <TextField {...params} />}
-                          onChange={(newValue) => {
-                            setCheckOutDate(newValue);
-                            handleDateChange(newValue);
-                          }}
-                          minDate={dayjs(checkInDate).add(1, "day")} // Chỉ cho phép chọn từ ngày sau ngày nhận phòng
-                          renderInput={(params) => (
-                            <TextField {...params} />
-                          )}
-                        />
-                      </LocalizationProvider>
-                    </Box>
-                  </div>
+
 
 
                   {/* <!-- Button --> */}
-                  <div className="d-grid">
+                  <div className="d-flex">
+                    <button
+                      className="btn btn-sm btn-dark text-white button_hover rounded mb-0 "
+                      to="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddRoom(roomId);
+                      }}
+
+                    >Thêm phòng</button>
                     <button className="btn btn-lg btn-primary text-white button_hover rounded mb-0" onClick={(e) => {
                       e.preventDefault(); // Prevent the default link action
                       handleBooking(roomDetails.id);
                     }}>Đặt ngay</button>
                   </div>
-                </div>
-                {/* <!-- Book now END --> */}
-
-                {/* <!-- Best deal START --> */}
-                <div className="mt-4 d-none d-xl-block">
-                  <h4>Today's Best Deal</h4>
-
-                  <div className="card shadow rounded-3 overflow-hidden">
-                    <div className="row g-0 align-items-center">
-                      {/* <!-- Image --> */}
-                      <div className="col-sm-6 col-md-12 col-lg-6">
-                        <img src={roomImages.img} className="card-img rounded-0" alt="" />
-                      </div>
-
-                      {/* <!-- Title and content --> */}
-                      <div className="col-sm-6 col-md-12 col-lg-6">
-                        <div className="card-body p-3">
-                          <h6 className="card-title"><a href="offer-detail.html" className="stretched-link">Travel Plan</a></h6>
-                          <p className="mb-0">Get up to $10,000 for lifetime limits</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- Best deal END --> */}
+               
               </div>
-            </aside>
+              {/* <!-- Book now END --> */}
+
+              {/* <!-- Best deal START --> */}
+
+              {/* <!-- Best deal END --> */}
           </div>
-          {/* <!-- Content END --> */}
+        </aside>
+      </div>
+      {/* <!-- Content END --> */}
 
-        </div>
-        {/* </div> */}
-      </section>
+    </div>
+        {/* </div> */ }
+      </section >
 
-      {/* <!-- Room Details Section End --> */}
-    </main>
+    {/* <!-- Room Details Section End --> */ }
+    </main >
   );
 }

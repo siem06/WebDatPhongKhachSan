@@ -53,6 +53,7 @@ export default function DetailBooking() {
     try {
       const newBooking = await updateBooking(data.id, { statusBooking: 5 });
       setBooking(newBooking);
+      alert("Hãy đến tại khách sạn để làm thủ tục nhận lại tiền hoàn");
       showNotification("success", "Đơn đặt phòng bạn đã hủy thành công!");
     } catch (error) {
       console.log(error);

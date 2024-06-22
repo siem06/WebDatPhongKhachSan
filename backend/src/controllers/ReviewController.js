@@ -80,7 +80,12 @@ const review = db.review;
 class ReviewController {
   async get(req, res) {
     try {
-      const reviews = await review.findAll();
+      const reviews = await review.findAll({
+        include: [{
+          model: db.user,
+          attributes: ['username','avatar']
+        }]
+      });
       res.json(reviews);
     } catch (error) {
       console.error("Error fetching reviews:", error);
@@ -177,6 +182,47 @@ class ReviewController {
    async calculateRatingStats(req, res)  {
     try {
       const reviews = await review.findAll(); // Fetch all reviews
+      let totalStars = 0;
+      let count = 0;
+      const starsCount = [0, 0, 0, 0, 0]; // Array to store count of each star rating
+  
+      reviews.forEach(review => {
+        totalStars += review.rating;
+        count++;
+        starsCount[review.rating - 1]++; // Increment count for respective star rating
+      });
+  
+      // Calculate percentages
+      const percentages = starsCount.map((count, index) => ({
+        stars: index + 1,
+        percent: count > 0 ? ((count / reviews.length) * 100).toFixed(2) : 0
+      }));
+  
+      // Prepare response object
+      const ratingStats = {
+        totalStars,
+        averageRating: count > 0 ? (totalStars / count).toFixed(2) : 0,
+        ratingsCount: reviews.length,
+        percentages
+      };
+  
+      res.status(200).json(ratingStats); // Send JSON response with rating statistics
+    } catch (error) {
+      console.error('Error calculating rating stats:', error);
+      res.status(500).json({ error: 'Internal Server Error' }); // Handle errors
+    }
+  };
+  async calculateRatingStatsidRoom(req, res) {
+    try {
+      const { roomId } = req.params;
+  
+      // Fetch all reviews for the specific roomId
+      const reviews = await review.findAll({ where: { roomId } });
+  
+      if (reviews.length === 0) {
+        return res.status(404).json({ error: "No reviews found for this room" });
+      }
+  
       let totalStars = 0;
       let count = 0;
       const starsCount = [0, 0, 0, 0, 0]; // Array to store count of each star rating

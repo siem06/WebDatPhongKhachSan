@@ -108,6 +108,32 @@ module.exports = (sequelize, Sequelize) => {
       throw error;
     }
   };
+  Room.calculateAverageRating = async function (roomId) {
+    const db = require("../models/index.js");
+    
+    try {
+      const reviews = await db.review.findAll({
+        where: { roomId },
+      });
 
+      let totalStars = 0;
+      let count = 0;
+
+      reviews.forEach(review => {
+        totalStars += review.rating;
+        count++;
+      });
+
+      const averageRating = count > 0 ? (totalStars / count).toFixed(2) : 0;
+
+      return {
+        averageRating,
+        ratingsCount: reviews.length
+      };
+    } catch (error) {
+      console.error("Error calculating average rating:", error);
+      throw error;
+    }
+  };
   return Room;
 };

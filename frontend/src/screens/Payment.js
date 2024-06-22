@@ -46,14 +46,33 @@ export default function Payment() {
   const [roomDetails, setRoomDetails] = useState([]);
   const [note, setNote] = useState("");
   const [notification, setNotification] = useState(null);
-
+  const getTypeRoomLabel = (type) => {
+    switch (type) {
+      case 1:
+        return "Phòng đơn Tiêu chuẩn";
+      case 2:
+        return "Phòng đơn Cao cấp";
+      case 3:
+        return "Phòng đơn Đặc biệt";
+      case 4:
+        return "Phòng Tổng thống";
+      case 5:
+        return "Phòng đôi Tiêu chuẩn";
+      case 6:
+        return "Phòng đôi Cao cấp";
+      case 7:
+        return "Phòng đôi Đặc biệt";
+      default:
+        return "Không xác định";
+    }
+  };
   const handleNote = (event) => {
     setNote(event.target.value);
   };
   const handleTabChange = (tab) => {
     setCurrentTab(tab);
   };
-  const [paymentMethod, setPaymentMethod] = useState("VNPAY");
+  const [paymentMethod, setPaymentMethod] = useState("PayPal");
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
   };
@@ -508,7 +527,7 @@ export default function Payment() {
      </div> */}
                           <div className=" y-gap-20 justify-between mt-3">
                             <div className=" col-auto lh-17 fw-500 font-weight-bold text-dark ">
-                              {item.type}
+                              {getTypeRoomLabel(item?.type)}
                             </div>
                             <div className=" col-auto text-14 lh-15 font-weight-bold text-dark  ">
                               <CurrencyFormat
@@ -704,11 +723,11 @@ export default function Payment() {
                           value={paymentMethod}
                           onChange={handlePaymentMethodChange}
                         >
-                          <FormControlLabel
+                          {/* <FormControlLabel
                             value="VNPAY"
                             control={<Radio />}
                             label="VNPAY"
-                          />
+                          /> */}
                           <FormControlLabel
                             value="PayPal"
                             control={<Radio />}

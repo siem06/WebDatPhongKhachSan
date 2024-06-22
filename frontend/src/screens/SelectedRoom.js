@@ -9,7 +9,26 @@ export default function SelectedRoom() {
   const [cartItems, setCartItems] = useState([]);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   const [notification, setNotification] = useState(null);
-
+  const getTypeRoomLabel = (type) => {
+    switch (type) {
+      case 1:
+        return "Phòng đơn Tiêu chuẩn";
+      case 2:
+        return "Phòng đơn Cao cấp";
+      case 3:
+        return "Phòng đơn Đặc biệt";
+      case 4:
+        return "Phòng Tổng thống";
+      case 5:
+        return "Phòng đôi Tiêu chuẩn";
+      case 6:
+        return "Phòng đôi Cao cấp";
+      case 7:
+        return "Phòng đôi Đặc biệt";
+      default:
+        return "Không xác định";
+    }
+  };
   const navigation = useNavigate();
   const showNotification = (type, message) => {
     setNotification({ type, message });
@@ -106,7 +125,7 @@ export default function SelectedRoom() {
                       </div>
                       <h5 className="card-title mb-1">
                         <Link to={`/room_detail?roomId=${room.id}`}>
-                          {room.type}
+                          {getTypeRoomLabel(room?.type)}
                         </Link>
                       </h5>
 

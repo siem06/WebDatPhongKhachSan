@@ -11,7 +11,26 @@ import { Link } from "react-router-dom";
 export default function LikeRoom() {
   const [rooms, setRooms] = useState([]);
   const [heartStates, setHeartStates] = useState({});
-
+  const getTypeRoomLabel = (type) => {
+    switch (type) {
+      case 1:
+        return "Phòng đơn Tiêu chuẩn";
+      case 2:
+        return "Phòng đơn Cao cấp";
+      case 3:
+        return "Phòng đơn Đặc biệt";
+      case 4:
+        return "Phòng Tổng thống";
+      case 5:
+        return "Phòng đôi Tiêu chuẩn";
+      case 6:
+        return "Phòng đôi Cao cấp";
+      case 7:
+        return "Phòng đôi Đặc biệt";
+      default:
+        return "Không xác định";
+    }
+  };
   const getLike = async () => {
     try {
       const loggedInUser = JSON.parse(localStorage.getItem("user"));
@@ -157,7 +176,7 @@ export default function LikeRoom() {
                       </h5>
                       <small>
                         <i className="bi bi-geo-alt me-2"></i>
-                        {room.type}
+                        {getTypeRoomLabel(room.type)}
                       </small>
 
                       <div className="d-sm-flex justify-content-sm-between align-items-center">

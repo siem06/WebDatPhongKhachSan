@@ -19,4 +19,5 @@ reviewRouter.delete(
 );
 reviewRouter.get("/:roomId", reviewController.getReviews);
 reviewRouter.get("/ratings/stats", reviewController.calculateRatingStats);
+reviewRouter.get("/rating/stat/:roomId", reviewController.calculateRatingStatsidRoom);
 module.exports = reviewRouter;
