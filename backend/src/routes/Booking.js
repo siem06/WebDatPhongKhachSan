@@ -4,11 +4,16 @@ const bookingRouter = express.Router();
 const authJwt = require("../middleware/authJWT");
 
 bookingRouter.get("/", bookingController.get);
-bookingRouter.get("/getBookingA/:id", bookingController.getBookingByIdA);
+bookingRouter.get("/status", bookingController.getBookingByStatus);
+bookingRouter.get(
+  "/getBookingA/:id",
+  authJwt.verifyToken,
+  bookingController.getBookingByIdA
+);
 bookingRouter.get("/:id", bookingController.findById);
 bookingRouter.get("/getBooking/:id", bookingController.getBooking);
 bookingRouter.post("/", authJwt.verifyToken, bookingController.create);
-bookingRouter.post("/getBookingByStatus", bookingController.getBookingByStatus);
+
 bookingRouter.put("/:id", authJwt.verifyToken, bookingController.update);
 bookingRouter.put(
   "/updateStatus/:id",

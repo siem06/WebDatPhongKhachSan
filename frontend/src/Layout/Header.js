@@ -1,57 +1,35 @@
-import React, { useState } from "react";
-import Logo from "../assets/image/Logo.png";
-import { Link, NavLink } from "react-router-dom";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import BedroomParentIcon from "@mui/icons-material/BedroomParent";
 import Avatar from "@mui/material/Avatar";
-import { getRoomsByType } from "../service/api";
-import { stringAvatar } from "../utils/UserLogo";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css";
 import "owl.carousel/dist/assets/owl.carousel.min.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+import React, { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import "../assets/css/responsive.css";
 import "../assets/css/style.css";
 import "../assets/css/style.css.map";
-import "../assets/css/responsive.css";
-import BedroomParentIcon from "@mui/icons-material/BedroomParent";
+import Logo from "../assets/image/Logo.png";
+import { stringAvatar } from "../utils/UserLogo";
+
 export default function Header({ loggedIn, user }) {
   const [active, setActive] = useState("/");
+  const [showSidebar, setShowSidebar] = useState(false);
+
   const getActiveClass = (path) => {
     return active === path ? "active" : "";
   };
-  const [showMenu, setShowMenu] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [rooms, setRooms] = useState([]);
-  const handleMouseEnter = () => {
-    setIsDropdownOpen(true);
-  };
 
-  const handleMouseLeave = () => {
-    setIsDropdownOpen(false);
-  };
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
-  };
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
   };
 
   const closeMenuOnMobile = () => {
     if (window.innerWidth <= 1150) {
-      // setShowMenu(false);
       setShowSidebar(false);
     }
   };
-  const handleRoomTypeSelect = async (type) => {
-    try {
-      // Gọi API để lấy danh sách phòng theo loại phòng
-      const rooms = await getRoomsByType(type);
-      setRooms(rooms);
-      // Xử lý logic hiển thị danh sách phòng, ví dụ: lưu vào state hoặc hiển thị trực tiếp
-      console.log(rooms);
-    } catch (error) {
-      console.error("Error fetching rooms by type:", error);
-    }
-  };
+
   return (
     <header className="header_area">
       <div className="d">
@@ -70,9 +48,11 @@ export default function Header({ loggedIn, user }) {
               <span className="lnr lnr-list"></span>
             </button>
           </div>
-
+          <div className="language-dropdown">
+            <div id="google_translate_element"></div>
+          </div>
           <div
-            className={`collapse navbar-collapse offset justif justify-content-center ${
+            className={`collapse navbar-collapse offset justify-content-center ${
               showSidebar ? "show" : ""
             } right-sidebar`}
             id="navbarSupportedContent"
@@ -87,7 +67,7 @@ export default function Header({ loggedIn, user }) {
                   onClick={() => setActive("/")}
                   to="/"
                 >
-                  TRANG CHỦ
+                  Home
                 </NavLink>
               </li>
               <li className={`nav-item ${getActiveClass("/about")}`}>
@@ -96,61 +76,17 @@ export default function Header({ loggedIn, user }) {
                   onClick={() => setActive("/about")}
                   to="/about"
                 >
-                  GIỚI THIỆU
+                  About us
                 </NavLink>
               </li>
-              <li
-                className={`nav-item submenu dropdown ${
-                  isDropdownOpen ? "show" : ""
-                }`}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
+              <li className={`nav-item ${getActiveClass("/room")}`}>
                 <NavLink
-                  className="nav-link dropdown-toggle "
-                  data-toggle="dropdown"
-                  role="button"
-                  aria-haspopup="true"
-                  aria-expanded={isDropdownOpen ? "true" : "false"}
+                  className="nav-link"
                   onClick={() => setActive("/room")}
                   to="/room"
                 >
-                  PHÒNG<span className="lnr lnr-chevron-down"></span>
+                  Room
                 </NavLink>
-                <ul className={`dropdown-menu ${isDropdownOpen ? "show" : ""}`}>
-                  <li className={`nav-item ${getActiveClass("/standard")}`}>
-                    <NavLink
-                      className="nav-link"
-                      onClick={() => handleRoomTypeSelect(1)}
-                    >
-                      Tiêu chuẩn
-                    </NavLink>
-                  </li>
-                  <li className={`nav-item ${getActiveClass("/superior")}`}>
-                    <NavLink
-                      className="nav-link"
-                      onClick={() => handleRoomTypeSelect(2)}
-                    >
-                      Cao cấp
-                    </NavLink>
-                  </li>
-                  <li className={`nav-item ${getActiveClass("/deluxe")}`}>
-                    <NavLink
-                      className="nav-link"
-                      onClick={() => handleRoomTypeSelect(3)}
-                    >
-                      Đặc biệt
-                    </NavLink>
-                  </li>
-                  <li className={`nav-item ${getActiveClass("/suite")}`}>
-                    <NavLink
-                      className="nav-link"
-                      onClick={() => handleRoomTypeSelect(4)}
-                    >
-                      Tổng thống
-                    </NavLink>
-                  </li>
-                </ul>
               </li>
               <li className={`nav-item ${getActiveClass("/blog")}`}>
                 <NavLink
@@ -158,7 +94,7 @@ export default function Header({ loggedIn, user }) {
                   onClick={() => setActive("/blog")}
                   to="/blog"
                 >
-                  TIN TỨC
+                  Blog
                 </NavLink>
               </li>
               <li className={`nav-item ${getActiveClass("/service")}`}>
@@ -167,7 +103,7 @@ export default function Header({ loggedIn, user }) {
                   onClick={() => setActive("/service")}
                   to="/service"
                 >
-                  DỊCH VỤ
+                  Service
                 </NavLink>
               </li>
               <li className={`nav-item ${getActiveClass("/contact")}`}>
@@ -176,7 +112,7 @@ export default function Header({ loggedIn, user }) {
                   onClick={() => setActive("/contact")}
                   to="/contact"
                 >
-                  LIÊN HỆ
+                  Contact
                 </NavLink>
               </li>
               <li className={`nav-item `}>
@@ -188,7 +124,10 @@ export default function Header({ loggedIn, user }) {
                 <li
                   className={`nav-item d-flex justify-content-center align-items-center `}
                 >
-                  <NavLink className="nav-link" to="/profile">
+                  <NavLink
+                    className="nav-link"
+                    to={user?.roles?.includes(2) ? "/dashboard" : "/profile"}
+                  >
                     {user && <Avatar {...stringAvatar(user.email)} />}
                   </NavLink>
                 </li>
@@ -199,7 +138,7 @@ export default function Header({ loggedIn, user }) {
                     onClick={() => setActive("/login")}
                     to="/login"
                   >
-                    ĐĂNG KÝ/ ĐĂNG NHẬP
+                    SIGN IN/SIGN UP
                   </NavLink>
                 </li>
               )}

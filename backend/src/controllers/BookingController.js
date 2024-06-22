@@ -14,16 +14,17 @@ class BookingController {
         console.log(error);
       });
   }
-  getBookingByStatus(req, res) {
-    db.booking
-      .getBookingStatus()
-      .then((value) => {
-        console.log(value);
-        res.json(value);
-      })
-      .catch((error) => {
-        console.log(error);
+  async getBookingByStatus(req, res) {
+    try {
+      const bookings = await db.booking.getBookingStatus();
+      console.log("Fetched bookings:", bookings); // Debugging line
+      res.json(bookings);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "An error occurred while fetching bookings with status 1",
       });
+    }
   }
   getBooking(req, res) {
     db.booking

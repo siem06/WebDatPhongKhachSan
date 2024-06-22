@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useLocalStorage("user", null);
 
   const updateUser = async (data) => {
-    console.log("data", data);
     setUser(data);
   };
 

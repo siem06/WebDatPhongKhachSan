@@ -34,11 +34,14 @@ export default function About() {
       <section className="about_history_area section_gap">
         <div className="container">
           <div className="row">
-            <div className="fff">
+            <div className="col-md-6">
               <div
                 className="ql-editor"
                 dangerouslySetInnerHTML={{ __html: aboutData.information }}
               />
+            </div>
+            <div className="col-md-6">
+              <img className="img-fluid" src={imgs.about_bg} alt="img" />
             </div>
             {/* <div className="col-md-6 d_flex align-items-center">
               <div className="about_content ">
