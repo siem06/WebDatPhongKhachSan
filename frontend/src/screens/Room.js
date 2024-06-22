@@ -19,6 +19,7 @@ import {
   getLikeRoom,
   getReviewByRoomId,
   getRoomRatingStats,
+  getRoomUtilities,
   getRoomsByType,
   removeRoomLike,
 } from "../service/api";
@@ -259,6 +260,26 @@ export default function Room() {
     console.log("ra", ratings)
     fetchRatingStats();
   }, [rooms]);
+  const [utilities, setUtilities] = useState([]);
+  const utilityIconMap = {
+    bed: 'bed',
+    bath: 'bath',
+    wifi: 'wifi',
+    // Add more mappings if needed
+  };
+  useEffect(() => {
+    const fetchUtilities = async () => {
+      try {
+        const data = await getRoomUtilities();
+        const allUtilities = data.map(item => item.utilities).join(',').split(',').map(u => u.trim());
+        setUtilities(allUtilities);
+      } catch (error) {
+        console.error("Error fetching room utilities:", error);
+      }
+    };
+
+    fetchUtilities();
+  }, []);
   return (
     <>
       {/* <Breadcrumb currently="Phòng" classNameImg="service_banner_two" /> */}
@@ -541,7 +562,14 @@ export default function Room() {
                             </ul>
                           </div>
                         </div>
-                        <div className="d-flex mb-3"></div>
+                        <div className="d-flex mb-3">
+                          {utilities.slice(-3).map((utility, index) => (
+                            <small key={index} className="border-end me-3 pe-3 d-flex align-items-center">
+                              <i className={`fa fa-${utility.toLowerCase()} text-dark me-2`}></i>
+                              {utility}
+                            </small>
+                          ))}
+                        </div>
                         <div className="d-flex justify-content-between">
                           <Link
                             className="btn btn-sm btn-dark text-white button_hover rounded py-2 px-4 "

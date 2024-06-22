@@ -20,7 +20,7 @@ import {
 import Sidebar from "../components/RightSide";
 import CardGrid from "../components/CardGrid_ImgDetail";
 import Breadcrumb from "../components/Breadcrumb";
-import { addCart, addRoomLike, createReview, getAllImage, getBookingIdUser, getByIdUserAll, getLikeRoom, getRatingStats, getReviews, getRoomsById, removeRoomLike } from "../service/api";
+import { addCart, addRoomLike, createReview, getAllImage, getBookingIdUser, getByIdUserAll, getLikeRoom, getRatingStats, getReviews, getRoomUtilities, getRoomsById, removeRoomLike } from "../service/api";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -282,8 +282,21 @@ export default function RoomDetail() {
     }
   };
 
+  const [utilities, setUtilities] = useState([]);
 
+  useEffect(() => {
+    const fetchUtilities = async () => {
+      try {
+        const data = await getRoomUtilities();
+        const allUtilities = data.map(item => item.utilities).join(',').split(',').map(u => u.trim());
+        setUtilities(allUtilities);
+      } catch (error) {
+        console.error("Error fetching room utilities:", error);
+      }
+    };
 
+    fetchUtilities();
+  }, []);
 
   return (
     <main>
@@ -453,133 +466,28 @@ export default function RoomDetail() {
                       {/* <!-- Activities --> */}
                       <div className="col-sm-6">
                         <h6>
-                          <i className="fa-solid fa-biking me-2"></i>Hoạt động
+                        <i className="fa-solid fa-concierge-bell me-2"></i>Dịch
+                        vụ
                         </h6>
                         {/* <!-- List --> */}
                         <ul className="list-group list-group-borderless mt-2 mb-0">
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Bể bơi
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Spa
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Khu vui chơi trẻ em
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Gym
-                          </li>
+                          {utilities.map((method, index) => (
+                            <li key={index} className="list-group-item pb-0">
+                              <i className="fa-solid fa-check-circle text-success me-2"></i>
+                              {method}
+                            </li>
+                          ))}
                         </ul>
                       </div>
 
                       {/* <!-- Payment Method --> */}
-                      <div className="col-sm-6">
-                        <h6>
-                          <i className="fa-solid fa-credit-card me-2"></i>Phương
-                          thức thanh toán
-                        </h6>
-                        {/* <!-- List --> */}
-                        <ul className="list-group list-group-borderless mt-2 mb-0">
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Thẻ tín dụng
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Tiền mặt
-                          </li>
-                        </ul>
-                      </div>
+                      
 
                       {/* <!-- Services --> */}
-                      <div className="col-sm-6">
-                        <h6>
-                          <i className="fa-solid fa-concierge-bell me-2"></i>Dịch
-                          vụ
-                        </h6>
-                        {/* <!-- List --> */}
-                        <ul className="list-group list-group-borderless mt-2 mb-0">
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Giặt khô
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Dịch vụ phòng
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Dịch vụ đặc biệt
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Khu vực chờ
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>{" "}
-                            Khu vực hút thuốc
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Trợ giúp đặc biệt
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Thiết bị giặt là
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Dịch vụ ủi
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Thang máy
-                          </li>
-                        </ul>
-                      </div>
+                      
 
                       {/* <!-- Safety & Security --> */}
-                      <div className="col-sm-6">
-                        <h6>
-                          <i className="bi bi-shield-fill-check me-2"></i>An toàn
-                          &amp; Bảo mật
-                        </h6>
-                        {/* <!-- List --> */}
-                        <ul className="list-group list-group-borderless mt-2 mb-4 mb-sm-5">
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Bác sĩ trực
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Bảo vệ trực
-                          </li>
-                        </ul>
-
-                        <h6>
-                          <i className="fa-solid fa-volume-up me-2"></i>Ngôn ngữ
-                          nhân viên
-                        </h6>
-                        {/* <!-- List --> */}
-                        <ul className="list-group list-group-borderless mt-2 mb-0">
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Tiếng Anh
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Tiếng Tây Ban Nha
-                          </li>
-                          <li className="list-group-item pb-0">
-                            <i className="fa-solid fa-check-circle text-success me-2"></i>
-                            Tiếng Hin-đi
-                          </li>
-                        </ul>
-                      </div>
+                     
                     </div>
                   </div>
                   {/* <!-- Card body END --> */}
@@ -989,23 +897,23 @@ export default function RoomDetail() {
                       handleBooking(roomDetails.id);
                     }}>Đặt ngay</button>
                   </div>
-               
+
+                </div>
+                {/* <!-- Book now END --> */}
+
+                {/* <!-- Best deal START --> */}
+
+                {/* <!-- Best deal END --> */}
               </div>
-              {/* <!-- Book now END --> */}
-
-              {/* <!-- Best deal START --> */}
-
-              {/* <!-- Best deal END --> */}
+            </aside>
           </div>
-        </aside>
-      </div>
-      {/* <!-- Content END --> */}
+          {/* <!-- Content END --> */}
 
-    </div>
-        {/* </div> */ }
+        </div>
+        {/* </div> */}
       </section >
 
-    {/* <!-- Room Details Section End --> */ }
+      {/* <!-- Room Details Section End --> */}
     </main >
   );
 }

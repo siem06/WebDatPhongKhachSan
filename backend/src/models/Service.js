@@ -4,7 +4,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
     utilities: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
     },
     content: {
       type: Sequelize.TEXT,

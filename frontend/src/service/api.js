@@ -660,3 +660,12 @@ export const getRoomRatingStats = async (roomId) => {
     throw error;
   }
 };
+export const getRoomUtilities = async () => {
+  try {
+    const response = await instance.get(`/room/room-utilities`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching room utilities:", error);
+    throw error;
+  }
+};

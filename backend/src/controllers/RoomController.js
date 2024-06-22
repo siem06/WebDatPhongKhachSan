@@ -465,6 +465,19 @@ class RoomController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+  async getRoomUtilities(req, res) {
+    try {
+      const ress = await db.service.findAll({
+        attributes: ['utilities'],
+      });
+  
+      res.status(200).json(ress);
+    } catch (error) {
+      console.error("Error fetching room utilities:", error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+  
 }
 
 module.exports = new RoomController();
