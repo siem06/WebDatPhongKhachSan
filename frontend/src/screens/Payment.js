@@ -72,7 +72,7 @@ export default function Payment() {
   const handleTabChange = (tab) => {
     setCurrentTab(tab);
   };
-  const [paymentMethod, setPaymentMethod] = useState("PayPal");
+  const [paymentMethod, setPaymentMethod] = useState("cash");
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
   };
