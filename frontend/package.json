@@ -26,6 +26,7 @@
     "dayjs": "^1.11.11",
     "eonasdan-bootstrap-datetimepicker": "^4.17.49",
     "formik": "^2.4.5",
+    "http-serve": "^1.0.1",
     "jquery": "^3.7.1",
     "linearicons": "^1.0.2",
     "material-react-table": "^2.12.1",
