@@ -23,6 +23,7 @@ const Login = ({ setLoggedIn }) => {
     event.preventDefault();
     try {
       const user = await login(email.trim(), password);
+
       localStorage.setItem("user", JSON.stringify(user));
       updateUser(user);
       console.log("user:", user);

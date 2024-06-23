@@ -35,20 +35,21 @@ function sendConfirmationEmail(recipientEmail, token) {
 
 // Hàm gửi email xác nhận đặt phòng
 async function sendEmailConfi(recipientEmail, book) {
+  console.log("Email sent: ", book);
   const user = await db.user.findByPk(book.userId);
-  const booking = await db.booking.getBooking(book.id);
-  const data = booking.dataValues.rooms;
-  console.log("gg", booking.dataValues.rooms);
-  console.log("gg22", user.dataValues);
+  // const booking = await db.booking.getBooking(book.id);
+  // console.log("gg22", booking);
+  // console.log("gg", booking.dataValues.rooms);
 
-  const userInformation = user.dataValues;
+  console.log("gg", user);
+  const userInformation = user;
   // Nếu không tìm thấy người dùng, có thể xử lý theo yêu cầu
 
   const emailOption = {
     from: "hongsiem2002@gmail.com",
     to: recipientEmail,
     subject: "Xác nhận đặt phòng",
-    html: html(book, data, userInformation),
+    html: html(book, userInformation),
     // html: `<p>Thông tin đặt phòng của bạn:</p>
     // <p>Mã đặt phòng: ${book.id}</p>
     // <p>Tổng giá: ${book.totalPrice}</p>

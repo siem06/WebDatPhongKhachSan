@@ -135,13 +135,13 @@ export default function Payment() {
       });
       await Promise.all(detailsPromises);
       localStorage.setItem("booking", JSON.stringify(response));
-      console.log("delo", response);
       return bookingData;
     } catch (error) {
       console.error("Có lỗi xảy ra khi đặt phòng:", error);
       return null;
     }
   };
+  const book = JSON.parse(localStorage.getItem("booking"));
   // Hàm kiểm tra xem ngày nhận phòng và ngày trả phòng của các phòng trong cùng một đơn đặt phòng có trùng nhau hay không
 
   const checkConflict = async () => {
@@ -203,14 +203,7 @@ export default function Payment() {
         return;
       }
       const isConflict = await checkConflict();
-      console.log(
-        "Check-in date:",
-        checkInDate.format(),
-        "Check-out date:",
-        checkOutDate.format(),
-        "Room IDs:",
-        roomIds
-      );
+
       if (isConflict) {
         showNotification(
           "error",
@@ -225,8 +218,6 @@ export default function Payment() {
       setCurrentTab(3);
     }
   };
-
-  const book = JSON.parse(localStorage.getItem("booking"));
 
   const [sdkReady, setSdkReady] = useState(false);
 
@@ -284,6 +275,24 @@ export default function Payment() {
         return orderID;
       });
   };
+  const checkOutMoney = async (data, actions) => {
+    try {
+      const book = JSON.parse(localStorage.getItem("booking"));
+      console.log("jjjj", book);
+      await saveBookingToDatabase();
+      await sendEmail(loggedInUser.email, book);
+
+      setCurrentTab(3);
+      showNotification("success", "Bạn đã đặt phòng thành công!");
+
+      removeAllCart(loggedInUser.id);
+    } catch (err) {
+      showNotification(
+        "error",
+        "Đã xảy ra lỗi trong quá trình đặt phòng. Vui lòng thử lại."
+      );
+    }
+  };
 
   const onApprove = async (data, actions) => {
     try {
@@ -301,9 +310,9 @@ export default function Payment() {
 
       await sendEmail(loggedInUser.email, book);
 
+      setCurrentTab(3);
       showNotification("success", "Bạn đã đặt phòng thành công!");
 
-      setCurrentTab(3);
       removeAllCart(loggedInUser.id);
     } catch (error) {
       console.error("Error during approval process:", error);
@@ -723,11 +732,11 @@ export default function Payment() {
                           value={paymentMethod}
                           onChange={handlePaymentMethodChange}
                         >
-                          {/* <FormControlLabel
-                            value="VNPAY"
+                          <FormControlLabel
+                            value="cash"
                             control={<Radio />}
-                            label="VNPAY"
-                          /> */}
+                            label="Tiền mặt"
+                          />
                           <FormControlLabel
                             value="PayPal"
                             control={<Radio />}
@@ -862,7 +871,10 @@ export default function Payment() {
                         onError={onError}
                       />
                     ) : (
-                      <button className="button -outline-blue-1 text-blue-1 px-30 py-15 mt-20">
+                      <button
+                        className="button -outline-blue-1 text-blue-1 px-30 py-15 mt-20"
+                        onClick={checkOutMoney}
+                      >
                         Thanh toán
                       </button>
                     )}

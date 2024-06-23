@@ -1,4 +1,4 @@
-const html = (book, data, userInformation) => `<!--
+const html = (book, userInformation) => `<!--
 * This email was built using Tabular.
 * For more information, visit https://tabular.email
 -->
