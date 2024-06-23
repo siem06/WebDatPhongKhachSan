@@ -54,7 +54,7 @@ db.sequelize.sync();
 // });
 
 route(app);
-const port = process.env.PORT || 5000;
+const port = 3001;
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
