@@ -147,11 +147,11 @@ export default function Payment() {
   const checkConflict = async () => {
     try {
       const existingBookings = await getAllBooking();
-      console.log("existingBookings", existingBookings);
+      // console.log("existingBookings", existingBookings);
 
       const newCheckin = dayjs(checkInDate).startOf("day");
       const newCheckout = dayjs(checkOutDate).startOf("day");
-      console.log("newCheckin", newCheckin.format(), newCheckout.format());
+      // console.log("newCheckin", newCheckin.format(), newCheckout.format());
 
       for (let i = 0; i < existingBookings.length; i++) {
         const existingBooking = existingBookings[i];
