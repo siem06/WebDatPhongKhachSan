@@ -121,11 +121,11 @@ class AccountController {
     const { otp, email } = req.body;
     const { otpInfo } = req.session;
 
-    if (!otp || !otpInfo || !otpInfo.otp || !otpInfo.email) {
-      return res
-        .status(400)
-        .json({ message: "OTP information is missing or invalid" });
-    }
+    // if (!otp || !otpInfo || !otpInfo.otp || !otpInfo.email) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "OTP information is missing or invalid" });
+    // }
     if (otp !== otpInfo.otp || email !== otpInfo.email) {
       return res.status(400).json({ message: "Invalid OTP or Email" });
     }
