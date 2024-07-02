@@ -33,6 +33,7 @@ import ManageComment from "./admin/pages/ManageComment";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Page404 from "./screens/Page404";
 import DetailBooking from "./pages/DetailBooking";
+import CreateRoom from "./admin/pages/CreateRoom";
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
@@ -210,6 +211,14 @@ function App() {
           element={
             <LayoutAdmin>
               <Dashboard />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/createRoom"
+          element={
+            <LayoutAdmin>
+              <CreateRoom />
             </LayoutAdmin>
           }
         />

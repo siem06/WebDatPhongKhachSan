@@ -27,5 +27,3 @@ roomRouter.get("/review/:rating", roomController.getReviewByRoomId);
 roomRouter.get("/:roomId/rating-stats", roomController.getRoomRatingStats);
 
 module.exports = roomRouter;
-
-

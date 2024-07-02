@@ -238,7 +238,7 @@ class AccountController {
       console.log(user);
       const token = jwt.sign({ id: user.id }, config.secret, {
         algorithm: "HS256",
-        expiresIn: 86400, // 24 giờ
+        expiresIn: 86400,
       });
 
       const roleIds = user.roles.map((role) => role.id);

@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const instance = axios.create({
-  baseURL: "http://54.242.250.132:3001",
-  // baseURL: "http://localhost:3001",
+  // baseURL: "http://54.242.250.132:3001",
+  baseURL: "http://localhost:3001",
 
   withCredentials: true,
 });
@@ -347,6 +347,14 @@ export const getService = async () => {
 export const getAllRooms = async () => {
   try {
     const response = await instance.get("/room");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const createRoom = async (data) => {
+  try {
+    const response = await instance.post("/room", data);
     return response.data;
   } catch (error) {
     throw error;

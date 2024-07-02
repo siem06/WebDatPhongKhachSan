@@ -27,8 +27,7 @@ const Login = ({ setLoggedIn }) => {
       localStorage.setItem("user", JSON.stringify(user));
       updateUser(user);
       console.log("user:", user);
-      console.log(user?.roles.includes(1));
-      console.log(user?.roles.includes(2));
+
       setLoggedIn(true);
       if (user?.roles[0].id === 2) {
         navigation("/dashboard");

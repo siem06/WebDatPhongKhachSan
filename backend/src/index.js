@@ -25,7 +25,8 @@ paypal.configure({
 });
 app.use(
   cors({
-    origin: "http:54.242.250.132:3000",
+    // origin: "http:54.242.250.132",
+    origin: "http://localhost:3000",
     credentials: true,
     optionSuccessStatus: 200,
   })
@@ -54,7 +55,7 @@ db.sequelize.sync();
 // });
 
 route(app);
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

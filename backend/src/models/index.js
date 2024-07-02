@@ -2,8 +2,9 @@ const config = require("../config/db.js");
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
   host: config.HOST,
+  port: config.PORT,
   dialect: config.dialect,
-  timezone: "+07:00",
+  timezone: config.timezone,
   pool: {
     max: config.pool.max,
     min: config.pool.min,
@@ -89,13 +90,15 @@ db.booking.belongsTo(db.user, { foreignKey: "userId" });
 db.room.hasMany(db.image, { as: "images", foreignKey: "roomId" });
 db.room.hasMany(db.review, { foreignKey: "roomId" });
 db.room.belongsToMany(db.review, {
-  through: "room_reviews", 
+  through: "room_reviews",
   foreignKey: "roomId",
-  as: "reviewsRoom"});
-db.review.belongsToMany(db.room, { 
- through: "room_reviews", 
- foreignKey: "reviewId", 
- as:"rooms" });
+  as: "reviewsRoom",
+});
+db.review.belongsToMany(db.room, {
+  through: "room_reviews",
+  foreignKey: "reviewId",
+  as: "rooms",
+});
 db.user.hasMany(db.review, { foreignKey: "userId", as: "userReviews" });
 db.review.belongsTo(db.user, { foreignKey: "userId" });
 
