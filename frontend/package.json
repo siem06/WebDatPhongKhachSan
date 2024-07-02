@@ -24,6 +24,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
     "dayjs": "^1.11.11",
+    "dotenv": "^16.4.5",
     "eonasdan-bootstrap-datetimepicker": "^4.17.49",
     "formik": "^2.4.5",
     "http-serve": "^1.0.1",

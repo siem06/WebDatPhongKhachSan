@@ -1,7 +1,6 @@
 const dotenv = require("dotenv");
-const { sendEmailConfi } = require("../models/SendEmail");
-
 dotenv.config();
+const { sendEmailConfi } = require("../models/SendEmail");
 
 class PaymentController {
   //   async create(req, res) {

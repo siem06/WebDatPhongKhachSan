@@ -26,7 +26,7 @@ paypal.configure({
 app.use(
   cors({
     // origin: "http:54.242.250.132",
-    origin: "http://localhost:3000",
+    origin: process.env.ORIGIN,
     credentials: true,
     optionSuccessStatus: 200,
   })

@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const instance = axios.create({
   // baseURL: "http://54.242.250.132:3001",
-  baseURL: "http://localhost:3001",
+  baseURL: "https://webdatphongkhachsan-production.up.railway.app",
 
   withCredentials: true,
 });
